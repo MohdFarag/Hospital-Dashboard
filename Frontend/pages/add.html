@@ -5,7 +5,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Dashboard | مستشفى الجمعية الشرعية للأطفال</title>
+  <title>Dashboard | مستشفى الجمعية الشرعية للأطفال</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="../vendors/feather/feather.css">
   <link rel="stylesheet" href="../vendors/mdi/css/materialdesignicons.min.css">
@@ -22,6 +22,20 @@
   <link rel="stylesheet" href="../css/vertical-layout-light/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../images/favicon.png" />
+  <style>
+    fieldset {
+      border: solid grey 1px;
+      padding: 10px 10px;
+    }
+
+    legend {
+      width: inherit;
+      /* Or auto */
+      /* To give a bit of padding on the left and right */
+      border: none;
+      font-size: medium;
+    }
+  </style>
 </head>
 
 <body>
@@ -43,7 +57,7 @@
           </a>
         </div>
       </div>
-      <div class="navbar-menu-wrapper d-flex align-items-top"> 
+      <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">Hossam</span></h1>
@@ -65,12 +79,14 @@
               <input type="search" class="form-control" placeholder="Search Here" title="Search here">
             </form>
           </li>
-          <li class="nav-item dropdown"> 
-            <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+          <li class="nav-item dropdown">
+            <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown"
+              aria-expanded="false">
               <i class="icon-bell"></i>
               <span class="count"></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
+              aria-labelledby="countDropdown">
               <a class="dropdown-item preview-item">
                 <div class="preview-thumbnail">
                   <img src="../images/faces/face1.jpg" alt="image" class="img-sm profile-pic">
@@ -91,12 +107,14 @@
                 <p class="mb-1 mt-3 font-weight-semibold">Hossam</p>
                 <p class="fw-light text-muted mb-0">Hossam@gmail.com</p>
               </div>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>FAQ</a>
+              <a class="dropdown-item"><i
+                  class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>FAQ</a>
               <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
         </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+          data-bs-toggle="offcanvas">
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
@@ -109,7 +127,7 @@
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
           <p class="settings-heading">Edit</p>
-          
+
         </div>
       </div>
       <!-- partial -->
@@ -139,69 +157,71 @@
                 <div class="card-body">
                   <h4 class="card-title">Add New Device</h4>
                   <form class="form-sample">
-                    <p class="card-description">
-                      Info
-                    </p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Model</label>
-                          <div class="col-sm-9">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose Model...</option>
-                              <option>Ventilator</option>
-                              <option>pressure gauge</option>
-                            </select>
+                    <p>Info</p>
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Model</label>
+                            <div class="col-sm-9">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose Model...</option>
+                                <option>Ventilator</option>
+                                <option>pressure gauge</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Manufacturer</label>
+                            <div class="col-sm-9">
+                              <input placeholder="Enter manufacturer" type="text"
+                                class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Manufacturer</label>
-                          <div class="col-sm-9">
-                            <input placeholder="Enter manufacturer" type="text" class="form-control form-control-sm" />
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">S/N</label>
+                            <div class="col-sm-9">
+                              <input placeholder="Enter Serial Number" type="text"
+                                class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Production Date</label>
+                            <div class="col-sm-9">
+                              <input type="date" class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">S/N</label>
-                          <div class="col-sm-9">
-                            <input placeholder="Enter Serial Number" type="text" class="form-control form-control-sm" />
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Location</label>
+                            <div class="col-sm-9">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose location...</option>
+                                <option>ICU</option>
+                                <option>Radiology</option>
+                              </select>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Production Date</label>
-                          <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Location</label>
-                          <div class="col-sm-9">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose location...</option>
-                              <option>ICU</option>
-                              <option>Radiology</option>
-                          </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Country</label>
-                          <div class="col-sm-9">
-                            <select class="form-control form-control-sm">
-                              <option value="0" label="Select a country ... " selected="selected">Select a country ... </option>
-                              <optgroup id="country-optgroup-Africa" label="Africa">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Country</label>
+                            <div class="col-sm-9">
+                              <select class="form-control form-control-sm">
+                                <option value="0" label="Select a country ... " selected="selected">Select a country ...
+                                </option>
+                                <optgroup id="country-optgroup-Africa" label="Africa">
                                   <option value="DZ" label="Algeria">Algeria</option>
                                   <option value="AO" label="Angola">Angola</option>
                                   <option value="BJ" label="Benin">Benin</option>
@@ -259,8 +279,8 @@
                                   <option value="EH" label="Western Sahara">Western Sahara</option>
                                   <option value="ZM" label="Zambia">Zambia</option>
                                   <option value="ZW" label="Zimbabwe">Zimbabwe</option>
-                              </optgroup>
-                              <optgroup id="country-optgroup-Americas" label="Americas">
+                                </optgroup>
+                                <optgroup id="country-optgroup-Americas" label="Americas">
                                   <option value="AI" label="Anguilla">Anguilla</option>
                                   <option value="AG" label="Antigua and Barbuda">Antigua and Barbuda</option>
                                   <option value="AR" label="Argentina">Argentina</option>
@@ -305,8 +325,10 @@
                                   <option value="KN" label="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
                                   <option value="LC" label="Saint Lucia">Saint Lucia</option>
                                   <option value="MF" label="Saint Martin">Saint Martin</option>
-                                  <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
-                                  <option value="VC" label="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+                                  <option value="PM" label="Saint Pierre and Miquelon">Saint Pierre and Miquelon
+                                  </option>
+                                  <option value="VC" label="Saint Vincent and the Grenadines">Saint Vincent and the
+                                    Grenadines</option>
                                   <option value="SR" label="Suriname">Suriname</option>
                                   <option value="TT" label="Trinidad and Tobago">Trinidad and Tobago</option>
                                   <option value="TC" label="Turks and Caicos Islands">Turks and Caicos Islands</option>
@@ -314,8 +336,8 @@
                                   <option value="US" label="United States">United States</option>
                                   <option value="UY" label="Uruguay">Uruguay</option>
                                   <option value="VE" label="Venezuela">Venezuela</option>
-                              </optgroup>
-                              <optgroup id="country-optgroup-Asia" label="Asia">
+                                </optgroup>
+                                <optgroup id="country-optgroup-Asia" label="Asia">
                                   <option value="AF" label="Afghanistan">Afghanistan</option>
                                   <option value="AM" label="Armenia">Armenia</option>
                                   <option value="AZ" label="Azerbaijan">Azerbaijan</option>
@@ -350,7 +372,8 @@
                                   <option value="OM" label="Oman">Oman</option>
                                   <option value="PK" label="Pakistan">Pakistan</option>
                                   <option value="PS" label="Palestinian Territories">Palestinian Territories</option>
-                                  <option value="YD" label="People's Democratic Republic of Yemen">People's Democratic Republic of Yemen</option>
+                                  <option value="YD" label="People's Democratic Republic of Yemen">People's Democratic
+                                    Republic of Yemen</option>
                                   <option value="PH" label="Philippines">Philippines</option>
                                   <option value="QA" label="Qatar">Qatar</option>
                                   <option value="SA" label="Saudi Arabia">Saudi Arabia</option>
@@ -368,8 +391,8 @@
                                   <option value="UZ" label="Uzbekistan">Uzbekistan</option>
                                   <option value="VN" label="Vietnam">Vietnam</option>
                                   <option value="YE" label="Yemen">Yemen</option>
-                              </optgroup>
-                              <optgroup id="country-optgroup-Europe" label="Europe">
+                                </optgroup>
+                                <optgroup id="country-optgroup-Europe" label="Europe">
                                   <option value="AL" label="Albania">Albania</option>
                                   <option value="AD" label="Andorra">Andorra</option>
                                   <option value="AT" label="Austria">Austria</option>
@@ -422,25 +445,29 @@
                                   <option value="SE" label="Sweden">Sweden</option>
                                   <option value="CH" label="Switzerland">Switzerland</option>
                                   <option value="UA" label="Ukraine">Ukraine</option>
-                                  <option value="SU" label="Union of Soviet Socialist Republics">Union of Soviet Socialist Republics</option>
+                                  <option value="SU" label="Union of Soviet Socialist Republics">Union of Soviet
+                                    Socialist Republics</option>
                                   <option value="GB" label="United Kingdom">United Kingdom</option>
                                   <option value="VA" label="Vatican City">Vatican City</option>
                                   <option value="AX" label="Åland Islands">Åland Islands</option>
-                              </optgroup>
-                              <optgroup id="country-optgroup-Oceania" label="Oceania">
+                                </optgroup>
+                                <optgroup id="country-optgroup-Oceania" label="Oceania">
                                   <option value="AS" label="American Samoa">American Samoa</option>
                                   <option value="AQ" label="Antarctica">Antarctica</option>
                                   <option value="AU" label="Australia">Australia</option>
                                   <option value="BV" label="Bouvet Island">Bouvet Island</option>
-                                  <option value="IO" label="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                                  <option value="IO" label="British Indian Ocean Territory">British Indian Ocean
+                                    Territory</option>
                                   <option value="CX" label="Christmas Island">Christmas Island</option>
                                   <option value="CC" label="Cocos [Keeling] Islands">Cocos [Keeling] Islands</option>
                                   <option value="CK" label="Cook Islands">Cook Islands</option>
                                   <option value="FJ" label="Fiji">Fiji</option>
                                   <option value="PF" label="French Polynesia">French Polynesia</option>
-                                  <option value="TF" label="French Southern Territories">French Southern Territories</option>
+                                  <option value="TF" label="French Southern Territories">French Southern Territories
+                                  </option>
                                   <option value="GU" label="Guam">Guam</option>
-                                  <option value="HM" label="Heard Island and McDonald Islands">Heard Island and McDonald Islands</option>
+                                  <option value="HM" label="Heard Island and McDonald Islands">Heard Island and McDonald
+                                    Islands</option>
                                   <option value="KI" label="Kiribati">Kiribati</option>
                                   <option value="MH" label="Marshall Islands">Marshall Islands</option>
                                   <option value="FM" label="Micronesia">Micronesia</option>
@@ -455,263 +482,283 @@
                                   <option value="PN" label="Pitcairn Islands">Pitcairn Islands</option>
                                   <option value="WS" label="Samoa">Samoa</option>
                                   <option value="SB" label="Solomon Islands">Solomon Islands</option>
-                                  <option value="GS" label="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
+                                  <option value="GS" label="South Georgia and the South Sandwich Islands">South Georgia
+                                    and the South Sandwich Islands</option>
                                   <option value="TK" label="Tokelau">Tokelau</option>
                                   <option value="TO" label="Tonga">Tonga</option>
                                   <option value="TV" label="Tuvalu">Tuvalu</option>
-                                  <option value="UM" label="U.S. Minor Outlying Islands">U.S. Minor Outlying Islands</option>
+                                  <option value="UM" label="U.S. Minor Outlying Islands">U.S. Minor Outlying Islands
+                                  </option>
                                   <option value="VU" label="Vanuatu">Vanuatu</option>
                                   <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
-                              </optgroup>
-                            </select>
+                                </optgroup>
+                              </select>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </fieldset>
+                    <br>
                     <p class="card-description">Contract</p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Contract type</label>
-                          <div class="col-sm-9">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose Contract type ...</option>
-                              <option>Warranty</option>
-                              <option>Local</option>
-                              <option>Contract of Maintenance</option>
-                            </select>
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Contract type</label>
+                            <div class="col-sm-9">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose Contract type ...</option>
+                                <option>Warranty</option>
+                                <option>Local</option>
+                                <option>Contract of Maintenance</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <div class="col-sm-4">
+                              <select hidden class="form-control form-control-sm">
+                                <option selected>Choose..</option>
+                                <option>معايرة</option>
+                                <option>شامل</option>
+                                <option>غير شامل</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-3">
+                              <input hidden type="date" class="form-control form-control-sm" />
+                            </div>
+                            <label hidden class="text-center fw-bold col-sm-2 col-form-label">To</label>
+                            <div class="col-sm-3">
+                              <input hidden type="date" class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <div class="col-sm-4">
-                            <select hidden class="form-control form-control-sm">
-                              <option selected>Choose..</option>
-                              <option>معايرة</option>
-                              <option>شامل</option>
-                              <option>غير شامل</option>
-                            </select>
-                          </div>
-                          <div class="col-sm-3">
-                            <input hidden type="date" class="form-control form-control-sm" />
-                          </div>
-                          <label hidden class="text-center fw-bold col-sm-2 col-form-label">To</label>
-                          <div class="col-sm-3">
-                            <input hidden type="date" class="form-control form-control-sm" />
-                          </div>                        
-                        </div>
-                      </div>
-                    </div>
+                    </fieldset>
+                    <br>
                     <p class="card-description">Inspection List</p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Inspection List file</label>
-                          <div class="col-sm-9">
-                            <input type="file" class="form-control form-control-sm" />
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Inspection List file</label>
+                            <div class="col-sm-9">
+                              <input type="file" class="form-control form-control-sm" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Frequency</label>
+                            <div class="col-sm-6">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose inspection period...</option>
+                                <option>Monthly</option>
+                                <option>3 Months</option>
+                                <option>6 Months</option>
+                                <option>Annually</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-3">
+                              <input type="date" class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Frequency</label>
-                          <div class="col-sm-6">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose inspection period...</option>
-                              <option>Monthly</option>
-                              <option>3 Months</option>
-                              <option>6 Months</option>
-                              <option>Annually</option>
-                            </select>
-                          </div>
-                          <div class="col-sm-3">
-                            <input type="date" class="form-control form-control-sm" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    </fieldset>
+                    <br>
                     <p class="card-description">PPM List</p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">PPM List file</label>
-                          <div class="col-sm-7">
-                            <input type="file" class="form-control form-control-sm" />
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">PPM List file</label>
+                            <div class="col-sm-7">
+                              <input type="file" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-sm-2">
+                              <input class="form-check-input" type="checkbox" />
+                              External
+                            </div>
                           </div>
-                          <div class="col-sm-2">
-                            <input class="form-check-input" type="checkbox" />
-                            External
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Frequency</label>
+                            <div class="col-sm-6">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose PPM period...</option>
+                                <option>Monthly</option>
+                                <option>3 Months</option>
+                                <option>6 Months</option>
+                                <option>Annually</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-3">
+                              <input type="date" class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Frequency</label>
-                          <div class="col-sm-6">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose PPM period...</option>
-                              <option>Monthly</option>
-                              <option>3 Months</option>
-                              <option>6 Months</option>
-                              <option>Annually</option>
-                            </select>
-                          </div>
-                          <div class="col-sm-3">
-                            <input type="date" class="form-control form-control-sm" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    </fieldset>
+                    <br>
                     <p class="card-description">Calibration List</p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Calibration List file</label>
-                          <div class="col-sm-7">
-                            <input type="file" class="form-control form-control-sm" />
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Calibration List file</label>
+                            <div class="col-sm-7">
+                              <input type="file" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-sm-2">
+                              <input class="form-check-input" type="checkbox" />
+                              External
+                            </div>
                           </div>
-                          <div class="col-sm-2">
-                            <input class="form-check-input" type="checkbox" />
-                            External
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Frequency</label>
+                            <div class="col-sm-6">
+                              <select class="form-control form-control-sm">
+                                <option selected>Choose calibration period...</option>
+                                <option>Monthly</option>
+                                <option>3 Months</option>
+                                <option>6 Months</option>
+                                <option>Annually</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-3">
+                              <input type="date" class="form-control form-control-sm" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Frequency</label>
-                          <div class="col-sm-6">
-                            <select class="form-control form-control-sm">
-                              <option selected>Choose calibration period...</option>
-                              <option>Monthly</option>
-                              <option>3 Months</option>
-                              <option>6 Months</option>
-                              <option>Annually</option>
-                            </select>
-                          </div>
-                          <div class="col-sm-3">
-                            <input type="date" class="form-control form-control-sm" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Technical Status</label>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input">
-                                FF
-                              </label>
+                      <div class="row">
+                        <div class="col-md-8">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Technical Status</label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  FF
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input">
-                                PF
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  PF
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input" >
-                                NF
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  NF
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input" >
-                                Not Updated
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  Not Updated
+                                </label>
+                              </div>
                             </div>
-                          </div>
 
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group row">
-                          <div class="col-sm-12">
-                            <input placeholder="Write name of module.." type="text" class="form-control" />
                           </div>
                         </div>
+                        <div class="col-md-4">
+                          <div class="form-group row">
+                            <div class="col-sm-12">
+                              <input placeholder="Write name of module.." type="text" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                          <label class="col-sm-2 col-form-label">TRC</label>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input"  >
-                                1
-                              </label>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">TRC</label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  1
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input"  >
-                                2
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  2
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input"  >
-                                3
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  3
+                                </label>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-sm-2">
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input"  >
-                                4
-                              </label>
+                            <div class="col-sm-2">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input">
+                                  4
+                                </label>
+                              </div>
                             </div>
-                          </div>
 
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                          <label class="col-sm-2 col-form-label">Description</label>
-                          <div class="col-sm-12">
-                            <textarea style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">QR Generator</label>
-                          <div class="col-sm-9">
-                            <input type="text" readonly class="form-control form-control-sm-plaintext" value="PG001-CUM-EM001" />
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Description</label>
+                            <div class="col-sm-12">
+                              <textarea style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </fieldset>
+                    <br>
+                    <p>Check & Submit</p>
+                    <fieldset>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">QR Generator</label>
+                            <div class="col-sm-9">
+                              <input type="text" readonly class="form-control form-control-sm-plaintext"
+                                value="PG001-CUM-EM001" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                          <div class="col-sm-12">
-                            <input type="submit" class="add btn btn-primary todo-list-add-btn" />
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group row">
+                            <div class="col-sm-12">
+                              <input type="submit" class="add btn btn-primary todo-list-add-btn" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </fieldset>
                   </form>
                 </div>
               </div>
@@ -723,7 +770,8 @@
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"></span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights
+              reserved.</span>
           </div>
         </footer>
         <!-- partial -->
@@ -758,4 +806,3 @@
 </body>
 
 </html>
-
