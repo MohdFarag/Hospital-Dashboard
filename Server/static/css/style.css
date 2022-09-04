@@ -5,4 +5,20 @@
     border: solid #c9c9c9 1px;
     padding: 30px 20px 0px 20px;
     border-radius: 10px;
+    margin-bottom: 25px;
+    background: rgb(255,255,255);
+    background: -moz-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(240,242,255,1) 57%, rgba(255,255,255,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(240,242,255,1) 57%, rgba(255,255,255,1) 100%);
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(240,242,255,1) 57%, rgba(255,255,255,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#ffffff",GradientType=1);
+}
+
+.rect label{
+    line-height: 0;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#qrcode{
+    text-align: center;
 }

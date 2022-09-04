@@ -6,6 +6,7 @@
       <div class="card-body">
         <h4 class="card-title">Add New Device</h4>
         <form class="form-sample">
+          
           <p>Info</p>
           <fieldset class="rect">
             <div class="row">
@@ -13,7 +14,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Model</label>
                   <div class="col-sm-9">
-                    <select class="form-control form-control-sm">
+                    <select name="model" class="form-control form-control-sm">
                       <option selected>Choose Model...</option>
                       <option>Ventilator</option>
                       <option>pressure gauge</option>
@@ -25,7 +26,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
                   <div class="col-sm-9">
-                    <input placeholder="Enter manufacturer" type="text"
+                    <input name="manufacturer" placeholder="Enter manufacturer" type="text"
                       class="form-control form-control-sm" />
                   </div>
                 </div>
@@ -36,7 +37,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
                   <div class="col-sm-9">
-                    <input placeholder="Enter Serial Number" type="text"
+                    <input name="sn" placeholder="Enter Serial Number" type="text"
                       class="form-control form-control-sm" />
                   </div>
                 </div>
@@ -45,7 +46,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
                   <div class="col-sm-9">
-                    <input type="date" class="form-control form-control-sm" />
+                    <input name="prod-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -55,10 +56,9 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Location</label>
                   <div class="col-sm-9">
-                    <select class="form-control form-control-sm">
+                    <select name="location" class="form-control form-control-sm">
                       <option selected>Choose location...</option>
-                      <option>ICU</option>
-                      <option>Radiology</option>
+                      <option>Unknown</option>
                     </select>
                   </div>
                 </div>
@@ -67,7 +67,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Country</label>
                   <div class="col-sm-9">
-                    <select class="form-control form-control-sm">
+                    <select name="country" class="form-control form-control-sm">
                       <option value="0" label="Select a country ... " selected="selected">Select a country ...
                       </option>
                       <optgroup id="country-optgroup-Africa" label="Africa">
@@ -347,7 +347,7 @@
               </div>
             </div>
           </fieldset>
-          <br>
+          
           <p class="card-description">Contract</p>
           <fieldset class="rect">
             <div class="row">
@@ -355,7 +355,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Contract type</label>
                   <div class="col-sm-9">
-                    <select class="form-control form-control-sm">
+                    <select onchange="contractType()" name="contract-type" id="contract-type" class="form-control form-control-sm">
                       <option selected>Choose Contract type ...</option>
                       <option>Warranty</option>
                       <option>Local</option>
@@ -367,7 +367,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <div class="col-sm-4">
-                    <select hidden class="form-control form-control-sm">
+                    <select id="maintenance-contract-type" name="maintenance-contract-type" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose..</option>
                       <option>معايرة</option>
                       <option>شامل</option>
@@ -375,17 +375,17 @@
                     </select>
                   </div>
                   <div class="col-sm-3">
-                    <input hidden type="date" class="form-control form-control-sm" />
+                    <input id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
-                  <label hidden class="text-center fw-bold col-sm-2 col-form-label">To</label>
+                  <label id="To" style="display: none;" class="text-center fw-bold col-sm-2 col-form-label">To</label>
                   <div class="col-sm-3">
-                    <input hidden type="date" class="form-control form-control-sm" />
+                    <input id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
-          <br>
+          
           <p class="card-description">Inspection List</p>
           <fieldset class="rect">
             <div class="row">
@@ -393,15 +393,15 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
                   <div class="col-sm-9">
-                    <input type="file" class="form-control form-control-sm" />
+                    <input name="inspection-list" type="file" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Frequency</label>
+                  <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select class="form-control form-control-sm">
+                    <select name="inspection-freq" class="form-control form-control-sm">
                       <option selected>Choose inspection period...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
@@ -409,14 +409,14 @@
                       <option>Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-3">
-                    <input type="date" class="form-control form-control-sm" />
+                  <div class="col-sm-4">
+                    <input name="inspection-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
-          <br>
+          
           <p class="card-description">PPM List</p>
           <fieldset class="rect">
             <div class="row">
@@ -424,19 +424,19 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">PPM List file</label>
                   <div class="col-sm-7">
-                    <input type="file" class="form-control form-control-sm" />
+                    <input name="ppm-list" type="file" class="form-control form-control-sm" />
                   </div>
                   <div class="col-sm-2">
-                    <input class="form-check-input" type="checkbox" />
+                    <input name="ppm-external" class="form-check-input" type="checkbox" />
                     External
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Frequency</label>
+                  <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select class="form-control form-control-sm">
+                    <select name="ppm-freq" class="form-control form-control-sm">
                       <option selected>Choose PPM period...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
@@ -444,14 +444,14 @@
                       <option>Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-3">
-                    <input type="date" class="form-control form-control-sm" />
+                  <div class="col-sm-4">
+                    <input name="ppm-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
-          <br>
+
           <p class="card-description">Calibration List</p>
           <fieldset class="rect">
             <div class="row">
@@ -459,19 +459,19 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Calibration List file</label>
                   <div class="col-sm-7">
-                    <input type="file" class="form-control form-control-sm" />
+                    <input name="calibration-list" type="file" class="form-control form-control-sm" />
                   </div>
                   <div class="col-sm-2">
-                    <input class="form-check-input" type="checkbox" />
+                    <input name="calibration-start-date" class="form-check-input" type="checkbox" />
                     External
                   </div>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Frequency</label>
+                  <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select class="form-control form-control-sm">
+                    <select name="calibration-freq" class="form-control form-control-sm">
                       <option selected>Choose calibration period...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
@@ -479,8 +479,8 @@
                       <option>Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-3">
-                    <input type="date" class="form-control form-control-sm" />
+                  <div class="col-sm-4">
+                    <input name="calibration-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -492,7 +492,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="technical-status" value="FF" type="radio" class="form-check-input">
                         FF
                       </label>
                     </div>
@@ -500,7 +500,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="technical-status" value="PF" type="radio" class="form-check-input">
                         PF
                       </label>
                     </div>
@@ -508,7 +508,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="technical-status" value="NF" type="radio" class="form-check-input">
                         NF
                       </label>
                     </div>
@@ -516,12 +516,11 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="technical-status" value="Not Updated" type="radio" class="form-check-input">
                         Not Updated
                       </label>
                     </div>
                   </div>
-
                 </div>
               </div>
               <div class="col-md-4">
@@ -539,7 +538,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="trc" value="1" type="radio" class="form-check-input">
                         1
                       </label>
                     </div>
@@ -547,7 +546,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="trc" value="2" type="radio" class="form-check-input">
                         2
                       </label>
                     </div>
@@ -555,7 +554,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="trc" value="3" type="radio" class="form-check-input">
                         3
                       </label>
                     </div>
@@ -563,7 +562,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="radio" class="form-check-input">
+                        <input name="trc" value="4" type="radio" class="form-check-input">
                         4
                       </label>
                     </div>
@@ -575,26 +574,46 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group row">
-                  <label class="col-sm-2 col-form-label">Description</label>
+                  <label class="col-sm-2 col-form-label">Description | Terms</label>
                   <div class="col-sm-12">
-                    <textarea style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
+                    <textarea name="description" style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
-          <br>
+          
           <p>Check & Submit</p>
           <fieldset class="rect">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">QR Generator</label>
                   <div class="col-sm-9">
-                    <input type="text" readonly class="form-control form-control-sm-plaintext"
-                      value="PG001-CUM-EM001" />
+                    <input readonly name="QR" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <!-- This is where our QRCode will appear in. -->
+                <div id="qrcode"></div>
+                <script type="text/javascript">
+                  function updateQRCode(text) {
+            
+                    var element = document.getElementById("qrcode");
+            
+                    var bodyElement = document.body;
+                    if(element.lastChild)
+                      element.replaceChild(showQRCode(text), element.lastChild);
+                    else
+                      element.appendChild(showQRCode(text));
+            
+                  }
+            
+                  updateQRCode('');
+                </script>
               </div>
             </div>
 
