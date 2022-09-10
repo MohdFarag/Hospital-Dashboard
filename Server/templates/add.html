@@ -5,19 +5,41 @@
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Add New Device</h4>
-        <form class="form-sample">
-          
+        
+        <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">
+          Device Added successfully.
+        </div>
+        <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">
+          There is empty fields !
+        </div>
+        
+        <form enctype="multipart/form-data" action="{{ url_for('addDevice') }}" method="POST">
           <p>Info</p>
           <fieldset class="rect">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group row">
+                  <div class="col-sm-12">
+                    <select required id="equipment" name="equipment" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose Equipment name ...</option>
+
+                      <option>Unknown</option>
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Model</label>
                   <div class="col-sm-9">
-                    <select name="model" class="form-control form-control-sm">
-                      <option selected>Choose Model...</option>
-                      <option>Ventilator</option>
-                      <option>pressure gauge</option>
+                    <select required id="model" name="model" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose Model ...</option>
+
+                      <option>Unknown</option>
+
                     </select>
                   </div>
                 </div>
@@ -26,7 +48,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
                   <div class="col-sm-9">
-                    <input name="manufacturer" placeholder="Enter manufacturer" type="text"
+                    <input required id="manufacturer" name="manufacturer" placeholder="Enter manufacturer ..." type="text"
                       class="form-control form-control-sm" />
                   </div>
                 </div>
@@ -37,7 +59,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
                   <div class="col-sm-9">
-                    <input name="sn" placeholder="Enter Serial Number" type="text"
+                    <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text"
                       class="form-control form-control-sm" />
                   </div>
                 </div>
@@ -46,7 +68,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
                   <div class="col-sm-9">
-                    <input name="prod-date" type="date" class="form-control form-control-sm" />
+                    <input required id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -56,9 +78,11 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Location</label>
                   <div class="col-sm-9">
-                    <select name="location" class="form-control form-control-sm">
-                      <option selected>Choose location...</option>
+                    <select required id="location" name="location" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose location...</option>
+                      
                       <option>Unknown</option>
+                    
                     </select>
                   </div>
                 </div>
@@ -67,8 +91,8 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Country</label>
                   <div class="col-sm-9">
-                    <select name="country" class="form-control form-control-sm">
-                      <option value="0" label="Select a country ... " selected="selected">Select a country ...
+                    <select required id="country" name="country" class="form-control form-control-sm">
+                      <option value="" label="Select a country ... " selected="selected">Select a country ...
                       </option>
                       <optgroup id="country-optgroup-Africa" label="Africa">
                         <option value="DZ" label="Algeria">Algeria</option>
@@ -369,9 +393,9 @@
                   <div class="col-sm-4">
                     <select id="maintenance-contract-type" name="maintenance-contract-type" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose..</option>
-                      <option>معايرة</option>
-                      <option>شامل</option>
-                      <option>غير شامل</option>
+                      <option>Calibration</option>
+                      <option>Comprehensive</option>
+                      <option>Excl</option>
                     </select>
                   </div>
                   <div class="col-sm-3">
@@ -393,7 +417,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
                   <div class="col-sm-9">
-                    <input name="inspection-list" type="file" class="form-control form-control-sm" />
+                    <input id="inspection-list" name="inspection-list" type="file" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -401,8 +425,8 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select name="inspection-freq" class="form-control form-control-sm">
-                      <option selected>Choose inspection period...</option>
+                    <select required id="inspection-freq" name="inspection-freq" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose inspection period ...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
                       <option>6 Months</option>
@@ -410,7 +434,7 @@
                     </select>
                   </div>
                   <div class="col-sm-4">
-                    <input name="inspection-start-date" type="date" class="form-control form-control-sm" />
+                    <input id="inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -424,10 +448,10 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">PPM List file</label>
                   <div class="col-sm-7">
-                    <input name="ppm-list" type="file" class="form-control form-control-sm" />
+                    <input id="ppm-list" name="ppm-list" type="file" class="form-control form-control-sm" />
                   </div>
                   <div class="col-sm-2">
-                    <input name="ppm-external" class="form-check-input" type="checkbox" />
+                    <input id="ppm-external" name="ppm-external" class="form-check-input" type="checkbox" />
                     External
                   </div>
                 </div>
@@ -436,8 +460,8 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select name="ppm-freq" class="form-control form-control-sm">
-                      <option selected>Choose PPM period...</option>
+                    <select required id="ppm-freq" name="ppm-freq" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose PPM period ...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
                       <option>6 Months</option>
@@ -445,7 +469,7 @@
                     </select>
                   </div>
                   <div class="col-sm-4">
-                    <input name="ppm-start-date" type="date" class="form-control form-control-sm" />
+                    <input id="ppm-start-date" name="ppm-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -459,10 +483,10 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Calibration List file</label>
                   <div class="col-sm-7">
-                    <input name="calibration-list" type="file" class="form-control form-control-sm" />
+                    <input id="calibration-list" name="calibration-list" type="file" class="form-control form-control-sm" />
                   </div>
                   <div class="col-sm-2">
-                    <input name="calibration-start-date" class="form-check-input" type="checkbox" />
+                    <input id name="calibration-external" class="form-check-input" type="checkbox" />
                     External
                   </div>
                 </div>
@@ -471,8 +495,8 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-6">
-                    <select name="calibration-freq" class="form-control form-control-sm">
-                      <option selected>Choose calibration period...</option>
+                    <select required id="calibration-freq" name="calibration-freq" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose calibration period ...</option>
                       <option>Monthly</option>
                       <option>3 Months</option>
                       <option>6 Months</option>
@@ -480,53 +504,67 @@
                     </select>
                   </div>
                   <div class="col-sm-4">
-                    <input name="calibration-start-date" type="date" class="form-control form-control-sm" />
+                    <input id="calibration-start-date" name="calibration-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
             </div>
+          </fieldset>
+
+          <fieldset class="rect">
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Technical Status</label>
-                  <div class="col-sm-2">
+                  <div class="col-sm-3">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="technical-status" value="FF" type="radio" class="form-check-input">
+                        <input onclick="statusChange('FF')" id="technical-status" name="technical-status" value="FF" type="radio" class="form-check-input">
                         FF
                       </label>
                     </div>
                   </div>
-                  <div class="col-sm-2">
+                  <div class="col-sm-3">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="technical-status" value="PF" type="radio" class="form-check-input">
+                        <input onclick="statusChange('PF')" id="technical-status" name="technical-status" value="PF" type="radio" class="form-check-input">
                         PF
                       </label>
                     </div>
                   </div>
-                  <div class="col-sm-2">
+                  <div class="col-sm-3">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="technical-status" value="NF" type="radio" class="form-check-input">
+                        <input onclick="statusChange('NF')" id="technical-status" name="technical-status" value="NF" type="radio" class="form-check-input">
                         NF
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-sm-2">
-                    <div class="form-check">
-                      <label class="form-check-label">
-                        <input name="technical-status" value="Not Updated" type="radio" class="form-check-input">
-                        Not Updated
                       </label>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-group row">
-                  <div class="col-sm-12">
-                    <input placeholder="Write name of module.." type="text" class="form-control" />
+                  <label id="problem-id" style="display: none;" class="col-sm-2 col-form-label">problem</label>
+                  <div class="col-sm-10">
+                    <input id="PF-problem" name="problem" style="display: none;" placeholder="Problem" type="text" class="form-control" />
+                    <select id="NF-problem" name="problem" style="display: none;" class="form-control form-control-sm">
+                      <option selected>Choose ...</option>
+                      <option>Equipment cannot start</option>
+                      <option>Equipment produces alarms</option>
+                      <option>Equipment is physically Damaged</option>
+                      <option>Equipment requires Calibration</option>
+                      <option>Equipment produces electric shocks</option>
+                      <option>Equipment requires supplies</option>
+                      <option>Printer problem</option>
+                      <option>Motion problem</option>
+                      <option>Cooling problem</option>
+                      <option>Control problem</option>
+                      <option>Noisy Operation</option>
+                      <option>Software problem</option>
+                      <option>Inaccurate results</option>
+                      <option>Equipment is missing Parts</option>
+                      <option>Other</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -538,7 +576,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="trc" value="1" type="radio" class="form-check-input">
+                        <input id="trc" name="trc" value="1" type="radio" class="form-check-input">
                         1
                       </label>
                     </div>
@@ -546,7 +584,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="trc" value="2" type="radio" class="form-check-input">
+                        <input id="trc" name="trc" value="2" type="radio" class="form-check-input">
                         2
                       </label>
                     </div>
@@ -554,7 +592,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="trc" value="3" type="radio" class="form-check-input">
+                        <input id="trc" name="trc" value="3" type="radio" class="form-check-input">
                         3
                       </label>
                     </div>
@@ -562,7 +600,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input name="trc" value="4" type="radio" class="form-check-input">
+                        <input id="trc" name="trc" value="4" type="radio" class="form-check-input">
                         4
                       </label>
                     </div>
@@ -570,13 +608,13 @@
 
                 </div>
               </div>
-            </div>
+            </div>          
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Description | Terms</label>
                   <div class="col-sm-12">
-                    <textarea name="description" style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
+                    <textarea id="description" name="description" style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
                   </div>
                 </div>
               </div>
@@ -588,9 +626,9 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">QR Generator</label>
+                  <label class="col-sm-3 col-form-label">Code</label>
                   <div class="col-sm-9">
-                    <input readonly name="QR" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                    <input readonly id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
                   </div>
                 </div>
               </div>
@@ -616,17 +654,17 @@
                 </script>
               </div>
             </div>
-
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group row">
-                  <div class="col-sm-12">
-                    <input type="submit" class="add btn btn-primary todo-list-add-btn" />
-                  </div>
+          </fieldset>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <input value="ADD DEVICE" type="submit" class="add btn btn-primary" />
                 </div>
               </div>
             </div>
-          </fieldset>
+          </div>
+        
         </form>
       </div>
     </div>

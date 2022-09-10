@@ -22,3 +22,11 @@
 #qrcode{
     text-align: center;
 }
+
+.twitter-typeahead{
+    display: block !important;
+}
+
+.tt-menu {
+    background-color: white;
+}

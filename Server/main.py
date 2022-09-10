@@ -39,12 +39,88 @@ def home():
 
 
 # Add New device
-@app.route("/AddDevice", methods=['GET', 'POST'])
+@app.route("/addDevice", methods=['GET', 'POST'])
 def addDevice():
-  db_tables = database.retrive_tables(mycursor)
   if 'loggedin' in session and session['loggedin'] == True:
+    db_tables = database.retrive_tables(mycursor)
+
+    models = list()
+    locations = list()
+    equipments = list()
+
+    status = -1
+    if request.method == 'POST' :
+
+      equipment = request.form['equipment']
+      model = request.form['model']
+      manufacturer = request.form['manufacturer']
+      sn = request.form['sn']
+      prod_date = request.form["prod-date"]
+      location = request.form['location']
+      country = request.form['country']
+      
+      contract = request.form['contract-type']
+      maintenance_contract_type = request.form['maintenance-contract-type']
+      if contract == "Contract of Maintenance":
+        contract = contract + " - " + maintenance_contract_type
+
+      contract_start_date = request.form['contract-start-date']
+      contract_end_date = request.form['contract-end-date']
+      
+      inspection_list = request.files['inspection-list']
+      inspection_freq = request.form['inspection-freq']
+      inspection_start_date = request.form['inspection-start-date']
+
+      ppm_list = request.files['ppm-list']
+      ppm_external = request.form.getlist('ppm-external')
+      ppm_freq = request.form['ppm-freq']
+      ppm_start_date = request.form['ppm-start-date']
+
+      calibration_list = request.files['calibration-list']
+      calibration_external = request.form.getlist('calibration-external')
+      calibration_freq = request.form['calibration-freq']
+      calibration_start_date = request.form['calibration-start-date']
+
+      technical_status = request.form.getlist('technical-status')
+      PF_problem = request.form['PF-problem']
+      NF_problem = request.form['NF-problem']
+      if technical_status == "FF":
+        problem = ''
+      elif technical_status == "PF":
+        problem = PF_problem
+      elif technical_status == "NF":
+        problem = NF_problem
+
+      trc = request.form.getlist('trc')
+      description = request.form['description']
+
+      code = request.form['code']
+
+      ### Insert Process
+      
+      mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s',(equipment))
+      equipment_id = mycursor.fetchone()
+
+      mycursor.execute('SELECT model_id FROM model where model_name = %s',(model))
+      model_id = mycursor.fetchone()
+
+      mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s',(manufacturer))
+      manufacturer_id = mycursor.fetchone()
+
+      mycursor.execute('SELECT location_id FROM location where location_name = %s',(location))
+      location_id = mycursor.fetchone()
+
+      
+      mycursor.execute("""INSERT INTO `almazadb`.`device` (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+                                                          (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
+      status = 1
+
     return render_template("add.html",
-                          title="Add New Device")
+                          title="Add New Device",
+                          status=status,
+                          equipments=equipments,
+                          models=models,
+                          locations=locations)
   else:
     return redirect(url_for('login'))
 
@@ -93,8 +169,6 @@ def logout():
   session.pop('username', None)
   # Redirect to login page
   return redirect(url_for('login'))
-
-
 
 # Run app
 if __name__ == "__main__":  
