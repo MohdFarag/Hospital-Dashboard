@@ -111,9 +111,8 @@ def addDevice():
       mycursor.execute('SELECT location_id FROM location where location_name = %s',(location))
       location_id = mycursor.fetchone()
 
-      print(sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code )
-      ##mycursor.execute("""INSERT INTO `almazadb`.`device` (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-      ##                                                    (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
+      mycursor.execute("""INSERT INTO device (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+                                                          (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
       status = 1
 
     return render_template("add.html",
@@ -138,7 +137,16 @@ def settings():
     locations = db_tables['location']
     equipments = db_tables['equipment']
     manufacturers = db_tables['manufacturer']
-    
+
+    if request.method == 'POST' :
+      # Insert Equipments
+      for i in range(1,3):
+        equipment = request.form["Equipment-"+str(i)]
+        mycursor.execute("""delete from equipment""")
+        mycursor.execute("""INSERT INTO `equipment` (`equipment_id`, `equipment_name`) VALUES (%s,%s)""", (i,equipment))
+        
+        status = 1
+
     return render_template("settings.html", 
                           title="Settings",
                           status=status,

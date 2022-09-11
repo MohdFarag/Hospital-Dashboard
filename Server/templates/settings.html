@@ -4,7 +4,7 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Settings</h4>
+            <h3 class="card-title">Settings</h3>
             <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">
                 Changes Done successfully.
             </div>
@@ -16,15 +16,16 @@
                     <div class="col-md-3">
                         <h5>Equipments</h5>
 
-                        <div id="categ-equipment">
+                        <div id="categ-Equipment">
                             {% for equipment in equipments %}
-                            <div class="row mb-1">
+                            <div id="row-Equipment-{{equipment[0]}}" class="row mb-1">
                                 <div class="col-md-10">
-                                    <input id="equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm" />
+                                    <input id="Equipment-{{equipment[0]}}" name="Equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input id="equipment-id" hidden type="text" value="{{ equipment[0] }}" />
+                                <input id="Equipment-id" hidden type="text" value="{{ equipment[0] }}" />
                                 <div class="col-md-1">
-                                    <a href="#" onclick="editItem('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
+                                    <a id="Equipment-editIcon-{{equipment[0]}}" href="#" onclick="editItem('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
+                                    <a id="Equipment-thump-{{equipment[0]}}" hidden href="#" onclick="doneEdit('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
                                 </div>
                                 <div class="col-md-1">
                                     <a href="#" onclick="deleteItem('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i></a>
@@ -34,7 +35,7 @@
                         </div>
                         <div class="row mb-1">
                             <div class="col-md-10">
-                                <input id="add-equipment" name="add-equipment" type="text" class="form-control form-control-sm" placeholder="Add" />
+                                <input id="add-Equipment" type="text" class="form-control form-control-sm" placeholder="Add" />
                             </div>
                             <div class="col-md-2">
                                 <button onclick="addItem('Equipment')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
@@ -44,36 +45,36 @@
                     <div class="col-md-3">
                         <h5>Models</h5>
                         
-                        <div id="categ-model">
+                        <div id="categ-Model">
                             {% for model in models %}
-                            <div class="row mb-1">
+                            <div id="row-Model-{{model[0]}}" class="row mb-1">
                                 <div class="col-md-5">
-                                    <input readonly type="text" value="{{ model[1] }}" class="form-control form-control-sm" />
+                                    <input id="Model-{{model[0]}}-1"  readonly type="text" value="{{ model[1] }}" class="form-control form-control-sm" />
                                 </div>
                                 <div class="col-md-5">
-                                    <select readonly class="form-control form-control-sm">
+                                    <select id="Model-{{model[0]}}-2" disabled="true" class="form-control form-control-sm">
                                         {% for equipment in equipments %}
                                         <option>{{ equipment[1] }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <input hidden type="text" value="{{ model[0] }}" />
+                                <input id="Model-id" hidden type="text" value="{{ model[0] }}" />
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i>
+                                    <a id="Model-editIcon-{{model[0]}}" href="#" onclick="editItem('Model-{{model[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
+                                    <a id="Model-thump-{{model[0]}}" hidden href="#" onclick="doneEdit('Model-{{model[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
                                 </div>
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i>
+                                    <a href="#" onclick="deleteItem('Model-{{model[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i></a>
                                 </div>
-                                
                             </div>
                             {% endfor %}
                         </div>                  
                         <div class="row mb-1">
                             <div class="col-md-5">
-                                <input type="text" class="form-control form-control-sm" placeholder="Add" />
+                                <input id="add-Model" type="text" class="form-control form-control-sm" placeholder="Add" />
                             </div>
                             <div class="col-md-5">
-                                <select class="form-control form-control-sm">
+                                <select id="add-Model-equipment" class="form-control form-control-sm">
                                     <option selected="selected" value="">Choose...</option>
                                     {% for equipment in equipments %}
                                     <option>{{ equipment[1] }}</option>
@@ -81,25 +82,26 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <button onclick="addItem('Model')" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                                <button onclick="addItem('Model')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                             </div>
                         </div>        
                     </div>
                     <div class="col-md-3">
                         <h5>Manufacturers</h5>
                         
-                        <div id="categ-manufacturer">
+                        <div id="categ-Manufacturer">
                             {% for manufacturer in manufacturers %}
-                            <div class="row mb-1">
+                            <div id="row-Manufacturer-{{manufacturer[0]}}" class="row mb-1">
                                 <div class="col-md-10">
-                                    <input readonly type="text" value="{{ manufacturer[1] }}" class="form-control form-control-sm" />
+                                    <input id="Manufacturer-{{manufacturer[0]}}" readonly type="text" value="{{ manufacturer[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input hidden type="text" value="{{ manufacturer[0] }}" />
+                                <input id="Manufacturer-id" hidden type="text" value="{{ manufacturer[0] }}" />
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i>
+                                    <a id="Manufacturer-editIcon-{{manufacturer[0]}}" href="#" onclick="editItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
+                                    <a id="Manufacturer-thump-{{manufacturer[0]}}" hidden href="#" onclick="doneEdit('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
                                 </div>
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i>
+                                    <a href="#" onclick="deleteItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i></a>
                                 </div>
                             </div>
                             {% endfor %}
@@ -107,28 +109,28 @@
 
                         <div class="row mb-1">
                             <div class="col-md-10">
-                                <input type="text" class="form-control form-control-sm" placeholder="Add" />
+                                <input id="add-Manufacturer" type="text" class="form-control form-control-sm" placeholder="Add" />
                             </div>
                             <div class="col-md-2">
-                                <button onclick="addItem('Manufacturer')" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                                <button onclick="addItem('Manufacturer')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <h5>Locations</h5>
                         
-                        <div id="categ-location">
+                        <div id="categ-Location">
                             {% for location in locations %}
-                            <div class="row mb-1">
+                            <div id="row-Location-{{location[0]}}" class="row mb-1">
                                 <div class="col-md-10">
-                                    <input readonly type="text" value="{{ location[1] }}" class="form-control form-control-sm" />
+                                    <input id="Location-{{location[0]}}" readonly type="text" value="{{ location[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input hidden type="text" value="{{ location[0] }}" />
+                                <input id="Location-id" hidden type="text" value="{{ location[0] }}" />
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i>
-                                </div>
+                                    <a id="Location-editIcon-{{location[0]}}" href="#" onclick="editItem('Location-{{location[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
+                                    <a id="Location-thump-{{location[0]}}" hidden href="#" onclick="doneEdit('Location-{{location[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>                                </div>
                                 <div class="col-md-1">
-                                    <i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i>
+                                    <a href="#" onclick="deleteItem('Location-{{location[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i></a>
                                 </div>
                             </div>
                             {% endfor %}
@@ -136,10 +138,10 @@
 
                         <div class="row mb-1">
                             <div class="col-md-10">
-                                <input type="text" class="form-control form-control-sm" placeholder="Add" />
+                                <input id="add-Location" type="text" class="form-control form-control-sm" placeholder="Add" />
                             </div>
                             <div class="col-md-2">
-                                <button onclick="addItem('Location')" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                                <button onclick="addItem('Location')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                             </div>
                         </div>                        
                     </div>
