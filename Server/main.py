@@ -44,9 +44,10 @@ def addDevice():
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor)
 
-    models = list()
-    locations = list()
-    equipments = list()
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
 
     status = -1
     if request.method == 'POST' :
@@ -110,9 +111,9 @@ def addDevice():
       mycursor.execute('SELECT location_id FROM location where location_name = %s',(location))
       location_id = mycursor.fetchone()
 
-      
-      mycursor.execute("""INSERT INTO `almazadb`.`device` (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-                                                          (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
+      print(sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code )
+      ##mycursor.execute("""INSERT INTO `almazadb`.`device` (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+      ##                                                    (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
       status = 1
 
     return render_template("add.html",
@@ -120,9 +121,34 @@ def addDevice():
                           status=status,
                           equipments=equipments,
                           models=models,
-                          locations=locations)
+                          locations=locations,
+                          manufacturers=manufacturers)
   else:
     return redirect(url_for('login'))
+
+# Add New device
+@app.route("/settings", methods=['GET', 'POST'])
+def settings():
+  if 'loggedin' in session and session['loggedin'] == True:
+    db_tables = database.retrive_tables(mycursor)
+    status = -1
+
+    # Lists
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
+    
+    return render_template("settings.html", 
+                          title="Settings",
+                          status=status,
+                          equipments=equipments,
+                          models=models,
+                          locations=locations,
+                          manufacturers=manufacturers)
+  else:
+    return redirect(url_for('login'))
+
 
 # Login
 @app.route("/login", methods=['GET', 'POST'])

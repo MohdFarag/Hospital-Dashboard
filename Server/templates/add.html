@@ -22,9 +22,9 @@
                   <div class="col-sm-12">
                     <select required id="equipment" name="equipment" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Equipment name ...</option>
-
-                      <option>Unknown</option>
-
+                      {% for equipment in equipments %}
+                      <option>{{ equipment[1] }}</option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -38,7 +38,9 @@
                     <select required id="model" name="model" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Model ...</option>
 
-                      <option>Unknown</option>
+                      {% for model in models %}
+                      <option>{{ model[1] }}</option>
+                      {% endfor %}
 
                     </select>
                   </div>
@@ -48,8 +50,14 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
                   <div class="col-sm-9">
-                    <input required id="manufacturer" name="manufacturer" placeholder="Enter manufacturer ..." type="text"
-                      class="form-control form-control-sm" />
+                    <select required id="manufacturer" name="manufacturer" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose Manufacturer ...</option>
+
+                      {% for manufacturer in manufacturers %}
+                      <option>{{ manufacturer[1] }}</option>
+                      {% endfor %}
+
+                    </select>
                   </div>
                 </div>
               </div>
@@ -81,7 +89,9 @@
                     <select required id="location" name="location" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose location...</option>
                       
-                      <option>Unknown</option>
+                      {% for location in locations %}
+                      <option>{{ location[1] }}</option>
+                      {% endfor %}
                     
                     </select>
                   </div>
@@ -546,8 +556,8 @@
                 <div class="form-group row">
                   <label id="problem-id" style="display: none;" class="col-sm-2 col-form-label">problem</label>
                   <div class="col-sm-10">
-                    <input id="PF-problem" name="problem" style="display: none;" placeholder="Problem" type="text" class="form-control" />
-                    <select id="NF-problem" name="problem" style="display: none;" class="form-control form-control-sm">
+                    <input id="PF-problem" name="PF-problem" style="display: none;" placeholder="Problem" type="text" class="form-control" />
+                    <select id="NF-problem" name="NF-problem" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose ...</option>
                       <option>Equipment cannot start</option>
                       <option>Equipment produces alarms</option>
@@ -659,7 +669,7 @@
             <div class="col-md-12">
               <div class="form-group row">
                 <div class="col-sm-12">
-                  <input value="ADD DEVICE" type="submit" class="add btn btn-primary" />
+                  <input value="ADD DEVICE" type="submit" class="btn btn-primary" />
                 </div>
               </div>
             </div>

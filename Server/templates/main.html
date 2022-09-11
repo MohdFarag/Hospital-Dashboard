@@ -97,6 +97,7 @@
                 <img class="img-sm rounded-circle" src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold">{{ session.username }}</p>
               </div>
+              <a href="{{ url_for('settings') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-settings text-primary me-2"></i>Settings</a>
               <a href="{{ url_for('logout') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
