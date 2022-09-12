@@ -73,8 +73,7 @@ function addItem(list){
     row.setAttribute('id', "row-" + list + "-"+(Number(lastValue) + 1));
     
     // Col
-    ///// <div class="col-md-10">
-    
+    ///// <div class="col-md-10/5">
     if (list=="Model") {
         var col1 = document.createElement("div");
         col1.setAttribute('class', "col-md-5");
@@ -89,7 +88,7 @@ function addItem(list){
     // Input
     ///// <input id="equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm" />
     var input = document.createElement("input");
-    if (list=="Model") {
+    if (list == "Model") {
         input.id = list + "-" + (Number(lastValue) + 1) + "-" + "1";
         input.name = list + "-" + (Number(lastValue) + 1) + "-" + "1";
     }else{
@@ -99,7 +98,11 @@ function addItem(list){
     input.readOnly = true;
     input.type = "text";
     input.setAttribute("value", addedValue);
-    input.classList = "form-control form-control-sm";
+    if (list == "Equipment") {
+        input.classList = "form-control form-control-sm equipment-input";
+    }else{
+        input.classList = "form-control form-control-sm";
+    }
 
     if (list=="Model") {
         var select = document.createElement("select");
@@ -107,10 +110,11 @@ function addItem(list){
         select.setAttribute("disabled", "true");
         select.classList = "form-control form-control-sm";
         
-        equipmentsList = getEquipments()
+        equipmentsList = document.querySelectorAll(".equipment-input");
         for (let i = 0; i < equipmentsList.length; i++) {
-            let newOption = new Option(equipmentsList[i], equipmentsList[i]);
-            if (equipmentsList[i] == addedEquipment) {
+            val = equipmentsList[i].value;
+            let newOption = new Option(val, val);
+            if (val == addedEquipment) {
                 newOption.selected = "selected";
             }
             select.add(newOption,undefined);
@@ -185,11 +189,25 @@ function addItem(list){
     document.getElementById("add-"+list).value = "";
 
     if(list == "Equipment"){
-        var e = document.getElementById("add-Model-equipment");
-        let newOption = new Option(addedValue, addedValue); 
-        e.add(newOption,undefined);
+        var selectList = document.querySelectorAll("select");
+        for (let i = 0; i < selectList.length; i++) {
+            let newOption = new Option(addedValue, addedValue); 
+            selectList[i].add(newOption,undefined);
+        }
     }
 
+    // WRITE SQL STATEMENT OF INSERT PROCCESS
+    statment = document.getElementById("statments");
+    if (list.includes("Model")){        
+        console.log(list + "-" + inputHidden.value + "-1")
+        modelValue = document.getElementById(list + "-" + inputHidden.value + "-1").value;
+        equipmentValue = document.getElementById(list + "-" + inputHidden.value + "-2").value;
+        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + "," + addedValue + "," + addedEquipment + ");";
+    }else{
+        value = document.getElementById(list + "-" + inputHidden.value).value;
+        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + "," + addedValue + ");";
+    }
+    
     updateNumberOfSections()
 }
 
@@ -217,7 +235,19 @@ function doneEdit(list){
     list = list.split("-");
     id = list[1]
     list = list[0]
+    
+    // WRITE SQL STATEMENT OF DELETE PROCCESS
+    statment = document.getElementById("statments");
+    if (list.includes("Model")){        
+        modelValue = document.getElementById(list + "-" + id + "-1").value;
+        equipmentValue = document.getElementById(list + "-" + id + "-2").value;
+        statment.value = statment.value + "UPDATE " + list + " SET Model_name=" + modelValue + ", Equipment_name=" + equipmentValue + " WHERE " + list + "_id="+ id + ";";
+    }else{
+        value = document.getElementById(list + "-" + id).value;
+        statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name=" + value + " WHERE " + list + "_id="+ id + ";";
+    }
 
+    // EDIT FIELD
     a_editIcon = document.getElementById(list + "-editIcon-"+id);
     a_editIcon.hidden = false;
     a_thump = document.getElementById(list + "-thump-" +id);
@@ -235,34 +265,24 @@ function doneEdit(list){
 
 
 function deleteItem(list){
+    // SEPERATE LIST TO ID AND CATEGORY NAME
     list = list.split("-");
     id = list[1]
     list = list[0]
-    
+
+    // WRITE SQL STATEMENT OF DELETE PROCCESS
+    statment = document.getElementById("statments");
+    if (list.includes("Model")){
+        value = document.getElementById(list + "-" + id + "-1").value;
+    }else{
+        value = document.getElementById(list + "-" + id).value;
+    }
+    statment.value = statment.value + "DELETE FROM " + list + " WHERE " + list + "_name=" + value + ";";
+
+    // REMOVE HTML ELEMENT
     row = document.getElementById("row" + "-" + list + "-" + id);
     row.remove()
     updateNumberOfSections()
-}
-
-function getEquipments(){
-    var category = document.getElementById("categ-Equipment");
-    Num = 0;
-    if(category.lastElementChild != null){
-        Num = Number(category.lastElementChild.querySelector("#Equipment-id").value);
-    }
-
-    equipmentsList = Array()
-    for (let i = 1; i < Num+1; i++) {
-        try {
-            var input = document.getElementById("Equipment-"+i);
-            equipmentsList.push(input.value);
-        }
-        catch(exceptionVar){
-
-        }
-    }
-
-    return equipmentsList;
 }
 
 /////////////////////////////////////////////////// 

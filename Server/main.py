@@ -1,7 +1,6 @@
 # Imports
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
-from Server.database import model
 import database
 import re # Regex
 #--------------------------------------------------------------------------#
@@ -141,7 +140,9 @@ def settings():
 
     if request.method == 'POST' :
       # Insert Equipments
-
+      statments = request.form['statments']
+      statmentsList = statments.split(";")
+      print(statmentsList)
       status = 1
 
     return render_template("settings.html", 

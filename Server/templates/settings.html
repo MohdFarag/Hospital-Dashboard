@@ -16,7 +16,7 @@
                             {% for equipment in equipments %}
                             <div id="row-Equipment-{{equipment[0]}}" class="row mb-1">
                                 <div class="col-md-10">
-                                    <input id="Equipment-{{equipment[0]}}" name="Equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm" />
+                                    <input id="Equipment-{{equipment[0]}}" name="Equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm equipment-input" />
                                 </div>
                                 <input id="Equipment-id" type="hidden" value="{{ equipment[0] }}" />
                                 <div class="col-md-1">
@@ -147,6 +147,8 @@
                                 
                 <input class="btn btn-success" value="SAVE" type="submit">
             
+                <textarea id="statments" name="statments"></textarea>
+
             </form>
         </div>
     </div>
@@ -158,7 +160,6 @@
 <input id="num-manufacturer" type="hidden" value="0" />
 <input id="num-location" type="hidden" value="0" />
 <!-- TODO :: ADD STATMENTS -->
-<textarea id="statments"></textarea>
 
 <script>updateNumberOfSections()</script>
 
