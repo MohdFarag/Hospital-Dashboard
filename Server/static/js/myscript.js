@@ -120,9 +120,8 @@ function addItem(list){
     // Input Hidden
     //// <input id="equipment-id" hidden type="text" value="{{ equipment[0] }}" />
     var inputHidden = document.createElement("input");
-    inputHidden.hidden = true;
-    inputHidden.type = "text";
-    inputHidden.id = list + "-id"
+    inputHidden.type = "hidden";
+    inputHidden.id = list + "-id";
     inputHidden.setAttribute("value", Number(lastValue) + 1);
 
     //// <div class="col-md-1">
@@ -190,49 +189,59 @@ function addItem(list){
         let newOption = new Option(addedValue, addedValue); 
         e.add(newOption,undefined);
     }
+
+    updateNumberOfSections()
 }
 
 function editItem(list){
-    id = list.slice(-1);
+    list = list.split("-");
+    id = list[1]
+    list = list[0]
 
-    a_editIcon = document.getElementById(list.slice(0,-2) + "-editIcon-" +id);
+    a_editIcon = document.getElementById(list + "-editIcon-" + id);
     a_editIcon.hidden = true;
-    a_thump = document.getElementById(list.slice(0,-2) + "-thump-" + id);
+    a_thump = document.getElementById(list + "-thump-" + id);
     a_thump.hidden = false;
 
     if (list.includes("Model")) {
-        input = document.getElementById(list.slice(0,-2) + "-" + id + "-" + "1");
-        select = document.getElementById(list.slice(0,-2) + "-" + id + "-" + "2");
+        input = document.getElementById(list + "-" + id + "-" + "1");
+        select = document.getElementById(list + "-" + id + "-" + "2");
         select.removeAttribute("disabled");
     }else{
-        input = document.getElementById(list.slice(0,-2) + "-" + id);
+        input = document.getElementById(list + "-" + id);
     }
     input.readOnly = false;
 }
 
 function doneEdit(list){
-    id = list.slice(-1);
+    list = list.split("-");
+    id = list[1]
+    list = list[0]
 
-    a_editIcon = document.getElementById(list.slice(0,-2) + "-editIcon-"+id);
+    a_editIcon = document.getElementById(list + "-editIcon-"+id);
     a_editIcon.hidden = false;
-    a_thump = document.getElementById(list.slice(0,-2) + "-thump-" +id);
+    a_thump = document.getElementById(list + "-thump-" +id);
     a_thump.hidden = true;
 
     if (list.includes("Model")) {
-        input = document.getElementById(list.slice(0,-2) + "-" + id + "-" + "1");
-        select = document.getElementById(list.slice(0,-2) + "-" + id + "-" + "2");
+        input = document.getElementById(list + "-" + id + "-" + "1");
+        select = document.getElementById(list + "-" + id + "-" + "2");
         select.setAttribute("disabled", "true");
     }else{
-        input = document.getElementById(list.slice(0,-2) + "-" + id);
+        input = document.getElementById(list + "-" + id);
     }
     input.readOnly = true;
 }
 
 
 function deleteItem(list){
-    id = list.slice(-1);
-    row = document.getElementById("row-"+list);
+    list = list.split("-");
+    id = list[1]
+    list = list[0]
+    
+    row = document.getElementById("row" + "-" + list + "-" + id);
     row.remove()
+    updateNumberOfSections()
 }
 
 function getEquipments(){
@@ -259,3 +268,25 @@ function getEquipments(){
 /////////////////////////////////////////////////// 
 /// TODO :: UPDATE LIST OF EQUIPMENTS OF MODELS ///
 ///////////////////////////////////////////////////
+
+function updateNumberOfSections(){
+    // Equipment 
+    equipmentDiv = document.getElementById("categ-Equipment");
+    equipments = equipmentDiv.querySelectorAll("#Equipment-id");
+    document.getElementById("num-equipment").value = equipments.length;
+
+    // Model
+    modelDiv = document.getElementById("categ-Model");
+    models = modelDiv.querySelectorAll("#Model-id");
+    document.getElementById("num-model").value = models.length;
+
+    // Manufacturer
+    ManufacturerDiv = document.getElementById("categ-Manufacturer");
+    manufacturers = ManufacturerDiv.querySelectorAll("#Manufacturer-id");
+    document.getElementById("num-manufacturer").value = manufacturers.length;
+
+    // Location
+    locationDiv = document.getElementById("categ-Location");
+    locations = locationDiv.querySelectorAll("#Location-id");
+    document.getElementById("num-location").value = locations.length;    
+}

@@ -17,35 +17,38 @@
           <p>Info</p>
           <fieldset class="rect">
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-6">
                 <div class="form-group row">
-                  <div class="col-sm-12">
-                    <select required id="equipment" name="equipment" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose Equipment name ...</option>
+                  <label class="col-sm-3 col-form-label">Equipment Name</label>
+                  <div class="col-sm-9">
+                    <select onchange="giveSelection(this.value)" required id="equipment" name="equipment" class="form-control form-control-sm">
+                      <option selected="selected" value="">Choose Equipment name ...</option>
+                      
                       {% for equipment in equipments %}
-                      <option>{{ equipment[1] }}</option>
+                      <option value="{{equipment[1]}}">{{ equipment[1] }}</option>
                       {% endfor %}
+                    
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Model</label>
+                  <div class="col-sm-9">
+                    <select required id="model" name="model" class="form-control form-control-sm">
+                      <option data-option="" selected="selected" value="" >Choose Equipment First ...</option>
+                      
+                      {% for model in models %}
+                      <option data-option="{{model[2]}}" value="{{ model[1] }}">{{ model[1] }}</option>
+                      {% endfor %}
+                    
                     </select>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Model</label>
-                  <div class="col-sm-9">
-                    <select required id="model" name="model" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose Model ...</option>
-
-                      {% for model in models %}
-                      <option>{{ model[1] }}</option>
-                      {% endfor %}
-
-                    </select>
-                  </div>
-                </div>
-              </div>
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
@@ -61,8 +64,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
@@ -72,11 +73,21 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
                   <div class="col-sm-9">
                     <input required id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Supply Date</label>
+                  <div class="col-sm-9">
+                    <input required id="supp-date" name="supp-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -403,9 +414,9 @@
                   <div class="col-sm-4">
                     <select id="maintenance-contract-type" name="maintenance-contract-type" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose..</option>
-                      <option>Calibration</option>
-                      <option>Comprehensive</option>
-                      <option>Excl</option>
+                      <option value="Calibration">Calibration</option>
+                      <option value="inclusive">inclusive</option>
+                      <option value="Excl">Excl</option>
                     </select>
                   </div>
                   <div class="col-sm-3">
@@ -679,5 +690,24 @@
       </div>
     </div>
 </div>
+
+<script>
+
+  var equipment = document.querySelector('#equipment');
+  var model = document.querySelector('#model');
+  var model_options = model.querySelectorAll('option');
+
+  function giveSelection(selValue) {
+    model.innerHTML = '';
+    for(var i = 0; i < model_options.length; i++) {
+        if(model_options[i].dataset.option === selValue) {
+            model.appendChild(model_options[i]);
+        }
+    }
+  }
+
+  giveSelection(equipment.value);
+
+</script>
 
 {% endblock %}

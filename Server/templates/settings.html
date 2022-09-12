@@ -5,12 +5,8 @@
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">Settings</h3>
-            <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">
-                Changes Done successfully.
-            </div>
-            <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">
-            There's Error !
-            </div>
+            <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">Changes Done successfully.</div>
+            <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">There's Error !</div>
             <form action="{{ url_for('settings') }}" method="POST">
                 <div class="row">
                     <div class="col-md-3">
@@ -22,7 +18,7 @@
                                 <div class="col-md-10">
                                     <input id="Equipment-{{equipment[0]}}" name="Equipment-{{equipment[0]}}" readonly type="text" value="{{ equipment[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input id="Equipment-id" hidden type="text" value="{{ equipment[0] }}" />
+                                <input id="Equipment-id" type="hidden" value="{{ equipment[0] }}" />
                                 <div class="col-md-1">
                                     <a id="Equipment-editIcon-{{equipment[0]}}" href="#" onclick="editItem('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
                                     <a id="Equipment-thump-{{equipment[0]}}" hidden href="#" onclick="doneEdit('Equipment-{{equipment[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
@@ -54,11 +50,11 @@
                                 <div class="col-md-5">
                                     <select id="Model-{{model[0]}}-2" disabled="true" class="form-control form-control-sm">
                                         {% for equipment in equipments %}
-                                        <option>{{ equipment[1] }}</option>
+                                        <option {% if equipment[1] ==  model[2] %} selected="selected" {% endif %}>{{ equipment[1] }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <input id="Model-id" hidden type="text" value="{{ model[0] }}" />
+                                <input id="Model-id" type="hidden" value="{{ model[0] }}" />
                                 <div class="col-md-1">
                                     <a id="Model-editIcon-{{model[0]}}" href="#" onclick="editItem('Model-{{model[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
                                     <a id="Model-thump-{{model[0]}}" hidden href="#" onclick="doneEdit('Model-{{model[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
@@ -95,7 +91,7 @@
                                 <div class="col-md-10">
                                     <input id="Manufacturer-{{manufacturer[0]}}" readonly type="text" value="{{ manufacturer[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input id="Manufacturer-id" hidden type="text" value="{{ manufacturer[0] }}" />
+                                <input id="Manufacturer-id" type="hidden" value="{{ manufacturer[0] }}" />
                                 <div class="col-md-1">
                                     <a id="Manufacturer-editIcon-{{manufacturer[0]}}" href="#" onclick="editItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
                                     <a id="Manufacturer-thump-{{manufacturer[0]}}" hidden href="#" onclick="doneEdit('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
@@ -125,7 +121,7 @@
                                 <div class="col-md-10">
                                     <input id="Location-{{location[0]}}" readonly type="text" value="{{ location[1] }}" class="form-control form-control-sm" />
                                 </div>
-                                <input id="Location-id" hidden type="text" value="{{ location[0] }}" />
+                                <input id="Location-id" type="hidden" value="{{ location[0] }}" />
                                 <div class="col-md-1">
                                     <a id="Location-editIcon-{{location[0]}}" href="#" onclick="editItem('Location-{{location[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
                                     <a id="Location-thump-{{location[0]}}" hidden href="#" onclick="doneEdit('Location-{{location[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>                                </div>
@@ -155,5 +151,15 @@
         </div>
     </div>
 </div>
+
+
+<input id="num-equipment" type="hidden" value="0" />
+<input id="num-model" type="hidden" value="0" />
+<input id="num-manufacturer" type="hidden" value="0" />
+<input id="num-location" type="hidden" value="0" />
+<!-- TODO :: ADD STATMENTS -->
+<textarea id="statments"></textarea>
+
+<script>updateNumberOfSections()</script>
 
 {% endblock %}

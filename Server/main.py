@@ -1,6 +1,7 @@
 # Imports
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
+from Server.database import model
 import database
 import re # Regex
 #--------------------------------------------------------------------------#
@@ -140,12 +141,8 @@ def settings():
 
     if request.method == 'POST' :
       # Insert Equipments
-      for i in range(1,3):
-        equipment = request.form["Equipment-"+str(i)]
-        mycursor.execute("""delete from equipment""")
-        mycursor.execute("""INSERT INTO `equipment` (`equipment_id`, `equipment_name`) VALUES (%s,%s)""", (i,equipment))
-        
-        status = 1
+
+      status = 1
 
     return render_template("settings.html", 
                           title="Settings",
@@ -174,8 +171,6 @@ def login():
 
       # Fetch one record and return result
       account = mycursor.fetchone()
-      print(username,password)
-      print(account)
 
       # If account exists in accounts table in out database
       if account:
