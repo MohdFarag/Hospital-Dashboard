@@ -57,6 +57,7 @@ def addDevice():
       manufacturer = request.form['manufacturer']
       sn = request.form['sn']
       prod_date = request.form["prod-date"]
+      supp_date = request.form["supp-date"]
       location = request.form['location']
       country = request.form['country']
       
@@ -98,23 +99,27 @@ def addDevice():
       code = request.form['code']
 
       ### Insert Process
+      try:
+        mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s',(equipment))
+        equipment_id = mycursor.fetchone()
+
+        mycursor.execute('SELECT model_id FROM model where model_name = %s',(model))
+        model_id = mycursor.fetchone()
+
+        mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s',(manufacturer))
+        manufacturer_id = mycursor.fetchone()
+
+        mycursor.execute('SELECT location_id FROM location where location_name = %s',(location))
+        location_id = mycursor.fetchone()
+
+        mycursor.execute("""INSERT INTO device (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+                                                            (sn, equipment_id, model_id, manufacturer_id, prod_date, supp_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
+        mydb.commit()
+        status = 1
+
+      except:
+        status = 0
       
-      mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s',(equipment))
-      equipment_id = mycursor.fetchone()
-
-      mycursor.execute('SELECT model_id FROM model where model_name = %s',(model))
-      model_id = mycursor.fetchone()
-
-      mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s',(manufacturer))
-      manufacturer_id = mycursor.fetchone()
-
-      mycursor.execute('SELECT location_id FROM location where location_name = %s',(location))
-      location_id = mycursor.fetchone()
-
-      mycursor.execute("""INSERT INTO device (`device_sn`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `location_id`, `device_country`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `inspection_list`, `ppm_list`, `calibration_list`, `technical_status`, `problem`, `TRC`, `QRcode`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-                                                          (sn, equipment_id, model_id, manufacturer_id, prod_date, location_id, country, contract, contract_start_date, contract_end_date, description, inspection_list, ppm_list, calibration_list, technical_status, problem, trc, code ))
-      status = 1
-
     return render_template("add.html",
                           title="Add New Device",
                           status=status,
@@ -130,20 +135,35 @@ def addDevice():
 def settings():
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor)
-    status = -1
-
+  
     # Lists
     models = db_tables['model']
     locations = db_tables['location']
     equipments = db_tables['equipment']
     manufacturers = db_tables['manufacturer']
-
+    
+    status = -1
     if request.method == 'POST' :
       # Insert Equipments
       statments = request.form['statments']
       statmentsList = statments.split(";")
-      print(statmentsList)
-      status = 1
+      
+      try:
+        for statment in statmentsList:
+            mycursor.execute(statment)
+        mydb.commit()
+        status = 1
+        
+      except:
+        status = 0
+    
+    db_tables = database.retrive_tables(mycursor)
+  
+    # Lists
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
 
     return render_template("settings.html", 
                           title="Settings",

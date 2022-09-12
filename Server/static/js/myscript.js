@@ -202,10 +202,10 @@ function addItem(list){
         console.log(list + "-" + inputHidden.value + "-1")
         modelValue = document.getElementById(list + "-" + inputHidden.value + "-1").value;
         equipmentValue = document.getElementById(list + "-" + inputHidden.value + "-2").value;
-        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + "," + addedValue + "," + addedEquipment + ");";
+        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + ",'" + addedValue + "'," + getEquipmentIdByName(addedEquipment) + ");";
     }else{
         value = document.getElementById(list + "-" + inputHidden.value).value;
-        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + "," + addedValue + ");";
+        statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + ",'" + addedValue + "');";
     }
     
     updateNumberOfSections()
@@ -241,10 +241,10 @@ function doneEdit(list){
     if (list.includes("Model")){        
         modelValue = document.getElementById(list + "-" + id + "-1").value;
         equipmentValue = document.getElementById(list + "-" + id + "-2").value;
-        statment.value = statment.value + "UPDATE " + list + " SET Model_name=" + modelValue + ", Equipment_name=" + equipmentValue + " WHERE " + list + "_id="+ id + ";";
+        statment.value = statment.value + "UPDATE " + list + " SET Model_name='" + modelValue + "', Equipment_name='" + equipmentValue + "' WHERE " + list + "_id="+ id + ";";
     }else{
         value = document.getElementById(list + "-" + id).value;
-        statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name=" + value + " WHERE " + list + "_id="+ id + ";";
+        statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name='" + value + "' WHERE " + list + "_id="+ id + ";";
     }
 
     // EDIT FIELD
@@ -277,7 +277,7 @@ function deleteItem(list){
     }else{
         value = document.getElementById(list + "-" + id).value;
     }
-    statment.value = statment.value + "DELETE FROM " + list + " WHERE " + list + "_name=" + value + ";";
+    statment.value = statment.value + "DELETE FROM " + list + " WHERE " + list + "_name='" + value + "';";
 
     // REMOVE HTML ELEMENT
     row = document.getElementById("row" + "-" + list + "-" + id);
@@ -309,4 +309,15 @@ function updateNumberOfSections(){
     locationDiv = document.getElementById("categ-Location");
     locations = locationDiv.querySelectorAll("#Location-id");
     document.getElementById("num-location").value = locations.length;    
+}
+
+function getEquipmentIdByName(name){
+    inputs = document.querySelectorAll(".equipment-input");
+    id = 0;
+    for (let i = 0; i < inputs.length; i++) {
+        if (name == inputs[i].value) {
+            id = inputs[i].parentElement.parentElement.querySelector("#Equipment-id").value
+        }
+    }
+    return id;
 }
