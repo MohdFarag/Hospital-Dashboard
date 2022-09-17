@@ -411,19 +411,19 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                     <select id="maintenance-contract-type" name="maintenance-contract-type" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose..</option>
                       <option value="Calibration">Calibration</option>
-                      <option value="inclusive">inclusive</option>
+                      <option value="Inclusive">Inclusive</option>
                       <option value="Excl">Excl</option>
                     </select>
                   </div>
-                  <div class="col-sm-3">
+                  <div class="col-sm-4">
                     <input id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
-                  <label id="To" style="display: none;" class="text-center fw-bold col-sm-2 col-form-label">To</label>
-                  <div class="col-sm-3">
+                  <label id="To" style="display: none;" class="text-center fw-bold col-sm-1 col-form-label">To</label>
+                  <div class="col-sm-4">
                     <input id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
@@ -448,10 +448,10 @@
                   <div class="col-sm-6">
                     <select required id="inspection-freq" name="inspection-freq" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose inspection period ...</option>
-                      <option>Monthly</option>
-                      <option>3 Months</option>
-                      <option>6 Months</option>
-                      <option>Annually</option>
+                      <option value="12">Monthly</option>
+                      <option value="4">3 Months</option>
+                      <option value="2">6 Months</option>
+                      <option value="1">Annually</option>
                     </select>
                   </div>
                   <div class="col-sm-4">
@@ -483,10 +483,10 @@
                   <div class="col-sm-6">
                     <select required id="ppm-freq" name="ppm-freq" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose PPM period ...</option>
-                      <option>Monthly</option>
-                      <option>3 Months</option>
-                      <option>6 Months</option>
-                      <option>Annually</option>
+                      <option value="12">Monthly</option>
+                      <option value="4">3 Months</option>
+                      <option value="2">6 Months</option>
+                      <option value="1">Annually</option>
                     </select>
                   </div>
                   <div class="col-sm-4">
@@ -518,10 +518,10 @@
                   <div class="col-sm-6">
                     <select required id="calibration-freq" name="calibration-freq" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose calibration period ...</option>
-                      <option>Monthly</option>
-                      <option>3 Months</option>
-                      <option>6 Months</option>
-                      <option>Annually</option>
+                      <option value="12">Monthly</option>
+                      <option value="4">3 Months</option>
+                      <option value="2">6 Months</option>
+                      <option value="1">Annually</option>
                     </select>
                   </div>
                   <div class="col-sm-4">
@@ -637,6 +637,12 @@
                   <div class="col-sm-12">
                     <textarea id="description" name="description" style="height: auto;" class="form-control form-control-sm" rows="6"></textarea>
                   </div>
+                  <div class="col-sm-12">
+                    <input hidden id="description-file" name="description-file" type="file" class="form-control form-control-sm" />
+                  </div>
+                  <a id="textChangeTerms" href="#/" onclick="changeTerms('file')" class="card-description text-decoration-none">
+                    Want to Upload File ?
+                  </a>
                 </div>
               </div>
             </div>
@@ -649,7 +655,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Code</label>
                   <div class="col-sm-9">
-                    <input readonly id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                    <input id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
                   </div>
                 </div>
               </div>

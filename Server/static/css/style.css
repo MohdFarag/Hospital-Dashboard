@@ -30,3 +30,9 @@
 .tt-menu {
     background-color: white;
 }
+
+.periods label{
+    line-height: 0;
+    font-size: 15px;
+    font-weight: bold;
+}

@@ -141,14 +141,36 @@
                             </div>
                         </div>                        
                     </div>
-                </div>                
+                </div>
 
                 <hr>
-                                
-                <input class="btn btn-success" value="SAVE" type="submit">
-            
-                <textarea hidden id="statments" name="statments"></textarea>
+                <div class="row periods">
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <label class="col-sm-8 col-form-label">Period Of PPM/Inspec./Calib. Before RESET</label>
+                            <div class="col-sm-2">
+                              <input id="service-period" name="service-period" type="number" class="form-control form-control-sm-plaintext" value="{{ service_period }}" />
+                            </div>
+                            <label class="col-sm-2 col-form-label">Yr</label>
+                          </div>
+                    </div>
+                </div>
 
+                <!-- <div class="row periods">
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <label class="col-sm-8 col-form-label">Period of ppm/Inspection/Calibration before reset</label>
+                            <div class="col-sm-2">
+                              <input id="code" name="code" type="number" class="form-control form-control-sm-plaintext" value="{{ service_period }}" />
+                            </div>
+                            <label class="col-sm-1 col-form-label">Yr</label>
+                          </div>
+                    </div>
+                </div> -->
+
+                <div class="row"><div class="col-md-12"><textarea style="width: inherit;" id="statments" name="statments" rows="5"></textarea></div></div>                
+
+                <input class="btn btn-success" value="SAVE" type="submit">
             </form>
         </div>
     </div>

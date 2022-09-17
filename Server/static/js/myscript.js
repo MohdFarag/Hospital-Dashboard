@@ -1,4 +1,21 @@
 
+function changeTerms(selector){
+    input = document.getElementById("description")
+    file = document.getElementById("description-file")
+    textChangeTerms = document.getElementById("textChangeTerms")
+    textChangeTerms.removeAttribute("onclick")
+
+    if (selector=="file") {
+        file.hidden = false
+        input.hidden = true
+        textChangeTerms.addEventListener("click", function(){ changeTerms("disc"); });
+    }else{
+        file.hidden = true
+        input.hidden = false
+        textChangeTerms.addEventListener("click", function(){ changeTerms("file"); });
+    }
+}
+
 function contractType(){
     var contract = document.getElementById('contract-type').value;
     var contract_start_date = document.getElementById('contract-start-date');
@@ -211,10 +228,15 @@ function addItem(list){
     updateNumberOfSections()
 }
 
+prevValue = ""
 function editItem(list){
     list = list.split("-");
     id = list[1]
     list = list[0]
+
+    if (list=="Equipment") {
+        prevValue = document.getElementById(list + "-" + id).value;
+    }
 
     a_editIcon = document.getElementById(list + "-editIcon-" + id);
     a_editIcon.hidden = true;
@@ -261,6 +283,19 @@ function doneEdit(list){
         input = document.getElementById(list + "-" + id);
     }
     input.readOnly = true;
+
+    if(list == "Equipment"){
+        var selectList = document.querySelectorAll("select");
+        for (let i = 0; i < selectList.length; i++) {
+            options = selectList[i].querySelectorAll("option");
+            for (let i = 0; i < options.length; i++) {
+                if(options[i].text == prevValue){
+                    options[i].value = value;
+                    options[i].text = value;
+                }
+            }
+        }
+    }
 }
 
 
@@ -282,6 +317,19 @@ function deleteItem(list){
     // REMOVE HTML ELEMENT
     row = document.getElementById("row" + "-" + list + "-" + id);
     row.remove()
+
+    if(list == "Equipment"){
+        var selectList = document.querySelectorAll("select");
+        for (let i = 0; i < selectList.length; i++) {
+            options = selectList[i].querySelectorAll("option");
+            for (let i = 0; i < options.length; i++) {
+                if(options[i].text == value){
+                    options[i].remove()
+                }
+            }
+        }
+    }
+
     updateNumberOfSections()
 }
 

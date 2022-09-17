@@ -38,15 +38,38 @@ def getTableData(mycursor, tableName):
 # TODO:: JOIN
 def device(mycursor) :
     'Retrieve all device data'
-    mycursor.execute("""SELECT device_sn, equipment_name, model_name, manufacturer_name, device_production_date, device_supply_date, location_name, device_country, device_contract_type, contract_start_date, contract_end_date, terms, inspection_list, ppm_list, calibration_list, technical_status, problem, TRC, Code FROM device
-                        left JOIN equipment
-                        ON device.equipment_id = equipment.equipment_id
-                        left JOIN model
-                        ON device.model_id = model.model_id
-                        left JOIN manufacturer
-                        ON device.manufacturer_id = manufacturer.manufacturer_id
-                        left JOIN location
-                        ON device.location_id = location.location_id""")
+    mycursor.execute("""
+    SELECT 
+      device_sn, 
+      equipment_name, 
+      model_name, 
+      manufacturer_name, 
+      device_production_date, 
+      device_supply_date, 
+      location_name, 
+      device_country, 
+      device_contract_type, 
+      contract_start_date, 
+      contract_end_date, 
+      terms, 
+      inspection_list, 
+      ppm_list, 
+      ppm_external,
+      calibration_list, 
+      calibration_external,
+      technical_status, 
+      problem, 
+      TRC, 
+      Code 
+    FROM device
+    left JOIN equipment
+    ON device.equipment_id = equipment.equipment_id
+    left JOIN model
+    ON device.model_id = model.model_id
+    left JOIN manufacturer
+    ON device.manufacturer_id = manufacturer.manufacturer_id
+    left JOIN location
+    ON device.location_id = location.location_id""")
     table = mycursor.fetchall()
 
     return table
@@ -71,6 +94,9 @@ def service(mycursor) :
 
 # Retrive all data in the database
 def retrive_tables(mycursor) :
+
+    ## TODO::AUTOMATIC select to tables
+    
     AllTables = dict()
     AllTables["admin"] = getTableData(mycursor, 'admin')
     AllTables["device"] = getTableData(mycursor, 'device')
@@ -79,5 +105,6 @@ def retrive_tables(mycursor) :
     AllTables["manufacturer"] = getTableData(mycursor, 'manufacturer')
     AllTables["model"] = getTableData(mycursor, 'model')
     AllTables["service"] = getTableData(mycursor, 'service')
+    AllTables["settings"] = getTableData(mycursor, 'settings')
 
     return AllTables

@@ -1,0 +1,41 @@
+{% extends 'main.html' %}
+{% block main %}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Basic Table</h4>
+            <p class="card-description">
+                {{numOfResults}} Results.
+            </p>
+            <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>type</th>
+                      <th>SN</th>
+                      <th>Scheduled Date</th>
+                      <th>Done Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for service in services %}
+                        <tr>
+                            <td>{{service[0]}}</td>
+                            <td>{{service[1]}}</td>
+                            <td>{{service[2]}}</td>
+                            <td>{{service[3]}}</td>
+                            <td>{{service[4]}}</td>
+                            <td><label class="badge badge-danger">Pending</label></td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
