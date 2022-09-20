@@ -13,8 +13,8 @@
                   <thead>
                     <tr>
                       <th>id</th>
-                      <th>type</th>
                       <th>SN</th>
+                      <th>type</th>
                       <th>Scheduled Date</th>
                       <th>Done Date</th>
                       <th>Status</th>
@@ -24,11 +24,19 @@
                     {% for service in services %}
                         <tr>
                             <td>{{service[0]}}</td>
+                            <td><a href="./device?sn={{service[2]}}">{{service[2]}}</a></td>
                             <td>{{service[1]}}</td>
-                            <td>{{service[2]}}</td>
                             <td>{{service[3]}}</td>
                             <td>{{service[4]}}</td>
-                            <td><label class="badge badge-danger">Pending</label></td>
+                            <td>
+                              {% if service[4] == None %}
+                                <label class="badge badge-warning">NOT YET</label>
+                              {% elif service[4] <= service[3] %}
+                                <label class="badge badge-danger">On Time</label>
+                              {% elif service[4] > service[3] %}
+                                <label class="badge badge-danger">LATE</label>
+                              {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                   </tbody>

@@ -20,8 +20,7 @@
               <div class="statistics-details d-flex align-items-center justify-content-between">
                 <div>
                   <p class="statistics-title">Number of devices</p>
-                  <h3 class="rate-percentage">1</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+1%</span></p>
+                  <h3 class="rate-percentage">{{ numOfDevices }}</h3>
                 </div>
               </div>
             </div>
@@ -85,18 +84,15 @@
               <div class="statistics-details d-flex align-items-center justify-content-between">
                 <div> 
                   <p class="statistics-title">Devices need inspection</p>
-                  <h3 class="rate-percentage">5</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                  <h3 class="rate-percentage">{{  thisMonth["needInspection"] }}</h3>
                 </div>
                 <div>
-                  <p class="statistics-title">Devices need ppm</p>
-                  <h3 class="rate-percentage">6</h3>
-                  <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
+                  <p class="statistics-title">Devices need PPM</p>
+                  <h3 class="rate-percentage">{{  thisMonth["needPPM"] }}</h3>
                 </div>
                 <div class="d-none d-md-block">
                   <p class="statistics-title">Devices need calibration</p>
-                  <h3 class="rate-percentage">10</h3>
-                  <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
+                  <h3 class="rate-percentage">{{  thisMonth["needCalibration"] }}</h3>
                 </div>
               </div>
             </div>
@@ -105,5 +101,7 @@
       </div>
     </div>
 </div>
+
+
 
 {% endblock %}

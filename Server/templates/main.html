@@ -67,9 +67,9 @@
             </div>
           </li>
           <li class="nav-item">
-            <form class="search-form" action="#">
+            <form class="search-form" action="{{ url_for('search') }}">
               <i class="icon-search"></i>
-              <input type="search" class="form-control" placeholder="Search Here" title="Search here">
+              <input name="search-bar" type="search" class="form-control" placeholder="Search By S/N" title="Search By S/N">
             </form>
           </li>
           <li class="nav-item dropdown"> 
@@ -187,8 +187,27 @@
   <!-- Custom js for this page-->
   <script src="{{ url_for('static', filename='js/jquery.cookie.js') }}" type="text/javascript"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
   <script src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+
+<script>
+
+  equipmentTypes = {% if equipmentsList %} {{equipmentsList | tojson | safe}} {% endif %}
+  technicalStatus = {% if technicalStatus %} {{technicalStatus | tojson | safe}} {% endif %}
+  contractType = {% if contracts %} {{contracts | tojson | safe}} {% endif %}
+  inspection = {% if Inspections %} {{Inspections | tojson | safe}} {% endif %}
+  ppm = {% if PPMs %} {{PPMs | tojson | safe}} {% endif %}
+  calibration = {% if Calibrations %} {{Calibrations | tojson | safe}} {% endif %}
+
+  buildChart(equipmentTypes, "equipmentTypes");
+  buildChart(technicalStatus, "technicalStatus");
+  buildChart(contractType, "contractType");
+  buildChart(inspection, "inspection");
+  buildChart(ppm, "ppm");
+  buildChart(calibration, "calibration");  
+
+</script>
+  
   <!-- End custom js for this page-->
 </body>
 
