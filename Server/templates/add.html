@@ -10,24 +10,45 @@
           Device Added successfully.
         </div>
         <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">
-          There is empty fields !
+          There is Error !
         </div>
         
         <form enctype="multipart/form-data" action="{{ url_for('addDevice') }}" method="POST">
-          <p>Info</p>
+          <p class="card-description">Info</p>
           <fieldset class="rect">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">S/N</label>
+                  <div class="col-sm-9">
+                    <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text" class="form-control form-control-sm" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Category</label>
+                  <div class="col-sm-9">
+                    <select required id="category" name="category" class="form-control form-control-sm">
+                      <option selected="selected" value="">Choose Category Name ...</option>
+                      <option value="BM">BM</option>
+                      <option value="MG">MG</option>
+                      <option value="EM">EM</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Equipment Name</label>
                   <div class="col-sm-9">
-                    <select onchange="giveSelection(this.value)" required id="equipment" name="equipment" class="form-control form-control-sm">
-                      <option selected="selected" value="">Choose Equipment name ...</option>
-                      
+                    <select required onchange="giveSelection(this.value)" id="equipment" name="equipment" class="form-control form-control-sm">
+                      <option selected="selected" value="">Choose Equipment Name ...</option>
                       {% for equipment in equipments %}
                       <option value="{{equipment[1]}}">{{ equipment[1] }}</option>
                       {% endfor %}
-                    
                     </select>
                   </div>
                 </div>
@@ -38,38 +59,10 @@
                   <div class="col-sm-9">
                     <select required id="model" name="model" class="form-control form-control-sm">
                       <option data-option="" selected="selected" value="" >Choose Equipment First ...</option>
-                      
                       {% for model in models %}
                       <option data-option="{{model[2]}}" value="{{ model[1] }}">{{ model[1] }}</option>
                       {% endfor %}
-                    
                     </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Manufacturer</label>
-                  <div class="col-sm-9">
-                    <select required id="manufacturer" name="manufacturer" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose Manufacturer ...</option>
-
-                      {% for manufacturer in manufacturers %}
-                      <option>{{ manufacturer[1] }}</option>
-                      {% endfor %}
-
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">S/N</label>
-                  <div class="col-sm-9">
-                    <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text"
-                      class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -95,15 +88,38 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Picture</label>
+                  <div class="col-sm-9">
+                    <input id="image" name="image" type="file" class="form-control form-control-sm" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Manufacturer</label>
+                  <div class="col-sm-9">
+                    <select required id="manufacturer" name="manufacturer" class="form-control form-control-sm">
+                      <option selected="selected" value="" >Choose Manufacturer ...</option>
+
+                      {% for manufacturer in manufacturers %}
+                      <option>{{ manufacturer[1] }}</option>
+                      {% endfor %}
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Location</label>
                   <div class="col-sm-9">
                     <select required id="location" name="location" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose location...</option>
-                      
+                      <option selected="selected" value="" >Choose location...</option>               
                       {% for location in locations %}
                       <option>{{ location[1] }}</option>
                       {% endfor %}
-                    
                     </select>
                   </div>
                 </div>
@@ -400,8 +416,8 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Contract type</label>
                   <div class="col-sm-9">
-                    <select onchange="contractType()" name="contract-type" id="contract-type" class="form-control form-control-sm">
-                      <option selected>Choose Contract type ...</option>
+                    <select onchange="contractTypes()" name="contract-type" id="contract-type" class="form-control form-control-sm">
+                      <option value="" selected>Choose Contract type ...</option>
                       <option>Warranty</option>
                       <option>Local</option>
                       <option>Contract of Maintenance</option>
@@ -445,17 +461,21 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
-                  <div class="col-sm-6">
+                  <div class="col-sm-3">
                     <select required id="inspection-freq" name="inspection-freq" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose inspection period ...</option>
+                      <option selected="selected" value="" >Choose Period ...</option>
                       <option value="Monthly">Monthly</option>
                       <option value="3 Months">3 Months</option>
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                     <input id="inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                  <label class="col-sm-1 col-form-label">TO</label>
+                  <div class="col-sm-3">
+                    <input id="inspection-end-date" name="inspection-end-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -480,17 +500,21 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
-                  <div class="col-sm-6">
+                  <div class="col-sm-3">
                     <select required id="ppm-freq" name="ppm-freq" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose PPM period ...</option>
+                      <option selected="selected" value="" >Choose period ...</option>
                       <option value="Monthly">Monthly</option>
                       <option value="3 Months">3 Months</option>
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                     <input id="ppm-start-date" name="ppm-start-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                  <label class="col-sm-1 col-form-label">TO</label>
+                  <div class="col-sm-3">
+                    <input id="ppm-end-date" name="ppm-end-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -515,17 +539,21 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
-                  <div class="col-sm-6">
+                  <div class="col-sm-3">
                     <select required id="calibration-freq" name="calibration-freq" class="form-control form-control-sm">
-                      <option selected="selected" value="" >Choose calibration period ...</option>
+                      <option selected="selected" value="" >Choose Period ...</option>
                       <option value="Monthly">Monthly</option>
                       <option value="3 Months">3 Months</option>
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-3">
                     <input id="calibration-start-date" name="calibration-start-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                  <label class="col-sm-1 col-form-label">TO</label>
+                  <div class="col-sm-3">
+                    <input id="calibration-end-date" name="calibration-end-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -534,7 +562,7 @@
 
           <fieldset class="rect">
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-8">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Technical Status</label>
                   <div class="col-sm-3">
@@ -563,10 +591,10 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group row">
-                  <label id="problem-id" style="display: none;" class="col-sm-2 col-form-label">problem</label>
-                  <div class="col-sm-10">
+                  <label id="problem-id" style="display: none;" class="col-sm-3 col-form-label">Problem</label>
+                  <div class="col-sm-9">
                     <input id="PF-problem" name="PF-problem" style="display: none;" placeholder="Problem" type="text" class="form-control" />
                     <select id="NF-problem" name="NF-problem" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose ...</option>
@@ -660,10 +688,20 @@
                 </div>
               </div>
             </div>
+            <div hidden id="file-qr" class="row">
+              <div class="col-md-12">
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">QRCode</label>
+                  <div class="col-sm-9">
+                    <input id="qrcode-file" name="qrcode-file" type="file" class="form-control form-control-sm-plaintext" value="" />
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-12">
                 <!-- This is where our QRCode will appear in. -->
-                <div id="qrcode"></div>
+                <div class="mb-2" id="qrcode"></div>
                 <script type="text/javascript">
                   function updateQRCode(text) {
             
@@ -681,6 +719,13 @@
                 </script>
               </div>
             </div>
+            <div class="row mb-4 text-center">
+              <div class="col-md-12">
+                <a id="textChangeQRcode" href="#/" onclick="changeQr('file')" class="card-description text-decoration-none">
+                  <b>OR</b> Want to Upload File ?
+                </a>
+              </div>
+            </div>
           </fieldset>
           <div class="row">
             <div class="col-md-12">
@@ -691,7 +736,6 @@
               </div>
             </div>
           </div>
-        
         </form>
       </div>
     </div>

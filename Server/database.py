@@ -37,9 +37,11 @@ def getTableData(mycursor, tableName):
     
 def device(mycursor) :
     'Retrieve all device data'
+
     mycursor.execute("""
     SELECT 
       device_sn, 
+      category,
       equipment_name, 
       model_name, 
       manufacturer_name, 
@@ -47,10 +49,12 @@ def device(mycursor) :
       device_supply_date, 
       location_name, 
       device_country, 
+      image,
       device_contract_type, 
       contract_start_date, 
       contract_end_date, 
-      terms, 
+      terms,
+      terms_file, 
       inspection_list, 
       ppm_list, 
       ppm_external,
@@ -60,9 +64,9 @@ def device(mycursor) :
       problem, 
       TRC, 
       Code,
+      qrCode,
       createdAt, 
       updatedAt  
-      
     FROM device
     left JOIN equipment
     ON device.equipment_id = equipment.equipment_id
@@ -98,8 +102,10 @@ def service(mycursor) :
 def retrive_tables(mycursor, *args) :
 
     ## TODO::AUTOMATIC select to tables
-
     AllTables = dict()
+    if "*" in args:
+        args = ["admin", "device", "equipment", "location", "manufacturer", "model", "service", "settings"]
+    
     for arg in args:
         AllTables[arg] = getTableData(mycursor, arg)
 

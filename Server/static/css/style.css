@@ -14,8 +14,8 @@
 }
 
 .rect label{
-    line-height: 0;
-    font-size: 15px;
+    line-height: 15px;
+    font-size: 14px;
     font-weight: bold;
 }
 
@@ -35,4 +35,9 @@
     line-height: 0;
     font-size: 15px;
     font-weight: bold;
+}
+
+#qrcode img{
+    border: 8px solid #000000d4;
+    border-radius: 4px;
 }

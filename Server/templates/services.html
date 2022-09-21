@@ -1,14 +1,14 @@
 {% extends 'main.html' %}
 {% block main %}
 
-<div class="col-lg-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Basic Table</h4>
             <p class="card-description">
                 {{numOfResults}} Results.
             </p>
-            <div class="table-responsive">
+            <div class="table-responsive text-center">
                 <table class="table">
                   <thead>
                     <tr>
@@ -27,12 +27,12 @@
                             <td><a href="./device?sn={{service[2]}}">{{service[2]}}</a></td>
                             <td>{{service[1]}}</td>
                             <td>{{service[3]}}</td>
-                            <td>{{service[4]}}</td>
+                            <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
                             <td>
                               {% if service[4] == None %}
                                 <label class="badge badge-warning">NOT YET</label>
                               {% elif service[4] <= service[3] %}
-                                <label class="badge badge-danger">On Time</label>
+                                <label class="badge badge-success">On Time</label>
                               {% elif service[4] > service[3] %}
                                 <label class="badge badge-danger">LATE</label>
                               {% endif %}
@@ -43,6 +43,20 @@
                 </table>
               </div>
         </div>
+        <nav class="d-flex justify-content-center" aria-label="...">
+          <ul class="pagination">
+            <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
+              <a class="page-link" href="/services?page={{currpage-1}}" tabindex="-1">Previous</a>
+            </li>
+            {% for i in range(1,numofPages+1) %}
+            <li class="page-item {% if i == currpage %} active {% endif %}"><a class="page-link" href="/services?page={{i}}">{{i}}</a></li>
+            {% endfor %}
+            
+            <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
+              <a class="page-link" href="/services?page={{currpage+1}}">Next</a>
+            </li>
+          </ul>
+        </nav>
     </div>
 </div>
 

@@ -14,9 +14,9 @@ function changeTerms(selector){
         input.hidden = false
         textChangeTerms.addEventListener("click", function(){ changeTerms("file"); });
     }
-}
+};
 
-function contractType(){
+function contractTypes(){
     var contract = document.getElementById('contract-type').value;
     var contract_start_date = document.getElementById('contract-start-date');
     var To = document.getElementById('To');
@@ -43,7 +43,6 @@ function contractType(){
     }
 };
 
-
 function statusChange(statusValue){
     var PF_problem = document.getElementById('PF-problem');
     var NF_problem = document.getElementById('NF-problem');
@@ -62,7 +61,7 @@ function statusChange(statusValue){
         NF_problem.style.display = 'none';
         problem_id.style.display = 'none';
     }
-}
+};
 
 
 function addItem(list){
@@ -226,7 +225,7 @@ function addItem(list){
     }
     
     updateNumberOfSections()
-}
+};
 
 prevValue = ""
 function editItem(list){
@@ -251,7 +250,7 @@ function editItem(list){
         input = document.getElementById(list + "-" + id);
     }
     input.readOnly = false;
-}
+};
 
 function doneEdit(list){
     list = list.split("-");
@@ -296,8 +295,7 @@ function doneEdit(list){
             }
         }
     }
-}
-
+};
 
 function deleteItem(list){
     // SEPERATE LIST TO ID AND CATEGORY NAME
@@ -331,7 +329,7 @@ function deleteItem(list){
     }
 
     updateNumberOfSections()
-}
+};
 
 /////////////////////////////////////////////////// 
 /// TODO :: UPDATE LIST OF EQUIPMENTS OF MODELS ///
@@ -357,7 +355,7 @@ function updateNumberOfSections(){
     locationDiv = document.getElementById("categ-Location");
     locations = locationDiv.querySelectorAll("#Location-id");
     document.getElementById("num-location").value = locations.length;    
-}
+};
 
 function getEquipmentIdByName(name){
     inputs = document.querySelectorAll(".equipment-input");
@@ -368,4 +366,4 @@ function getEquipmentIdByName(name){
         }
     }
     return id;
-}
+};

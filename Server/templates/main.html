@@ -9,7 +9,6 @@
   <!-- QR Code -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/qrcode.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/html5-qrcode.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
 
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='vendors/feather/feather.css') }}">
@@ -69,7 +68,7 @@
           <li class="nav-item">
             <form class="search-form" action="{{ url_for('search') }}">
               <i class="icon-search"></i>
-              <input name="search-bar" type="search" class="form-control" placeholder="Search By S/N" title="Search By S/N">
+              <input name="equipment" type="search" class="form-control" placeholder="Search By Equipment Name" title="Search By Equipment Name">
             </form>
           </li>
           <li class="nav-item dropdown"> 
@@ -156,7 +155,7 @@
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"></span>
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
           </div>
         </footer>
@@ -178,26 +177,27 @@
 
   <!-- End plugin js for this page -->
   <!-- inject:js -->
-  <script src="{{ url_for('static', filename='js/off-canvas.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/hoverable-collapse.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/template.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/todolist.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/off-canvas.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/hoverable-collapse.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/template.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/todolist.js') }}"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="{{ url_for('static', filename='js/jquery.cookie.js') }}" type="text/javascript"></script>
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookie.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
 
 <script>
 
-  equipmentTypes = {% if equipmentsList %} {{equipmentsList | tojson | safe}} {% endif %}
-  technicalStatus = {% if technicalStatus %} {{technicalStatus | tojson | safe}} {% endif %}
-  contractType = {% if contracts %} {{contracts | tojson | safe}} {% endif %}
-  inspection = {% if Inspections %} {{Inspections | tojson | safe}} {% endif %}
-  ppm = {% if PPMs %} {{PPMs | tojson | safe}} {% endif %}
-  calibration = {% if Calibrations %} {{Calibrations | tojson | safe}} {% endif %}
+  equipmentTypes = {% if equipmentsList %} {{equipmentsList | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  technicalStatus = {% if technicalStatus %} {{technicalStatus | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  contractType = {% if contracts %} {{contracts | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  inspection = {% if Inspections %} {{Inspections | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  ppm = {% if PPMs %} {{PPMs | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  calibration = {% if Calibrations %} {{Calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
 
   buildChart(equipmentTypes, "equipmentTypes");
   buildChart(technicalStatus, "technicalStatus");
