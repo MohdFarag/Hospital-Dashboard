@@ -21,7 +21,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
                   <div class="col-sm-9">
-                    <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text" class="form-control form-control-sm" />
+                    <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text" onchange="createDownloadQr()" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -436,11 +436,11 @@
                     </select>
                   </div>
                   <div class="col-sm-4">
-                    <input id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
+                    <input required id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                   <label id="To" style="display: none;" class="text-center fw-bold col-sm-1 col-form-label">To</label>
                   <div class="col-sm-4">
-                    <input id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
+                    <input required id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -681,9 +681,14 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">Code</label>
+                  <label class="col-sm-1 col-form-label">Code</label>
                   <div class="col-sm-9">
                     <input id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                  </div>
+                  <div class="col-md-2">
+                    <a style="line-height: 2;" id="textChangeQRcode" href="#/" onclick="changeQr('file')" class="card-description text-decoration-none">
+                      <b>OR</b> Want to Upload File ?
+                    </a>
                   </div>
                 </div>
               </div>
@@ -702,28 +707,14 @@
               <div class="col-md-12">
                 <!-- This is where our QRCode will appear in. -->
                 <div class="mb-2" id="qrcode"></div>
-                <script type="text/javascript">
-                  function updateQRCode(text) {
-            
-                    var element = document.getElementById("qrcode");
-            
-                    var bodyElement = document.body;
-                    if(element.lastChild)
-                      element.replaceChild(showQRCode(text), element.lastChild);
-                    else
-                      element.appendChild(showQRCode(text));
-            
-                  }
-            
-                  updateQRCode('');
-                </script>
               </div>
             </div>
             <div class="row mb-4 text-center">
-              <div class="col-md-12">
-                <a id="textChangeQRcode" href="#/" onclick="changeQr('file')" class="card-description text-decoration-none">
-                  <b>OR</b> Want to Upload File ?
+              <div class="col-md-12" id="qr-div">
+                <a download="output.png" class="card-description text-decoration-none">
+                  <b>Download</b>
                 </a>
+                <textarea id="qrcode" hidden ></textarea>
               </div>
             </div>
           </fieldset>
@@ -741,7 +732,37 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
+
+  function updateQRCode(text) {
+
+    var element = document.getElementById("qrcode");
+
+    var bodyElement = document.body;
+    if(element.lastChild) element.replaceChild(showQRCode(text), element.lastChild);
+    else element.appendChild(showQRCode(text));
+    
+    createDownloadQr();
+  }
+
+  function createDownloadQr(){
+      var qrcode = document.getElementById("qrcode");
+      var img = qrcode.querySelector("img");
+
+      var qr_div = document.getElementById("qr-div");
+
+      var link = qr_div.querySelector("a");
+      link.href = img.src;
+
+      var input = qr_div.querySelector("textarea");
+      input.value = img.src;
+
+      link.download = document.getElementById("sn").value + "Qrcode";
+
+    
+  }
+  updateQRCode('');               
+  createDownloadQr();   
 
   var equipment = document.querySelector('#equipment');
   var model = document.querySelector('#model');

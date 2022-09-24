@@ -2,7 +2,65 @@
 {% block main %}
 
 <div class="col-12 grid-margin">
-    {{device}}
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title"><span style="color: rgb(0, 61, 114);">{{device[4]}} {{device[3]}}</span> <br> S/N <span style="color: rgb(0, 102, 255) ;">{{device[0]}}</span></h2>
+            <p class="card-description">{{device[1]}}</p>
+            <div class="table-responsive">
+                <table class="table">
+                    <!-- TODO::Delete [7:]-->
+                    <tr class="text-center"><td colspan="2"><img class="img-fluid img-thumbnail devicePic" src="{% if device[9] == "" %}static/images/placeholder_device.svg{% else %}{{device[9][7:]}}{% endif %}" alt="{{device[0]}}"></td></tr>
+                    <tr>
+                        <td>Type</td>
+                        <td>{{device[2]}}</td>
+                    </tr>
+                    <tr>
+                        <td>Production Date</td>
+                        <td>{{device[5].strftime('%Y')}}</td>
+                    </tr>
+                    <tr>
+                        <td>Supply Date</td>
+                        <td>{{device[6].strftime('%Y')}}</td>
+                    </tr>
+                    <tr>
+                        <td>Location</td>
+                        <td>{{device[7]}}</td>
+                    </tr>
+                    <tr>
+                        <td>Country</td>
+                        <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[8] }}.svg" alt="{{device[8]}}" title="{{device[8]}}" /> </td>
+                    </tr>
+                    <tr>
+                        <td>Contract</td>
+                        <td>
+                            {% if device[10] != "Local" %}
+                                {{device[10]}} <br> From <b style="color: rgb(0, 61, 114);">{{device[11]}}</b> TO <b style="color: rgb(0, 61, 114);">{{device[12]}}</b>
+                            {% else %} 
+                                {{device[10]}} 
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Terms</td>
+                        <td>{% if device[13] == "" %} __ {% else %} {{device[13]}} {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>Technical Status</td>
+                        <td>{% if device[20] != "FF" %} {{device[20]}} - {{device[21]}} {% else %} {{device[20]}} {% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td>TRC</td>
+                        <td>{{device[22]}}</td>
+                    </tr>
+                    <tr>
+                        <td>Code</td>
+                        <td>{{device[23]}}</td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

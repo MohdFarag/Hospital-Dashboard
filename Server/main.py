@@ -1,14 +1,27 @@
 # Imports
 from flask import Flask, render_template, request, redirect, url_for, session
-import json
 import database
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
+import math
 #--------------------------------------------------------------------------#
 
 """Functions"""
-# GET REQUEST
+
+# Get Data Of today month services
+def todaymonthServices(type):
+  today = pd.to_datetime("today")
+
+  sentenceWhere = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today.year} AND month(`scheduled_date`)={today.month} AND `done_date` IS NULL"
+  mycursor.execute(f"""SELECT * FROM service
+                        {sentenceWhere}
+                        ORDER BY scheduled_date Asc""")
+  data = mycursor.fetchall()
+
+  return data
+
+# Get Request
 def argsGet(argName):
   if request.args.get(argName):
     field = request.args.get(argName)
@@ -16,6 +29,22 @@ def argsGet(argName):
     field = ""
   
   return field
+
+def listToStringWithComma(givenName, fieldName):
+  # fieldName IN ({category}) AND
+  givenList = request.form.getlist(givenName)
+  outputString = ""
+
+  for item in givenList:
+    outputString += f"'{str(item)}'"+","
+
+  if len(givenList) > 0:
+    outputString = f"`{fieldName}` IN ({outputString[:-1]}) AND"
+  else:
+    outputString = ""
+
+  return outputString
+
 
 # Tuple To List
 def tupleToList(tupleItem):
@@ -29,7 +58,6 @@ def tupleToList(tupleItem):
 
 # Get Dates
 def getDates(start_date, end_date, freq):
-    print(freq,"--------------------------------------------------")
     if(freq == "Monthly"):
         freq = 'M' 
     elif(freq == "3 Months"):
@@ -40,6 +68,7 @@ def getDates(start_date, end_date, freq):
         freq = '12M'
 
     datesList = pd.date_range(start_date, end_date, freq=freq, inclusive="both")
+    
 
     return datesList 
 
@@ -71,18 +100,16 @@ db_tables = database.retrive_tables(mycursor, "*")
 """Our app"""
 app = Flask(__name__)
 app.secret_key = 'hlzgzxpzlllkgzrn' # Your Secret_Key
-UPLOAD_FOLDER = "Server/static/UPLOAD/"
+UPLOAD_FOLDER = "static/UPLOAD/"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS_DOC = set(['pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg'])
-
 
 #--------------------------------------------------------------------------#
 
 """ Routes of Pages """
 # Home Page
-@app.route("/")
+@app.route("/Dashboard")
 def home():
-
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor, "device", "equipment")
     devices = db_tables["device"]
@@ -196,10 +223,10 @@ def home():
     Calibrations[0][0] = "On Time"
     Calibrations[1][0] = "Late"
     Calibrations[2][0] = "Not Yet"
-    
-    needInspection = Inspections[0][1]
-    needPPM = PPMs[0][1]
-    needCalibration = Calibrations[0][1]
+
+    needInspection = len(todaymonthServices("Inspection"))
+    needPPM = len(todaymonthServices("PPM"))
+    needCalibration = len(todaymonthServices("Calibration"))
 
     thisMonth = { "needInspection": needInspection,
                   "needCalibration": needCalibration,
@@ -218,10 +245,9 @@ def home():
   else:
     return redirect(url_for('login'))
 
-
 # Add New device
 @app.route("/addDevice", methods=['GET', 'POST'])
-def addDevice():
+def addDevice(): 
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
 
@@ -293,7 +319,7 @@ def addDevice():
       description_file = request.files['description-file']
 
       code = request.form['code']
-      qrcode = "" ## TODO::QRCode
+      qrcode = request.form['qrcode'] ## TODO::QRCode
 
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
@@ -354,6 +380,18 @@ def addDevice():
   else:
     return redirect(url_for('login'))
 
+@app.route("/deleteDevice")
+def deleteDevice():
+  # GET Serial Number from arguments
+  sn = argsGet("sn")
+  
+  # Execute the DELETE Process
+  mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
+  mydb.commit() # Work Is DONE
+
+  # Redirect to device page again
+  return redirect(url_for('search'))
+
 # Add New device
 @app.route("/settings", methods=['GET', 'POST'])
 def settings():
@@ -407,7 +445,6 @@ def settings():
 @app.route("/search", methods=['GET', 'POST'])
 def search(): 
   if 'loggedin' in session and session['loggedin'] == True:
-
     perPage = 10
     startAt = 0
     if request.args.get('page'):
@@ -416,27 +453,277 @@ def search():
       startAt = 0
     currpage = startAt*perPage
 
-    device_sn = argsGet('device_sn')
-    equipment = argsGet('equipment')
-    model = argsGet('model')
-    manufacturer = argsGet('manufacturer')
-
-    device_production_date = argsGet('device_production_date')
-    device_supply_date = argsGet('device_supply_date')
-    
-    location = argsGet('location') 
-    
-    device_country = argsGet('device_country')
-    
-    device_contract_type = argsGet('device_contract_type')
-    contract_start_date = argsGet('contract_start_date')
-    contract_end_date = argsGet('contract_end_date')
-    
-    technical_status = argsGet('technical_status')
-    TRC = argsGet('TRC')
-    Code = argsGet('Code')
+    searchValue = argsGet('searchValue')
 
     mycursor.execute(f"""SELECT 
+                          device_sn, 
+                          equipment_name, 
+                          model_name, 
+                          manufacturer_name, 
+                          device_production_date, 
+                          location_name, 
+                          device_country, 
+                          device_contract_type, 
+                          Code
+                         FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'
+                        LIMIT {currpage},{perPage}""")
+    data = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT COUNT(device_sn)
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    numOfResults = mycursor.fetchone()[0]
+    
+    mycursor.execute(f"""SELECT DISTINCT `equipment_name` 
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Equipments = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `model_name`
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Models = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `manufacturer_name`
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Manufacturers = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `location_name`
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Locations = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `device_country` FROM `device`
+                      LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Countries = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `device_contract_type` FROM `device`
+                          LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    Contracts = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT 
+                        MIN(`contract_start_date`), 
+                        MAX(`contract_start_date`),
+                        MIN(`contract_end_date`), 
+                        MAX(`contract_end_date`)
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    contractDates = mycursor.fetchone()
+
+    mycursor.execute(f"""SELECT 
+                        MIN(`device_production_date`), 
+                        MAX(`device_production_date`),
+                        MIN(`device_supply_date`), 
+                        MAX(`device_supply_date`)
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    infoDates = mycursor.fetchone()
+
+    mycursor.execute(f"""SELECT DISTINCT `technical_status` FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    TechStatus = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT DISTINCT `TRC` FROM `device`
+                          LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%'""")
+    TRCS = mycursor.fetchall()
+
+    if request.method == 'POST' :
+      searchValue = request.form['searchValue']
+      category = listToStringWithComma('category', 'category')
+      equipment = listToStringWithComma('equipment', 'equipment_name')
+      model = listToStringWithComma('model', 'model_name')
+      manufacturer = listToStringWithComma('manufacturer', 'manufacturer_name')
+      
+      production_date_start = request.form['production-date-start']
+      production_date_end = request.form['production-date-end']
+      supply_date_start = request.form['supply-date-start']
+      supply_date_end = request.form['supply-date-end']
+
+      location = listToStringWithComma('location', 'location_name')
+      country = listToStringWithComma('country', 'device_country')
+      contract = listToStringWithComma('contract', 'device_contract_type')
+
+      contract_start_date_start = request.form['contract-start-date-start']
+      contract_start_date_end = request.form['contract-start-date-end']
+      contract_end_date_start = request.form['contract-end-date-start']
+      contract_end_date_end = request.form['contract-end-date-end']
+
+      technical_status = listToStringWithComma('technical-status','technical_status')
+      trc = listToStringWithComma('trc','trc')
+      
+
+      print(f""" 
+          SELECT 
                           device_sn, 
                           equipment_name, 
                           model_name, 
@@ -456,18 +743,116 @@ def search():
                         LEFT JOIN location
                           ON device.location_id = location.location_id 
                         WHERE
-                          device_sn LIKE '%{device_sn}%' And
-                          equipment_name LIKE '%{equipment}%'
+                          (device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%') AND
+                          {category}
+                          {equipment}
+                          {model}
+                          {manufacturer}
+                          {location}
+                          {country}
+                          {contract}
+                          {technical_status}
+                          {trc}
+                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
+                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
+                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
+                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'""")
+      
+      mycursor.execute(f"""SELECT 
+                          device_sn, 
+                          equipment_name, 
+                          model_name, 
+                          manufacturer_name, 
+                          device_production_date, 
+                          location_name, 
+                          device_country, 
+                          device_contract_type, 
+                          Code
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          (device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%') AND
+                          {category}
+                          {equipment}
+                          {model}
+                          {manufacturer}
+                          {location}
+                          {country}
+                          {contract}
+                          {technical_status}
+                          {trc}
+                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
+                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
+                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
+                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'
                         LIMIT {currpage},{perPage}""")
-    
-    data = mycursor.fetchall()
+      
+      data = mycursor.fetchall()
+
+      mycursor.execute(f"""SELECT COUNT(device_sn) FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          (device_sn LIKE '%{searchValue}%' OR
+                          equipment_name LIKE '%{searchValue}%' OR
+                          model_name LIKE '%{searchValue}%' OR
+                          manufacturer_name LIKE '%{searchValue}%' OR
+                          location_name LIKE '%{searchValue}%' OR
+                          Code LIKE '%{searchValue}%') AND
+                          {category}
+                          {equipment}
+                          {model}
+                          {manufacturer}
+                          {location}
+                          {country}
+                          {contract}
+                          {technical_status}
+                          {trc}
+                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
+                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
+                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
+                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'""")
+      numOfResults = mycursor.fetchone()[0]
 
     return render_template("search.html",
-                    numOfResults=len(data),
+                    numOfResults=numOfResults,
                     devices=data,
-                    search_value=equipment,
-                    numofPages=int(len(data)/perPage)+1,
-                    currpage=startAt+1)
+                    search_value=searchValue,
+                    numofPages=math.ceil(numOfResults/perPage),
+                    currpage=startAt+1,
+                    Equipments=Equipments,
+                    Models=Models,
+                    Manufacturers=Manufacturers,
+                    Locations=Locations,
+                    Countries=Countries,
+                    Contracts=Contracts,
+                    infoDates=infoDates,
+                    contractDates=contractDates,
+                    TechStatus=TechStatus,
+                    TRCS=TRCS)
   else:
     return redirect(url_for('login'))
 
@@ -483,20 +868,33 @@ def services():
 
     if startAt <= 0:
       startAt = 0
-
     currpage = startAt*perPage
-    mycursor.execute(f"""SELECT * FROM service limit {currpage},{perPage}""")
+
+    type = argsGet("type")
+    sentence = ""
+    today = pd.to_datetime("today")
+
+    if type != "":
+      sentence = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today.year} AND month(`scheduled_date`)={today.month} AND `done_date` IS NULL"
+
+    mycursor.execute(f"""SELECT * FROM service
+                         {sentence}
+                         ORDER BY scheduled_date Asc 
+                         LIMIT {currpage},{perPage}""")
     data = mycursor.fetchall()
 
-    print(int(len(data)/perPage),len(data),perPage)
+    mycursor.execute(f"""SELECT COUNT(service_id) FROM service {sentence}""")
+    numOfResults = mycursor.fetchone()[0]
+    print(numOfResults)
+
     return render_template("services.html",
-                          numOfResults=len(db_tables["service"]),
-                          numofPages=int(len(db_tables["service"])/perPage)+1,
+                          numOfResults=numOfResults,
+                          numofPages=int(numOfResults/perPage)+1,
                           services=data,
-                          currpage=startAt+1)
+                          currpage=startAt+1,
+                          type=type)
   else:
     return redirect(url_for('login'))
-
 
 # Device Page
 @app.route("/device", methods=['GET', 'POST'])
@@ -506,8 +904,8 @@ def device():
     mycursor.execute("""
     SELECT 
       device_sn, 
-      equipment_name, 
       category,
+      equipment_name, 
       model_name, 
       manufacturer_name, 
       device_production_date, 
@@ -543,14 +941,33 @@ def device():
     ON device.location_id = location.location_id    
     WHERE device_sn=%s""",(sn,))
 
-    device = mycursor.fetchall()
+    device = mycursor.fetchone()
 
     return render_template("device.html",device=device)
   else:
     return redirect(url_for('login'))
 
+# Complete Service
+@app.route("/completeService")
+def completeService():
+  # GET Serial Number from arguments
+  id = argsGet("id")
+  type = argsGet("type")
+  
+  today = pd.to_datetime("today")
+  print(today.date())
+  # Execute the DELETE Process
+  mycursor.execute(f"""UPDATE service
+                       SET `done_date` = '{today.date()}'
+                       WHERE service_id='{id}';""")
+  mydb.commit() # Work Is DONE
+
+  # Redirect to device page again
+  return redirect(f"/services?type={type}")
+
+
 # Login
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def login():
   if 'loggedin' in session and session['loggedin'] == True:
     return redirect(url_for('home'))

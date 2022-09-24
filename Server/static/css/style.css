@@ -41,3 +41,77 @@
     border: 8px solid #000000d4;
     border-radius: 4px;
 }
+
+.devicePic{
+    width: 300px !important;
+    height: 300px !important;
+    border-radius: 0 !important;
+}
+
+.search-item-link i{
+    font-size: 26px;   
+}
+
+/* R */
+
+.form-1-box fieldset {
+    background: #d1d1d124;
+    padding-top: 0px !important;
+}
+
+.form-1-box legend {
+    font-size: inherit;
+    line-height: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+    float: none;
+}
+ 
+.form-1-box .form-check-label {
+    line-height: 1.5;
+    vertical-align: top;
+    margin-left: 0;
+}
+ 
+.form-1-box input[type="text"] {
+    background: none;
+    border: 1px solid #ddd;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #888;
+    box-shadow: none;
+}
+
+.form-1-box input[type="text"]:focus {
+    outline: 0;
+    background: none;
+    border: 1px solid #db5d50;
+    box-shadow: none;
+}
+ 
+.form-1-box input[type="text"]::-moz-placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+ 
+.form-1-box input[type="text"]:-ms-input-placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+ 
+.form-1-box input[type="text"]::-webkit-input-placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+
+.form-check {
+    padding-left: 1.5em;
+}
+
+.img-checkbox{
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+}

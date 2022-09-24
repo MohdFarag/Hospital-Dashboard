@@ -12,8 +12,13 @@
             <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#thisMonth" role="tab" aria-selected="false">This Month</a>
           </li>
         </ul>
+        <div>
+          <div class="btn-wrapper">
+            <a href="#" onclick="window.print()" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+          </div>
+        </div>
       </div>
-      <div class="tab-content tab-content-basic">
+      <div id="PrimaryData" class="tab-content tab-content-basic">
         <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
           <div class="row">
             <div class="col-sm-12">
@@ -84,15 +89,15 @@
               <div class="statistics-details d-flex align-items-center justify-content-between">
                 <div> 
                   <p class="statistics-title">Devices need inspection</p>
-                  <h3 class="rate-percentage">{{  thisMonth["needInspection"] }}</h3>
+                  <a href="/services?type=inspection"><h3 class="rate-percentage">{{  thisMonth["needInspection"] }}</h3></a>
                 </div>
                 <div>
                   <p class="statistics-title">Devices need PPM</p>
-                  <h3 class="rate-percentage">{{  thisMonth["needPPM"] }}</h3>
+                  <a href="/services?type=ppm"><h3 class="rate-percentage">{{  thisMonth["needPPM"] }}</h3></a>
                 </div>
                 <div class="d-none d-md-block">
                   <p class="statistics-title">Devices need calibration</p>
-                  <h3 class="rate-percentage">{{  thisMonth["needCalibration"] }}</h3>
+                  <a href="/services?type=calibration"><h3 class="rate-percentage">{{  thisMonth["needCalibration"] }}</h3></a>
                 </div>
               </div>
             </div>

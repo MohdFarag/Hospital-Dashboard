@@ -5,34 +5,214 @@
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">Search</h3>
-            <form class="search-form" action="{{ url_for('search') }}">
+            <form class="search-form" action="{{ url_for('search') }}" method="post">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-11">
-                                <input name="equipment" type="search" class="form-control form-control-sm" placeholder="Search By Equipment Name ..." title="Search By Equipment Name ..." value="{% if search_value %}{{search_value}}{% endif %}">
+                            <div class="col-md-1">     
+                                <a class="btn btn-outline-dark btn-sm float-start" data-bs-toggle="offcanvas" href="#advancedSearch" role="button" aria-controls="advancedSearch">                   
+                                    Advanced
+                                </a>
+                            </div>
+                            <div class="col-md-10">
+                                <input name="searchValue" type="search" class="form-control form-control-sm" placeholder="Search ..." title="Search" value="{% if search_value %}{{search_value}}{% endif %}">
                             </div>
                             <div class="col-md-1">
-                                <input class="btn btn-inverse-dark btn-sm" value="Search" type="submit">
+                                <input class="btn btn-inverse-dark btn-sm float-end" value="Search" type="submit">
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <hr>
-                
-                <div class="row">
-                    <div class="col-12">                        
-                        <a class="btn btn-outline-dark btn-sm" data-bs-toggle="collapse" href="#advancedSearch" role="button" aria-expanded="false" aria-controls="advancedSearch">
-                            Advanced Search
-                        </a>
-                    </div>
-                </div>
-                
+   
                 <hr>
 
-                <div class="collapse" id="advancedSearch">
-                  <!-- TODO :: CREATE SEARCH -->
+                <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="advancedSearch" aria-labelledby="advancedSearchLabel">
+                    <div class="offcanvas-header">
+                      <h5 class="offcanvas-title" id="advancedSearchLabel"><b>Advanced Search</b></h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Categories -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Category</legend>
+                                    <div class="form-check">
+                                        <input class="form-check-input save-cb-state" type="checkbox" name="category" id="MG" value="MG">
+                                        <label class="form-check-label" for="MG"><strong>MG</strong></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="category" id="EM" value="EM">
+                                        <label class="form-check-label" for="EM"><strong>EM</strong></label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="category" id="BM" value="BM">
+                                        <label class="form-check-label" for="BM"><strong>BM</strong></label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Equipments -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Equipment</legend>
+                                    <div class="form-check">
+                                        {% for equipment in Equipments %}
+                                        <input  class="form-check-input" type="checkbox" name="equipment" id="{{equipment[0]}}" value="{{equipment[0]}}">
+                                        <label class="form-check-label" for="{{equipment[0]}}"><strong>{{equipment[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Models -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Models</legend>
+                                    <div class="form-check">
+                                        {% for model in Models %}
+                                        <input  class="form-check-input" type="checkbox" name="model" id="{{model[0]}}" value="{{model[0]}}">
+                                        <label class="form-check-label" for="{{model[0]}}"><strong>{{model[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Manufacturers -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Manufacturers</legend>
+                                    <div class="form-check">
+                                        {% for manufacturer in Manufacturers %}
+                                        <input  class="form-check-input" type="checkbox" name="manufacturer" id="{{manufacturer[0]}}" value="{{manufacturer[0]}}">
+                                        <label class="form-check-label" for="{{manufacturer[0]}}"><strong>{{manufacturer[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Contract Start Date -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Production Date</legend>
+                                    <input value="{{infoDates[0]}}" min='{{infoDates[0]}}' max='{{infoDates[1]}}' class="form-control form-control-sm" name="production-date-start"  type="date">
+                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
+                                    <input value="{{infoDates[1]}}" min='{{infoDates[0]}}' max='{{infoDates[1]}}' class="form-control form-control-sm" name="production-date-end"  type="date">
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Contract End Date -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Supply Date</legend>
+                                    <input value="{{infoDates[2]}}" min='{{infoDates[2]}}' max='{{infoDates[3]}}' class="form-control form-control-sm" name="supply-date-start" type="date">
+                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
+                                    <input value="{{infoDates[3]}}" min='{{infoDates[2]}}' max='{{infoDates[3]}}' class="form-control form-control-sm" name="supply-date-end" type="date">
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Locations -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Locations</legend>
+                                    <div class="form-check">
+                                        {% for location in Locations %}
+                                        <input  class="form-check-input" type="checkbox" name="location" id="{{location[0]}}" value="{{location[0]}}">
+                                        <label class="form-check-label" for="{{location[0]}}"><strong>{{location[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Countries -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Countries</legend>
+                                    <div class="form-check">
+                                        {% for country in Countries %}
+                                        <input  class="form-check-input" type="checkbox" name="country" id="{{country[0]}}" value="{{country[0]}}">
+                                        <label class="form-check-label" for="{{country[0]}}">
+                                            <strong>
+                                                <img class="img-checkbox" src="{{ url_for('static', filename='images/flags/1x1/') }}{{ country[0] }}.svg" alt="{{country[0]}}" title="{{country[0]}}" />
+                                            </strong>
+                                    </label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Contracts -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Contract Types</legend>
+                                    <div class="form-check">
+                                        {% for contract in Contracts %}
+                                        <input  class="form-check-input" type="checkbox" name="contract" id="{{contract[0]}}" value="{{contract[0]}}">
+                                        <label class="form-check-label" for="{{contract[0]}}"><strong>{{contract[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Contract Start Date -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Contract Start Date</legend>
+                                    <input value="{{contractDates[0]}}" min='{{contractDates[0]}}' max='{{contractDates[1]}}' class="form-control form-control-sm" name="contract-start-date-start"  type="date">
+                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
+                                    <input value="{{contractDates[1]}}" min='{{contractDates[0]}}' max='{{contractDates[1]}}' class="form-control form-control-sm" name="contract-start-date-end"  type="date">
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Contract End Date -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Contract End Date</legend>
+                                    <input value="{{contractDates[2]}}" min='{{contractDates[2]}}' max='{{contractDates[3]}}' class="form-control form-control-sm" name="contract-end-date-start"  type="date">
+                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
+                                    <input value="{{contractDates[3]}}" min='{{contractDates[2]}}' max='{{contractDates[3]}}' class="form-control form-control-sm" name="contract-end-date-end"  type="date">
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- Technical Status -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">Technical Status</legend>
+                                    <div class="form-check">
+                                        {% for categ in TechStatus %}
+                                        <input  class="form-check-input" type="checkbox" name="technical-status" id="{{categ[0]}}" value="{{categ[0]}}">
+                                        <label class="form-check-label" for="{{categ[0]}}"><strong>{{categ[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-1-box fadeInUp">
+                                <!-- TRC -->
+                                <fieldset class="form-group border p-3">
+                                    <legend class="w-auto px-2">TRC</legend>
+                                    <div class="form-check">
+                                        {% for TRC in TRCS %}
+                                        <input  class="form-check-input" type="checkbox" name="trc" id="{{TRC[0]}}" value="{{TRC[0]}}">
+                                        <label class="form-check-label" for="{{TRC[0]}}"><strong>{{TRC[0]}}</strong></label>
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -40,15 +220,21 @@
 </div>
     
 <div class="col-lg-12 grid-margin">
-    <div {% if numOfResults <= 0 %} hidden {% endif %} class="alert alert-success" role="alert">{{numOfResults}} Results.</div>
     <div {% if numOfResults != 0 %} hidden {% endif %} class="alert alert-warning" role="alert">No Results !</div>
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Basic Table</h4>
-            <p class="card-description">
-                {{numOfResults}} Results.
-            </p>
-            <div class="table-responsive">
+            <div class="d-sm-flex justify-content-between align-items-start">
+                <div>
+                  <h4 class="card-title card-title-dash">Devices</h4>
+                  <p class="card-subtitle card-subtitle-dash">{{numOfResults}} Results.</p>
+                </div>
+                <div>
+                  <a href="/addDevice">
+                    <button class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"> <i class="mdi mdi-plus-circle"></i> Add new device</button>
+                  </a>
+                </div>
+              </div>
+            <div class="table-responsive mt-3">
                 <table class="table">
                   <thead>
                     <tr>
@@ -56,48 +242,119 @@
                       <th>Equipment</th>
                       <th>Model</th>
                       <th>Manufacturer</th>
-                      <th>production Date</th>
+                      <th>Production Date</th>
                       <th>Location</th>
                       <th>Country</th>
-                      <th>Contract</th>
                       <th>Code</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for device in devices %}
                     <tr>
-                      <td><a href="./device?sn={{device[0]}}">{{device[0]}}</a></td>
-                      <td>{{device[1]}}</td>
-                      <td>{{device[2]}}</td>
-                      <td>{{device[3]}}</td>
-                      <td>{{device[4]}}</td>
-                      <td>{{device[5]}}</td>
-                      <td>{{device[6]}}</td>
-                      <td>{{device[7]}}</td>
-                      <td>{{device[8]}}</td>
+                        <td><b><a class="text-decoration-none" href="./device?sn={{device[0]}}">{{device[0]}}</a></b></td>
+                        <td>{{device[1]}}</td>
+                        <td>{{device[2]}}</td>
+                        <td>{{device[3]}}</td>
+                        <td>{{device[4].strftime('%Y')}}</td>
+                        <td>{{device[5]}}</td>
+                        <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[6] }}.svg" alt="{{device[6]}}" title="{{device[6]}}" /></td>
+                        <td>{{device[8]}}</td>
+                        <td style="text-align: center;">
+                            <a href="" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
+                        </td>
+                        <td style="text-align: center;">
+                            <!-- Text trigger modal -->
+                            <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{device[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop-{{device[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Delete Device</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure to delete this device with S/N {{device[0]}}?
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <a href="/deleteDevice?sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
               </div>
         </div>
-        <nav class="d-flex justify-content-center" aria-label="...">
+        <nav class="d-flex justify-content-center">
             <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" tabindex="-1">Previous</a>
+              <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
+                <a class="page-link" href="?page={{currpage-1}}" tabindex="-1">Previous</a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item active">
-                <a class="page-link" href="#">2</a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#">Next</a>
+              {% for i in range(1,numofPages+1) %}
+              <li class="page-item {% if i == currpage %} active {% endif %}"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+              {% endfor %}
+              
+              <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
+                <a class="page-link" href="?page={{currpage+1}}">Next</a>
               </li>
             </ul>
         </nav>
     </div>
 </div>
+
+<script>
+    // Avoid scoping issues by encapsulating code inside anonymous function
+    (function() {
+      // variable to store our current state
+      var cbstate;
+      
+      // bind to the onload event
+      window.addEventListener('load', function() {
+        // Get the current state from localstorage
+        // State is stored as a JSON string
+        cbstate = JSON.parse(localStorage['CBState'] || '{}');
+      
+        // Loop through state array and restore checked 
+        // state for matching elements
+        for(var i in cbstate) {
+          var el = document.querySelector('input[name="' + i + '"]');
+          if (el) el.checked = true;
+        }
+      
+        // Get all checkboxes that you want to monitor state for
+        var cb = document.getElementsByClassName('save-cb-state');
+      
+        // Loop through results and ...
+        for(var i = 0; i < cb.length; i++) {
+      
+          //bind click event handler
+          cb[i].addEventListener('click', function(evt) {
+            // If checkboxe is checked then save to state
+            if (this.checked) {
+              cbstate[this.name] = true;
+            }
+        
+        // Else remove from state
+            else if (cbstate[this.name]) {
+              delete cbstate[this.name];
+            }
+        
+        // Persist state
+            localStorage.CBState = JSON.stringify(cbstate);
+          });
+        }
+      });
+    })();
+</script>
+            
+            
 
 
 {% endblock %}
