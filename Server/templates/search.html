@@ -59,7 +59,7 @@
                                     <legend class="w-auto px-2">Equipment</legend>
                                     <div class="form-check">
                                         {% for equipment in Equipments %}
-                                        <input  class="form-check-input" type="checkbox" name="equipment" id="{{equipment[0]}}" value="{{equipment[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="equipment" id="{{equipment[0]}}" value="{{equipment[0]}}">
                                         <label class="form-check-label" for="{{equipment[0]}}"><strong>{{equipment[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -73,7 +73,7 @@
                                     <legend class="w-auto px-2">Models</legend>
                                     <div class="form-check">
                                         {% for model in Models %}
-                                        <input  class="form-check-input" type="checkbox" name="model" id="{{model[0]}}" value="{{model[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="model" id="{{model[0]}}" value="{{model[0]}}">
                                         <label class="form-check-label" for="{{model[0]}}"><strong>{{model[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -87,7 +87,7 @@
                                     <legend class="w-auto px-2">Manufacturers</legend>
                                     <div class="form-check">
                                         {% for manufacturer in Manufacturers %}
-                                        <input  class="form-check-input" type="checkbox" name="manufacturer" id="{{manufacturer[0]}}" value="{{manufacturer[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="manufacturer" id="{{manufacturer[0]}}" value="{{manufacturer[0]}}">
                                         <label class="form-check-label" for="{{manufacturer[0]}}"><strong>{{manufacturer[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -123,7 +123,7 @@
                                     <legend class="w-auto px-2">Locations</legend>
                                     <div class="form-check">
                                         {% for location in Locations %}
-                                        <input  class="form-check-input" type="checkbox" name="location" id="{{location[0]}}" value="{{location[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="location" id="{{location[0]}}" value="{{location[0]}}">
                                         <label class="form-check-label" for="{{location[0]}}"><strong>{{location[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -137,7 +137,7 @@
                                     <legend class="w-auto px-2">Countries</legend>
                                     <div class="form-check">
                                         {% for country in Countries %}
-                                        <input  class="form-check-input" type="checkbox" name="country" id="{{country[0]}}" value="{{country[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="country" id="{{country[0]}}" value="{{country[0]}}">
                                         <label class="form-check-label" for="{{country[0]}}">
                                             <strong>
                                                 <img class="img-checkbox" src="{{ url_for('static', filename='images/flags/1x1/') }}{{ country[0] }}.svg" alt="{{country[0]}}" title="{{country[0]}}" />
@@ -155,7 +155,7 @@
                                     <legend class="w-auto px-2">Contract Types</legend>
                                     <div class="form-check">
                                         {% for contract in Contracts %}
-                                        <input  class="form-check-input" type="checkbox" name="contract" id="{{contract[0]}}" value="{{contract[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="contract" id="{{contract[0]}}" value="{{contract[0]}}">
                                         <label class="form-check-label" for="{{contract[0]}}"><strong>{{contract[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -191,7 +191,7 @@
                                     <legend class="w-auto px-2">Technical Status</legend>
                                     <div class="form-check">
                                         {% for categ in TechStatus %}
-                                        <input  class="form-check-input" type="checkbox" name="technical-status" id="{{categ[0]}}" value="{{categ[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="technical-status" id="{{categ[0]}}" value="{{categ[0]}}">
                                         <label class="form-check-label" for="{{categ[0]}}"><strong>{{categ[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -205,7 +205,7 @@
                                     <legend class="w-auto px-2">TRC</legend>
                                     <div class="form-check">
                                         {% for TRC in TRCS %}
-                                        <input  class="form-check-input" type="checkbox" name="trc" id="{{TRC[0]}}" value="{{TRC[0]}}">
+                                        <input  class="form-check-input save-cb-state" type="checkbox" name="trc" id="{{TRC[0]}}" value="{{TRC[0]}}">
                                         <label class="form-check-label" for="{{TRC[0]}}"><strong>{{TRC[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
@@ -324,7 +324,7 @@
         // Loop through state array and restore checked 
         // state for matching elements
         for(var i in cbstate) {
-          var el = document.querySelector('input[name="' + i + '"]');
+          var el = document.querySelector('input[id="' + i + '"]');
           if (el) el.checked = true;
         }
       
@@ -338,12 +338,12 @@
           cb[i].addEventListener('click', function(evt) {
             // If checkboxe is checked then save to state
             if (this.checked) {
-              cbstate[this.name] = true;
+              cbstate[this.id] = true;
             }
         
         // Else remove from state
-            else if (cbstate[this.name]) {
-              delete cbstate[this.name];
+            else if (cbstate[this.id]) {
+              delete cbstate[this.id];
             }
         
         // Persist state
