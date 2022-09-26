@@ -18,3 +18,10 @@
 .footer{
     display: none !important;
 }
+
+
+/* Devices Page */
+
+.search-card{
+    display: none;
+}

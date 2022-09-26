@@ -2,7 +2,7 @@
 {% block main %}
 
 <div class="col-12 grid-margin">
-    <div class="card">
+    <div class="card search-card">
         <div class="card-body">
             <h3 class="card-title">Search</h3>
             <form class="search-form" action="{{ url_for('search') }}" method="post">
@@ -229,9 +229,8 @@
                   <p class="card-subtitle card-subtitle-dash">{{numOfResults}} Results.</p>
                 </div>
                 <div>
-                  <a href="/addDevice">
-                    <button class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"> <i class="mdi mdi-plus-circle"></i> Add new device</button>
-                  </a>
+                  <a href="/addDevice" class="btn btn-primary btn-sm text-white mb-0 me-0"><i class="mdi mdi-plus-circle"></i> Add new device</a>
+                  <a href="#" onclick="window.print()" class="btn btn-otline-dark printButt"><i class="icon-printer"></i> Print</a>
                 </div>
               </div>
             <div class="table-responsive mt-3">

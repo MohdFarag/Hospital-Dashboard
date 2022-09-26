@@ -133,3 +133,13 @@ img {
 }
 
 .pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }
+
+.printButt{
+    padding: 8px 15px;
+    border: 1px solid #CADDFF;
+    box-sizing: border-box;
+    border-radius: 6px;
+    color: #000000;
+    font-weight: 500;
+    font-size: 12px;
+}
