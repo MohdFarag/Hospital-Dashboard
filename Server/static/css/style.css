@@ -1,3 +1,19 @@
+img {
+    position: relative;
+  }
+  img:before {
+    content: ' ';
+    display: block;
+    position: inherit;
+    height: 140px;
+    width: 295px;
+    background-color: white;
+    background-image:
+    url('../images/placeholder_device.svg');
+    background-position: center;
+    background-size: contain;
+  }
+
 
 /* Add.html */
 
@@ -115,3 +131,5 @@
     height: 36px;
     border-radius: 100%;
 }
+
+.pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }

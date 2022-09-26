@@ -885,7 +885,6 @@ def services():
 
     mycursor.execute(f"""SELECT COUNT(service_id) FROM service {sentence}""")
     numOfResults = mycursor.fetchone()[0]
-    print(numOfResults)
 
     return render_template("services.html",
                           numOfResults=numOfResults,
@@ -900,6 +899,16 @@ def services():
 @app.route("/device", methods=['GET', 'POST'])
 def device():
   if 'loggedin' in session and session['loggedin'] == True:
+    perPage = 10
+    startAt = 0
+    
+    if request.args.get('page'):
+      startAt = int(request.args.get('page')) - 1
+
+    if startAt <= 0:
+      startAt = 0
+    currpage = startAt*perPage
+
     sn = argsGet('sn')
     mycursor.execute("""
     SELECT 
@@ -940,10 +949,21 @@ def device():
     left JOIN location
     ON device.location_id = location.location_id    
     WHERE device_sn=%s""",(sn,))
-
     device = mycursor.fetchone()
 
-    return render_template("device.html",device=device)
+    mycursor.execute(f"SELECT * FROM service WHERE device_sn='{sn}' ORDER BY scheduled_date Asc LIMIT {currpage},{perPage} ")
+    services = mycursor.fetchall()
+
+    mycursor.execute(f"SELECT COUNT(service_id) FROM service WHERE device_sn='{sn}'")
+    numOfResults = mycursor.fetchone()[0]
+
+    return render_template("device.html",
+                            title=device[0],
+                            services=services,
+                            device=device,
+                            numOfResults=numOfResults,
+                            numofPages=int(numOfResults/perPage)+1,
+                            currpage=startAt+1,)
   else:
     return redirect(url_for('login'))
 
@@ -964,7 +984,6 @@ def completeService():
 
   # Redirect to device page again
   return redirect(f"/services?type={type}")
-
 
 # Login
 @app.route("/", methods=['GET', 'POST'])

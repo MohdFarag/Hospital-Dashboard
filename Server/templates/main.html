@@ -9,6 +9,9 @@
   <!-- QR Code -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/qrcode.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/html5-qrcode.js') }}"></script>
+  <!-- pdfObject -->
+  <script type="text/javascript" src="{{ url_for('static', filename='js/PDFObject.js') }}"></script>
+
 
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='vendors/feather/feather.css') }}">
@@ -55,8 +58,8 @@
       <div class="navbar-menu-wrapper d-flex align-items-top"> 
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-            <h1 class="welcome-text">Good Morning, <span class="text-black fw-bold">{{ session.username }}</span></h1>
-            <h3 class="welcome-sub-text">Your performance summary this week </h3>
+            <h1 class="welcome-text">We have entered a new day, along with all the dominion which belongs to Allah, <span class="text-black fw-bold">{{ session.username }}</span></h1>
+            <h3 class="welcome-sub-text">مستشفى الجمعية الشرعية للأطفال</h3>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
@@ -198,7 +201,6 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
-
 <script>
 
   equipmentTypes = {% if equipmentsList %} {{equipmentsList | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
@@ -208,12 +210,12 @@
   ppm = {% if PPMs %} {{PPMs | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
   calibration = {% if Calibrations %} {{Calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
 
-  buildChart(equipmentTypes, "equipmentTypes");
-  buildChart(technicalStatus, "technicalStatus");
-  buildChart(contractType, "contractType");
-  buildChart(inspection, "inspection");
-  buildChart(ppm, "ppm");
-  buildChart(calibration, "calibration");  
+  buildChart(equipmentTypes, "equipmentTypes","pie");
+  buildChart(technicalStatus, "technicalStatus","doughnut");
+  buildChart(contractType, "contractType","pie");
+  buildChart(inspection, "inspection","doughnut");
+  buildChart(ppm, "ppm","doughnut");
+  buildChart(calibration, "calibration","doughnut");  
 
 </script>
   
