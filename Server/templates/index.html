@@ -25,7 +25,7 @@
               <div class="statistics-details d-flex align-items-center justify-content-between">
                 <div>
                   <p class="statistics-title">Number of devices</p>
-                  <h3 class="rate-percentage">{{ numOfDevices }}</h3>
+                  <h3 class="rate-percentage">{{ num_of_devices }}</h3>
                 </div>
               </div>
             </div>
@@ -89,15 +89,15 @@
               <div class="statistics-details d-flex align-items-center justify-content-between">
                 <div> 
                   <p class="statistics-title">Devices need inspection</p>
-                  <a href="/services?type=inspection"><h3 class="rate-percentage">{{  thisMonth["needInspection"] }}</h3></a>
+                  <a href="/services?type=inspection"><h3 class="rate-percentage">{{  this_month["need_inspection"] }}</h3></a>
                 </div>
                 <div>
                   <p class="statistics-title">Devices need PPM</p>
-                  <a href="/services?type=ppm"><h3 class="rate-percentage">{{  thisMonth["needPPM"] }}</h3></a>
+                  <a href="/services?type=ppm"><h3 class="rate-percentage">{{  this_month["need_ppm"] }}</h3></a>
                 </div>
                 <div class="d-none d-md-block">
                   <p class="statistics-title">Devices need calibration</p>
-                  <a href="/services?type=calibration"><h3 class="rate-percentage">{{  thisMonth["needCalibration"] }}</h3></a>
+                  <a href="/services?type=calibration"><h3 class="rate-percentage">{{  this_month["need_calibration"] }}</h3></a>
                 </div>
               </div>
             </div>

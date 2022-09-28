@@ -35,10 +35,6 @@ img {
     font-weight: bold;
 }
 
-#qrcode{
-    text-align: center;
-}
-
 .twitter-typeahead{
     display: block !important;
 }
@@ -56,6 +52,12 @@ img {
 #qrcode img{
     border: 8px solid #000000d4;
     border-radius: 4px;
+}
+
+#qrcodeDiv img{
+    border: 8px solid #000000d4;
+    border-radius: 4px;
+    max-height: 500px;
 }
 
 .devicePic{
@@ -142,4 +144,10 @@ img {
     color: #000000;
     font-weight: 500;
     font-size: 12px;
+}
+
+.pdfobject {
+    overflow: auto;
+    width: 100%;
+    height: 450px;
 }

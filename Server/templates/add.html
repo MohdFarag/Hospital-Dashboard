@@ -13,7 +13,7 @@
           There is Error !
         </div>
         
-        <form enctype="multipart/form-data" action="{{ url_for('addDevice') }}" method="POST">
+        <form enctype="multipart/form-data" action="{{ url_for('add_device') }}" method="POST">
           <p class="card-description">Info</p>
           <fieldset class="rect">
             <div class="row">
@@ -684,21 +684,12 @@
                   <label class="col-sm-1 col-form-label">Code</label>
                   <div class="col-sm-9">
                     <input id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                    <input hidden id="qrcode-file" name="qrcode" type="file" class="form-control form-control-sm" onchange="prevImg('qrcode-file', 'qrcodeImg')" />
                   </div>
                   <div class="col-md-2">
-                    <a style="line-height: 2;" id="textChangeQRcode" href="#/" onclick="changeQr('file')" class="card-description text-decoration-none">
-                      <b>OR</b> Want to Upload File ?
+                    <a style="line-height: 2;" id="textChangeQRcode" href="#/" onclick="changeQrInputToFile('file')" class="card-description text-decoration-none">
+                      <b>OR</b> Upload File ?
                     </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div hidden id="file-qr" class="row">
-              <div class="col-md-12">
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label">QRCode</label>
-                  <div class="col-sm-9">
-                    <input id="qrcode-file" name="qrcode-file" type="file" class="form-control form-control-sm-plaintext" value="" />
                   </div>
                 </div>
               </div>
@@ -706,15 +697,18 @@
             <div class="row">
               <div class="col-md-12">
                 <!-- This is where our QRCode will appear in. -->
-                <div class="mb-2" id="qrcode"></div>
+                <div class="mb-2 text-center" id="qrcode"></div>
+                <div hidden class="mb-2 text-center" id="qrcodeDiv">
+                  <img class="mb-2" id="qrcodeImg" />
+                </div>
               </div>
             </div>
             <div class="row mb-4 text-center">
               <div class="col-md-12" id="qr-div">
-                <a download="output.png" class="card-description text-decoration-none">
+                <a id="downloadQrcode" download="output.png" class="card-description text-decoration-none">
                   <b>Download</b>
                 </a>
-                <textarea id="qrcode" name="qrcode" hidden ></textarea>
+                <textarea id="qrcodeTextArea" name="qrcode" hidden ></textarea>
               </div>
             </div>
           </fieldset>

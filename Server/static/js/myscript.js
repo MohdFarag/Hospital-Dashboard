@@ -16,6 +16,48 @@ function changeTerms(selector){
     }
 };
 
+function prevImg(inputID,imgId){
+    const [file] = document.getElementById(inputID).files
+    if (file) {
+        document.getElementById(imgId).src = URL.createObjectURL(file)
+    }   
+};
+
+function changeQrInputToFile(selector){
+    input = document.getElementById("code");
+    qrcode = document.getElementById("qrcode");
+    file = document.getElementById("qrcode-file");
+    downloadQrcode = document.getElementById("downloadQrcode");
+    QrcodeTextarea = document.getElementById("qrcodeTextArea");
+
+    text = document.getElementById("textChangeQRcode");
+    text.removeAttribute("onclick");
+
+    if (selector=="file") {
+        file.hidden = false;
+        file.name = "qrcode";
+        input.hidden = true;
+        document.getElementById("qrcodeDiv").hidden = false;
+
+        downloadQrcode.hidden = true;
+        text.addEventListener("click", function(){ changeQrInputToFile("qrCode"); });
+        text.innerHTML = "<b>OR</b> Generate QRCode ?" ;
+        qrcode.innerHTML = "";
+        QrcodeTextarea.name = "";
+    }else{
+        file.hidden = true;
+        file.name = "";
+        input.hidden = false;
+        document.getElementById("qrcodeDiv").hidden = true;
+
+        downloadQrcode.hidden = false;
+        text.addEventListener("click", function(){ changeQrInputToFile("file"); });
+        text.innerHTML = "<b>OR</b> Upload File ?" ;
+        QrcodeTextarea.name = "qrcode"
+    }
+
+};
+
 function contractTypes(){
     var contract = document.getElementById('contract-type').value;
     var contract_start_date = document.getElementById('contract-start-date');
@@ -367,3 +409,4 @@ function getEquipmentIdByName(name){
     }
     return id;
 };
+

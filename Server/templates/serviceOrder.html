@@ -1,0 +1,82 @@
+{% extends 'main.html' %}
+{% block main %}
+
+<div class="col-12 grid-margin">
+    <div class="card search-card">
+        <div class="card-body">
+            <h3 class="card-title">Service Order</h3>
+            <div id="print-area" class="border p-4">
+                <div class="row">
+                    <div class="col-md-5 text-start">
+                        <img style="width: 150px;" src="{{ url_for('static', filename='images/logo1.jpg') }}" />
+                    </div>
+                    <div id="qrcode" class="col-md-2">
+                        <center><img style="width: 150px;" src="{{service[18]}}" /></center>
+                    </div>
+                    <div class="col-md-5 text-end mt-4">
+                        <img style="height: 100px;" src="{{ url_for('static', filename='images/logo1.png') }}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2>{{service[1]}} of {{service[3]}} </h2>
+                    </div>
+                    <div class="col-md-6 mx-auto">
+                        <div class="table-responsive mt-3">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-muted">Equipment Name</th>
+                                        <th>{{service[3]}}</th>
+                                        <th class="text-muted">Manufacturer Name</th>
+                                        <th>{{service[5]}}</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Model</th>
+                                        <th>{{service[4]}}</th>
+                                        <th class="text-muted">Code</th>
+                                        <th>{{service[17]}}</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">S/N</th>
+                                        <th>{{service[2]}}</th>
+                                        <th class="text-muted">Year / Month</th>
+                                        <th>{{today.strftime('%Y')}} / {{today.strftime('%m')}}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-12">
+                        <div id="checklist"></div>
+                        <script>
+                            var options = {
+                                height: "450px",
+                                pdfOpenParams: { page: 10 },
+                                omitInlineStyles: true
+                            };
+                            PDFObject.embed("{{service[12]}}", "#checklist", options);
+                        </script>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-md-1">
+                        <h4>Notes:</h4>
+                    </div>
+                    <div class="col-md-11">
+                        <textarea style="height: auto;" class="form-control form-control-sm" rows="6">{% for i in range(0,20)%}.................................................................................................................{%endfor%}</textarea>
+                    </div>
+                    <div class="col-md-12 mt-5">
+                        <h6>
+                            In the event of any difference in the quality control of a device, the maintenance is reported with a malfunction report
+                        </h6>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

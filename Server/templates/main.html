@@ -47,10 +47,10 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="./">
+          <a class="navbar-brand brand-logo" href="{{ url_for('dashboard') }}">
             <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="logo" />
           </a>
-          <a class="navbar-brand brand-logo-mini" href="./">
+          <a class="navbar-brand brand-logo-mini" href="{{ url_for('dashboard') }}">
             <img src="{{ url_for('static', filename='images/logo-mini.svg') }}" alt="logo" />
           </a>
         </div>
@@ -128,25 +128,25 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="./Dashboard">
+            <a class="nav-link" href="{{ url_for('dashboard') }}">
               <i class="mdi mdi-view-dashboard menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./addDevice">
+            <a class="nav-link" href="{{ url_for('add_device') }}">
               <i class="mdi mdi-plus-box menu-icon"></i>
               <span class="menu-title">Add New Device</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./search">
+            <a class="nav-link" href="{{ url_for('search') }}">
               <i class="mdi mdi-view-grid menu-icon"></i>
               <span class="menu-title">Devices List</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="./services">
+            <a class="nav-link" href="{{ url_for('services') }}">
               <i class="mdi mdi-animation menu-icon"></i>
               <span class="menu-title">Services List</span>
             </a>
@@ -203,12 +203,12 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
 <script>
 
-  equipmentTypes = {% if equipmentsList %} {{equipmentsList | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  technicalStatus = {% if technicalStatus %} {{technicalStatus | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  equipmentTypes = {% if equipments %} {{equipments | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  technicalStatus = {% if technical_status %} {{technical_status | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
   contractType = {% if contracts %} {{contracts | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  inspection = {% if Inspections %} {{Inspections | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  ppm = {% if PPMs %} {{PPMs | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  calibration = {% if Calibrations %} {{Calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  inspection = {% if inspections %} {{inspections | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  ppm = {% if ppms %} {{ppms | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+  calibration = {% if calibrations %} {{calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
 
   buildChart(equipmentTypes, "equipmentTypes","pie");
   buildChart(technicalStatus, "technicalStatus","doughnut");

@@ -9,20 +9,20 @@ import math
 
 """Functions"""
 
-# Get Data Of today month services
-def todaymonthServices(type):
-  today = pd.to_datetime("today")
+# Get services of current month
+def services_of_current_month(type):
+  today_date = pd.to_datetime("today")
 
-  sentenceWhere = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today.year} AND month(`scheduled_date`)={today.month} AND `done_date` IS NULL"
+  where_sentence = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today_date.year} AND month(`scheduled_date`)={today_date.month} AND `done_date` IS NULL"
   mycursor.execute(f"""SELECT * FROM service
-                        {sentenceWhere}
+                        {where_sentence}
                         ORDER BY scheduled_date Asc""")
   data = mycursor.fetchall()
 
   return data
 
 # Get Request
-def argsGet(argName):
+def get_argument(argName):
   if request.args.get(argName):
     field = request.args.get(argName)
   else:
@@ -30,34 +30,66 @@ def argsGet(argName):
   
   return field
 
-def listToStringWithComma(givenName, fieldName):
-  # fieldName IN ({category}) AND
-  givenList = request.form.getlist(givenName)
-  outputString = ""
+# Get SQL [IN] sentence for search
+def get_sql_for_search(givenName, fieldName):
+  given_list = request.form.getlist(givenName)
+  output_string = ""
 
-  for item in givenList:
-    outputString += f"'{str(item)}'"+","
+  for item in given_list:
+    output_string += f"'{str(item)}'"+","
 
-  if len(givenList) > 0:
-    outputString = f"`{fieldName}` IN ({outputString[:-1]}) AND"
+  if len(given_list) > 0:
+    output_string = f"`{fieldName}` IN ({output_string[:-1]}) AND"
   else:
-    outputString = ""
+    output_string = ""
 
-  return outputString
+  return output_string
 
+# Get stat services
+def stat_of_services(service_type):
+    mycursor.execute(f""" SELECT 
+    service_type, count(service.service_type)
+    FROM service
+    WHERE `service_type` = "{service_type}" 
+    AND year(`scheduled_date`) = year(`done_date`)
+    AND month(`scheduled_date`) = month(`done_date`)
 
-# Tuple To List
-def tupleToList(tupleItem):
-  listItem = list()
+    UNION ALL
 
-  for oldtuple in tupleItem:
-    newList = list(oldtuple)
-    listItem.append(newList)
+    SELECT 
+    service_type, count(service.service_type)
+    FROM service 
+    WHERE `service_type` = "{service_type}"
+    AND (year(`scheduled_date`) <= year(`done_date`) AND month(`scheduled_date`) < month(`done_date`))
+    OR (year(`scheduled_date`) < year(`done_date`) AND month(`scheduled_date`) <= month(`done_date`))
 
-  return listItem
+    UNION ALL
 
-# Get Dates
-def getDates(start_date, end_date, freq):
+    SELECT 
+    service_type, count(service.service_type)
+    FROM service 
+    WHERE `service_type` = "{service_type}" AND isnull(`done_date`) """)
+    service_list = mycursor.fetchall()
+    
+    service_list = list_of_tuples_to_List_of_lists(service_list)
+    service_list[0][0] = "On Time"
+    service_list[1][0] = "Late"
+    service_list[2][0] = "Not Yet"
+
+    return service_list
+
+# List of tuples to list of lists
+def list_of_tuples_to_List_of_lists(tuple_objects):
+  list_object = list()
+
+  for item in tuple_objects:
+    new_list = list(item)
+    list_object.append(new_list)
+
+  return list_object
+
+# Get dates in interval given start date and end date with specefic frequency
+def get_dates_in_interval(start_date, end_date, freq):
     if(freq == "Monthly"):
         freq = 'M' 
     elif(freq == "3 Months"):
@@ -67,17 +99,17 @@ def getDates(start_date, end_date, freq):
     elif(freq == "Annually"):
         freq = '12M'
 
-    datesList = pd.date_range(start_date, end_date, freq=freq, inclusive="both")
-    
+    dates_list = pd.date_range(start_date, end_date, freq=freq, inclusive="both")
 
-    return datesList 
+    return dates_list 
 
+# Check extention of files
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_DOC
 
-def saveFile(list, sn, fileName):
-
+# Save file
+def save_file(list, sn, fileName):
     if list and allowed_file(list.filename):
       filename = secure_filename(fileName + "." + list.filename.rsplit('.', 1)[1])
       path = app.config['UPLOAD_FOLDER'] + sn + "/" 
@@ -87,6 +119,14 @@ def saveFile(list, sn, fileName):
     else:
       return ""
 
+def get_categories_stat(field_name):
+  mycursor.execute(f""" SELECT 
+                    device.{field_name}, count(device.{field_name}) AS `count` 
+                    FROM device 
+                    GROUP BY device.{field_name}""")
+  list_stat = mycursor.fetchall()
+
+  return list_stat
 #--------------------------------------------------------------------------#
 
 # Connecting with Database
@@ -107,147 +147,57 @@ ALLOWED_EXTENSIONS_DOC = set(['pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg'])
 #--------------------------------------------------------------------------#
 
 """ Routes of Pages """
-# Home Page
-@app.route("/Dashboard")
-def home():
+# Dashboard
+@app.route("/dashboard")
+def dashboard():
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor, "device", "equipment")
     devices = db_tables["device"]
 
     # Equipments Counts
-    mycursor.execute(""" SELECT 
+    mycursor.execute(f""" SELECT 
                     equipment.equipment_name, count(device.`equipment_id`) AS `count`
                     FROM device
                     LEFT JOIN equipment
                     ON device.equipment_id = equipment.equipment_id 
                     GROUP BY equipment.equipment_name""")
     equipments = mycursor.fetchall()
-
-    # Technical Status Counts
-    mycursor.execute(""" SELECT 
-                    device.technical_status, count(device.technical_status) AS `count` 
-                    FROM device 
-                    GROUP BY device.technical_status""")
-    technicalStatus = mycursor.fetchall()
-
-    # Contract Type Counts
-    mycursor.execute(""" SELECT 
-                        device.device_contract_type, count(device.device_contract_type) AS `count` 
-                        FROM device 
-                        GROUP BY device.device_contract_type""")
-    contracts = mycursor.fetchall()
+    technical_status = get_categories_stat("technical_status")
+    contracts = get_categories_stat("device_contract_type")
 
     # Inspections Counts
-    mycursor.execute(""" SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Inspection" 
-    AND year(`scheduled_date`) = year(`done_date`)
-    AND month(`scheduled_date`) = month(`done_date`)
-
-    UNION ALL
-
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Inspection" 
-    AND (year(`scheduled_date`) <= year(`done_date`) AND month(`scheduled_date`) < month(`done_date`))
-    OR (year(`scheduled_date`) < year(`done_date`) AND month(`scheduled_date`) <= month(`done_date`))
-
-    UNION ALL
-
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Inspection" AND isnull(`done_date`) """)
-    Inspections = mycursor.fetchall()
-    Inspections = tupleToList(Inspections)
-    Inspections[0][0] = "On Time"
-    Inspections[1][0] = "Late"
-    Inspections[2][0] = "Not Yet"
-
+    inspections = stat_of_services('inspection')
     # PPMs Counts
-    mycursor.execute(""" SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "PPM" 
-    AND year(`scheduled_date`) = year(`done_date`)
-    AND month(`scheduled_date`) = month(`done_date`)
-
-    UNION ALL
-
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "PPM" 
-    AND (year(`scheduled_date`) <= year(`done_date`) AND month(`scheduled_date`) < month(`done_date`))
-    OR (year(`scheduled_date`) < year(`done_date`) AND month(`scheduled_date`) <= month(`done_date`))
-
-    UNION ALL
-
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "PPM" AND isnull(`done_date`) """)
-    PPMs = mycursor.fetchall()
-    PPMs = tupleToList(PPMs)
-    PPMs[0][0] = "On Time"
-    PPMs[1][0] = "Late"
-    PPMs[2][0] = "Not Yet"
-
+    ppms = stat_of_services('ppm')
     # Calibrations Counts
-    mycursor.execute(""" SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Calibration" 
-    AND year(`scheduled_date`) = year(`done_date`)
-    AND month(`scheduled_date`) = month(`done_date`)
+    calibrations = stat_of_services("calibration")
 
-    UNION ALL
+    need_inspection = len(services_of_current_month("Inspection"))
+    need_ppm = len(services_of_current_month("PPM"))
+    need_calibration = len(services_of_current_month("Calibration"))
 
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Calibration" 
-    AND (year(`scheduled_date`) <= year(`done_date`) AND month(`scheduled_date`) < month(`done_date`))
-    OR (year(`scheduled_date`) < year(`done_date`) AND month(`scheduled_date`) <= month(`done_date`))
-
-    UNION ALL
-
-    SELECT 
-    service_type, count(service.service_type) AS `count` 
-    FROM service 
-    WHERE `service_type` = "Calibration" AND isnull(`done_date`) """)
-    Calibrations = mycursor.fetchall()
-    Calibrations = tupleToList(Calibrations)
-    Calibrations[0][0] = "On Time"
-    Calibrations[1][0] = "Late"
-    Calibrations[2][0] = "Not Yet"
-
-    needInspection = len(todaymonthServices("Inspection"))
-    needPPM = len(todaymonthServices("PPM"))
-    needCalibration = len(todaymonthServices("Calibration"))
-
-    thisMonth = { "needInspection": needInspection,
-                  "needCalibration": needCalibration,
-                  "needPPM": needPPM }
+    this_month = {  "need_inspection": need_inspection,
+                    "need_ppm": need_ppm,
+                    "need_calibration": need_calibration }
     
     return render_template("index.html",
                        title="Dashboard",
-                       numOfDevices=len(devices),
-                       thisMonth=thisMonth,
-                       equipmentsList=equipments,
-                       technicalStatus=technicalStatus,
+                       num_of_devices=len(devices),
+                       this_month=this_month,
+                       equipments=equipments,
+                       technical_status=technical_status,
                        contracts=contracts,
-                       Inspections=Inspections,
-                       PPMs=PPMs,
-                       Calibrations=Calibrations)
+                       inspections=inspections,
+                       ppms=ppms,
+                       calibrations=calibrations)
   else:
     return redirect(url_for('login'))
 
-# Add New device
-@app.route("/addDevice", methods=['GET', 'POST'])
-def addDevice(): 
+#-----------Devices-----------#
+
+# Add new device
+@app.route("/add-device", methods=['GET', 'POST'])
+def add_device(): 
   if 'loggedin' in session and session['loggedin'] == True:
     db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
 
@@ -338,28 +288,28 @@ def addDevice():
       mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
       location_id = mycursor.fetchone()
 
-      image_path = saveFile(image, sn, "image") 
-      inspection_path = saveFile(inspection_list, sn, "inspection")      
-      ppm_path = saveFile(ppm_list, sn, 'ppm')      
-      calibration_path = saveFile(calibration_list, sn, 'calibration')      
-      description_path = saveFile(description_file, sn, 'description')
+      image_path = save_file(image, sn, "image") 
+      inspection_path = save_file(inspection_list, sn, "inspection")      
+      ppm_path = save_file(ppm_list, sn, 'ppm')      
+      calibration_path = save_file(calibration_list, sn, 'calibration')      
+      description_path = save_file(description_file, sn, 'description')
 
       mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `ppm_list`, `ppm_external`, `calibration_list`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
                                               (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, ppm_path, ppm_external, calibration_path, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
 
       
       # Inspection
-      inspectionsList = getDates(inspection_start_date, inspection_end_date, inspection_freq)
+      inspectionsList = get_dates_in_interval(inspection_start_date, inspection_end_date, inspection_freq)
       for date in inspectionsList:
         mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
                                                   ("Inspection", sn, date.date(), None))
       # PPM
-      PPMsList = getDates(ppm_start_date, ppm_end_date, ppm_freq)
+      PPMsList = get_dates_in_interval(ppm_start_date, ppm_end_date, ppm_freq)
       for date in PPMsList:
         mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
                                                   ("PPM", sn, date.date(), None))
       # Calibration
-      calibrationsList = getDates(calibration_start_date, calibration_end_date, calibration_freq)
+      calibrationsList = get_dates_in_interval(calibration_start_date, calibration_end_date, calibration_freq)
       for date in calibrationsList:
         mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
                                                   ("Calibration", sn, date.date(), None))
@@ -380,10 +330,11 @@ def addDevice():
   else:
     return redirect(url_for('login'))
 
-@app.route("/deleteDevice")
-def deleteDevice():
+# Delete device
+@app.route("/delete-device")
+def delete_device():
   # GET Serial Number from arguments
-  sn = argsGet("sn")
+  sn = get_argument("sn")
   
   # Execute the DELETE Process
   mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
@@ -392,56 +343,7 @@ def deleteDevice():
   # Redirect to device page again
   return redirect(url_for('search'))
 
-# Add New device
-@app.route("/settings", methods=['GET', 'POST'])
-def settings():
-  if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
-  
-    # Lists
-    models = db_tables['model']
-    locations = db_tables['location']
-    equipments = db_tables['equipment']
-    manufacturers = db_tables['manufacturer']
-    settings = db_tables['settings']
-    service_period = settings[0][1]
-    
-    status = -1
-    if request.method == 'POST' :
-      # Insert Equipments
-      statments = request.form['statments']
-      statmentsList = statments.split(";")
-    
-      try:
-        # Update Libraries
-        for statment in statmentsList:
-            mycursor.execute(statment)
-        mydb.commit()
-        status = 1
-        
-      except:
-        status = 0
-    
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
-  
-    # Lists
-    models = db_tables['model']
-    locations = db_tables['location']
-    equipments = db_tables['equipment']
-    manufacturers = db_tables['manufacturer']
-
-    return render_template("settings.html", 
-                          title="Settings",
-                          status=status,
-                          equipments=equipments,
-                          models=models,
-                          locations=locations,
-                          manufacturers=manufacturers,
-                          service_period=service_period)
-  else:
-    return redirect(url_for('login'))
-
-# Add New device
+# Search on devices
 @app.route("/search", methods=['GET', 'POST'])
 def search(): 
   if 'loggedin' in session and session['loggedin'] == True:
@@ -453,7 +355,7 @@ def search():
       startAt = 0
     currpage = startAt*perPage
 
-    searchValue = argsGet('searchValue')
+    searchValue = get_argument('searchValue')
 
     mycursor.execute(f"""SELECT 
                           device_sn, 
@@ -699,70 +601,29 @@ def search():
 
     if request.method == 'POST' :
       searchValue = request.form['searchValue']
-      category = listToStringWithComma('category', 'category')
-      equipment = listToStringWithComma('equipment', 'equipment_name')
-      model = listToStringWithComma('model', 'model_name')
-      manufacturer = listToStringWithComma('manufacturer', 'manufacturer_name')
+      category = get_sql_for_search('category', 'category')
+      equipment = get_sql_for_search('equipment', 'equipment_name')
+      model = get_sql_for_search('model', 'model_name')
+      manufacturer = get_sql_for_search('manufacturer', 'manufacturer_name')
       
       production_date_start = request.form['production-date-start']
       production_date_end = request.form['production-date-end']
       supply_date_start = request.form['supply-date-start']
       supply_date_end = request.form['supply-date-end']
 
-      location = listToStringWithComma('location', 'location_name')
-      country = listToStringWithComma('country', 'device_country')
-      contract = listToStringWithComma('contract', 'device_contract_type')
+      location = get_sql_for_search('location', 'location_name')
+      country = get_sql_for_search('country', 'device_country')
+      contract = get_sql_for_search('contract', 'device_contract_type')
 
       contract_start_date_start = request.form['contract-start-date-start']
       contract_start_date_end = request.form['contract-start-date-end']
       contract_end_date_start = request.form['contract-end-date-start']
       contract_end_date_end = request.form['contract-end-date-end']
 
-      technical_status = listToStringWithComma('technical-status','technical_status')
-      trc = listToStringWithComma('trc','trc')
+      technical_status = get_sql_for_search('technical-status','technical_status')
+      trc = get_sql_for_search('trc','trc')
       
 
-      print(f""" 
-          SELECT 
-                          device_sn, 
-                          equipment_name, 
-                          model_name, 
-                          manufacturer_name, 
-                          device_production_date, 
-                          location_name, 
-                          device_country, 
-                          device_contract_type, 
-                          Code
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          (device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%') AND
-                          {category}
-                          {equipment}
-                          {model}
-                          {manufacturer}
-                          {location}
-                          {country}
-                          {contract}
-                          {technical_status}
-                          {trc}
-                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
-                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
-                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
-                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'""")
-      
       mycursor.execute(f"""SELECT 
                           device_sn, 
                           equipment_name, 
@@ -803,7 +664,6 @@ def search():
                           contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
                           contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'
                         LIMIT {currpage},{perPage}""")
-      
       data = mycursor.fetchall()
 
       mycursor.execute(f"""SELECT COUNT(device_sn) FROM `device`
@@ -838,6 +698,7 @@ def search():
       numOfResults = mycursor.fetchone()[0]
 
     return render_template("search.html",
+                    title="Devices",
                     numOfResults=numOfResults,
                     devices=data,
                     search_value=searchValue,
@@ -856,46 +717,7 @@ def search():
   else:
     return redirect(url_for('login'))
 
-# Services
-@app.route("/services", methods=['GET', 'POST'])
-def services():
-  if 'loggedin' in session and session['loggedin'] == True:
-    perPage = 10
-    startAt = 0
-    
-    if request.args.get('page'):
-      startAt = int(request.args.get('page')) - 1
-
-    if startAt <= 0:
-      startAt = 0
-    currpage = startAt*perPage
-
-    type = argsGet("type")
-    sentence = ""
-    today = pd.to_datetime("today")
-
-    if type != "":
-      sentence = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today.year} AND month(`scheduled_date`)={today.month} AND `done_date` IS NULL"
-
-    mycursor.execute(f"""SELECT * FROM service
-                         {sentence}
-                         ORDER BY scheduled_date Asc 
-                         LIMIT {currpage},{perPage}""")
-    data = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT COUNT(service_id) FROM service {sentence}""")
-    numOfResults = mycursor.fetchone()[0]
-
-    return render_template("services.html",
-                          numOfResults=numOfResults,
-                          numofPages=int(numOfResults/perPage)+1,
-                          services=data,
-                          currpage=startAt+1,
-                          type=type)
-  else:
-    return redirect(url_for('login'))
-
-# Device Page
+# Device profile page
 @app.route("/device", methods=['GET', 'POST'])
 def device():
   if 'loggedin' in session and session['loggedin'] == True:
@@ -909,7 +731,7 @@ def device():
       startAt = 0
     currpage = startAt*perPage
 
-    sn = argsGet('sn')
+    sn = get_argument('sn')
     mycursor.execute("""
     SELECT 
       device_sn, 
@@ -967,29 +789,174 @@ def device():
   else:
     return redirect(url_for('login'))
 
-# Complete Service
-@app.route("/completeService")
-def completeService():
-  # GET Serial Number from arguments
-  id = argsGet("id")
-  type = argsGet("type")
-  
-  today = pd.to_datetime("today")
-  print(today.date())
-  # Execute the DELETE Process
-  mycursor.execute(f"""UPDATE service
-                       SET `done_date` = '{today.date()}'
-                       WHERE service_id='{id}';""")
-  mydb.commit() # Work Is DONE
+#-----------Services-----------#
 
-  # Redirect to device page again
-  return redirect(f"/services?type={type}")
+# Services page
+@app.route("/services", methods=['GET', 'POST'])
+def services():
+  if 'loggedin' in session and session['loggedin'] == True:
+    perPage = 10
+    startAt = 0
+    
+    if request.args.get('page'):
+      startAt = int(request.args.get('page')) - 1
+
+    if startAt <= 0:
+      startAt = 0
+    currpage = startAt*perPage
+
+    type = get_argument("type")
+    sentence = ""
+    today = pd.to_datetime("today")
+
+    if type != "":
+      sentence = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today.year} AND month(`scheduled_date`)={today.month} AND `done_date` IS NULL"
+
+    mycursor.execute(f"""SELECT * FROM service
+                         {sentence}
+                         ORDER BY scheduled_date Asc 
+                         LIMIT {currpage},{perPage}""")
+    data = mycursor.fetchall()
+
+    mycursor.execute(f"""SELECT COUNT(service_id) FROM service {sentence}""")
+    numOfResults = mycursor.fetchone()[0]
+
+    return render_template("services.html",
+                          title="Services",
+                          numOfResults=numOfResults,
+                          numofPages=int(numOfResults/perPage)+1,
+                          services=data,
+                          currpage=startAt+1,
+                          type=type)
+  else:
+    return redirect(url_for('login'))
+
+# Complete Service
+@app.route("/complete-service")
+def complete_service():
+  if 'loggedin' in session and session['loggedin'] == True:
+    # GET sn&type from arguments
+    id = get_argument("id")
+    type = get_argument("type")
+
+    today = pd.to_datetime("today")
+
+    # Execute the DELETE Process
+    mycursor.execute(f"""UPDATE service
+                        SET `done_date` = '{today.date()}'
+                        WHERE service_id='{id}';""")
+    mydb.commit() # Work Is DONE
+
+    # Redirect to device page again
+    return redirect(f"/services?type={type}")
+  else:
+    return redirect(url_for('login'))
+
+# service-order
+@app.route("/service-order")
+def service_order():
+  if 'loggedin' in session and session['loggedin'] == True:
+    # GET sn from arguments
+    id = get_argument("id")
+    mycursor.execute(f"""SELECT service_id,
+                                service_type,
+                                service.device_sn
+                                scheduled_date,
+                                equipment_name,
+                                model_name,
+                                manufacturer_name,
+                                device_production_date,
+                                device_supply_date,
+                                location_name,
+                                device_contract_type,
+                                contract_start_date,
+                                contract_end_date,
+                                inspection_list,
+                                ppm_list,
+                                calibration_list,
+                                technical_status,
+                                TRC,
+                                Code,
+                                qrcode
+                         FROM service
+                         left Join device 
+                         on service.device_sn = device.device_sn
+                         Join equipment 
+                         on device.equipment_id = equipment.equipment_id
+                         Join model 
+                         on device.model_id = model.model_id
+                         Join manufacturer 
+                         on device.manufacturer_id = manufacturer.manufacturer_id 
+                         Join location 
+                         on device.location_id = location.location_id 
+                         Where service_id={id}""")
+    service = mycursor.fetchone()
+
+    today = pd.to_datetime("today")
+    return render_template("serviceOrder.html",
+                            title="Service Order",
+                            service=service,
+                            today=today)
+  else:
+    return redirect(url_for('login'))
+#-----------Settings-----------#
+
+# Settings
+@app.route("/settings", methods=['GET', 'POST'])
+def settings():
+  if 'loggedin' in session and session['loggedin'] == True:
+    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
+  
+    # Lists
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
+    settings = db_tables['settings']
+    service_period = settings[0][1]
+    
+    status = -1
+    if request.method == 'POST' :
+      # Insert Equipments
+      statments = request.form['statments']
+      statmentsList = statments.split(";")
+    
+      try:
+        # Update Libraries
+        for statment in statmentsList:
+            mycursor.execute(statment)
+        mydb.commit()
+        status = 1
+        
+      except:
+        status = 0
+    
+    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
+  
+    # Lists
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
+
+    return render_template("settings.html", 
+                          title="Settings",
+                          status=status,
+                          equipments=equipments,
+                          models=models,
+                          locations=locations,
+                          manufacturers=manufacturers,
+                          service_period=service_period)
+  else:
+    return redirect(url_for('login'))
+
+#-----------Login and Logout-----------#
 
 # Login
 @app.route("/", methods=['GET', 'POST'])
 def login():
   if 'loggedin' in session and session['loggedin'] == True:
-    return redirect(url_for('home'))
+    return redirect(url_for('dashboard'))
   else:
     status = True
     if request.method == 'POST':
@@ -1009,8 +976,8 @@ def login():
           session['id'] = account[0]
           session['username'] = account[1]
           status = True
-          # Redirect to home page
-          return redirect(url_for('home'))
+          # Redirect to dashboard page
+          return redirect(url_for('dashboard'))
       else:
           # Account doesnt exist or username/password incorrect
           status = False
@@ -1028,6 +995,8 @@ def logout():
   session.pop('username', None)
   # Redirect to login page
   return redirect(url_for('login'))
+
+#-----------ERRORS-----------#
 
 # Page 404
 @app.errorhandler(404)

@@ -127,8 +127,8 @@
                                         <label class="badge badge-danger">LATE</label>
                                     {% endif %}
                                     </td>
-                                    <td><a href="/serviceOrder?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
-                                    <td><a href="/completeService?id={{service[0]}}&type={{type}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                                    <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
+                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
