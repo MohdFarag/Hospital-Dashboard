@@ -2,7 +2,7 @@
 {% block main %}
 
 <div class="col-12 grid-margin">
-    <div class="card search-card">
+    <div class="card">
         <div class="card-body">
             <h3 class="card-title">Service Order</h3>
             <div id="print-area" class="border p-4">
@@ -54,7 +54,7 @@
                         <script>
                             var options = {
                                 height: "450px",
-                                pdfOpenParams: { page: 10 },
+                                pdfOpenParams: { page: 1 },
                                 omitInlineStyles: true
                             };
                             PDFObject.embed("{{service[12]}}", "#checklist", options);

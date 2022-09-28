@@ -831,6 +831,22 @@ def services():
   else:
     return redirect(url_for('login'))
 
+# Delete Service 
+@app.route("/delete-service")
+def delete_service():
+  # GET Serial Number from arguments
+  id = get_argument("id")
+  page = get_argument("page") 
+  type = get_argument("type")
+  
+  # Execute the DELETE Process
+  mycursor.execute(f"""DELETE FROM service WHERE service_id='{id}';""")
+  mydb.commit() # Work Is DONE
+
+  # Redirect to device page again
+  return redirect(f"/services?page={page}&type={type}")
+
+
 # Complete Service
 @app.route("/complete-service")
 def complete_service():

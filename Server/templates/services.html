@@ -22,9 +22,11 @@
                       <th>type</th>
                       <th>Scheduled Date</th>
                       <th>Done Date</th>
-                      <th>Status</th>
                       <th>Service Order</th>
                       <th>Done</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -34,7 +36,34 @@
                             <td><a class="text-decoration-none" href="./device?sn={{service[2]}}&type={{type}}"><b>{{service[2]}}</b></a></td>
                             <td>{{service[1]}}</td>
                             <td>{{service[3]}}</td>
-                            <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
+                            <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {% endif %}</td>
+                            <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
+                            <td><a href="/complete-service?id={{service[0]}}&type={{type}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                            <td style="text-align: center;">
+                              <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
+                            </td>
+                            <td style="text-align: center;">
+                              <!-- Text trigger modal -->
+                              <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
+                              <!-- Modal -->
+                              <div class="modal fade" id="staticBackdrop-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Delete Service</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure to delete this service with id {{service[0]}} ?
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{currpage}}" type="button" class="btn btn-primary">Yes</a>
+                                        </div>
+                                    </div>
+                                  </div>
+                              </div>
+                            </td>
                             <td>
                               {% if service[4] == None %}
                                 <label class="badge badge-warning">NOT YET</label>
@@ -44,9 +73,8 @@
                                 <label class="badge badge-danger">LATE</label>
                               {% endif %}
                             </td>
-                            <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
-                            <td><a href="/complete-service?id={{service[0]}}&type={{type}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
-                        </tr>
+
+                          </tr>
                     {% endfor %}
                   </tbody>
                 </table>
