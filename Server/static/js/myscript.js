@@ -124,7 +124,6 @@ function statusChange(statusValue){
     }
 };
 
-
 function addItem(list){
 
     var category = document.getElementById("categ-"+list);
@@ -211,7 +210,7 @@ function addItem(list){
     //// <a id="editIcon-{{equipment[0]}}" href="#" onclick="editItem('Equipment-{{equipment[0]}}')">
     var a_add = document.createElement("a");
     a_add.setAttribute("id", list + "-editIcon-" + inputHidden.value)
-    a_add.href = "#";
+    a_add.href = "#/";
     a_add.addEventListener("click", function(){ editItem(list + '-' + inputHidden.value); });
     //// <i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i>
     var i_add = document.createElement("i");
@@ -220,7 +219,7 @@ function addItem(list){
     //// <a id="thump-{{equipment[0]}}" hidden href="#" onclick="doneEdit('Equipment-{{equipment[0]}}')">
     var a_done = document.createElement("a");
     a_done.setAttribute("id", list + "-thump-" + inputHidden.value)
-    a_done.href = "#";
+    a_done.href = "#/";
     a_done.hidden = true
     a_done.addEventListener("click", function(){ doneEdit(list + '-' + inputHidden.value); });
     //// <i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i>
@@ -232,7 +231,7 @@ function addItem(list){
     col_delete.setAttribute("class", "col-md-1");
     //// <a href="#" onclick="deleteItem('Equipment-{{equipment[0]}}')">
     var a_delete = document.createElement("a");
-    a_delete.href = "#"
+    a_delete.href = "#/"
     a_delete.addEventListener("click", function(){ deleteItem(list + '-' + inputHidden.value); });
     //// <i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i>
     var i_delete = document.createElement("i");
@@ -317,17 +316,6 @@ function doneEdit(list){
     list = list.split("-");
     id = list[1]
     list = list[0]
-    
-    // WRITE SQL STATEMENT OF DELETE PROCCESS
-    statment = document.getElementById("statments");
-    if (list.includes("Model")){        
-        modelValue = document.getElementById(list + "-" + id + "-1").value;
-        equipmentValue = document.getElementById(list + "-" + id + "-2").value;
-        statment.value = statment.value + "UPDATE " + list + " SET Model_name='" + modelValue + "', Equipment_name='" + equipmentValue + "' WHERE " + list + "_id="+ id + ";";
-    }else{
-        value = document.getElementById(list + "-" + id).value;
-        statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name='" + value + "' WHERE " + list + "_id="+ id + ";";
-    }
 
     // EDIT FIELD
     a_editIcon = document.getElementById(list + "-editIcon-"+id);
@@ -336,6 +324,9 @@ function doneEdit(list){
     a_thump.hidden = true;
 
     if (list.includes("Model")) {
+        console.log("xxxxx");
+        console.log(list + "-" + id + "-" + "1")
+        console.log(list + "-" + id + "-" + "2")
         input = document.getElementById(list + "-" + id + "-" + "1");
         select = document.getElementById(list + "-" + id + "-" + "2");
         select.setAttribute("disabled", "true");
@@ -343,6 +334,17 @@ function doneEdit(list){
         input = document.getElementById(list + "-" + id);
     }
     input.readOnly = true;
+
+    // WRITE SQL STATEMENT OF DELETE PROCCESS
+    statment = document.getElementById("statments");
+    if (list.includes("Model")){        
+        modelValue = document.getElementById(list + "-" + id + "-1").value;
+        equipmentValue = document.getElementById(list + "-" + id + "-2").value;
+        statment.value = statment.value + "UPDATE " + list + " SET Model_name='" + modelValue + "', Equipment_id=" +  getEquipmentIdByName(equipmentValue) + " WHERE " + list + "_id="+ id + ";";
+    }else{
+        value = document.getElementById(list + "-" + id).value;
+        statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name='" + value + "' WHERE " + list + "_id="+ id + ";";
+    }
 
     if(list == "Equipment"){
         var selectList = document.querySelectorAll("select");

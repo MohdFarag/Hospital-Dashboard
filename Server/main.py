@@ -119,7 +119,8 @@ def save_file(list, sn, fileName):
     else:
       return ""
 
-def get_categories_stat(field_name):
+# Get dashboard statistics
+def get_dashboard_stat(field_name):
   mycursor.execute(f""" SELECT 
                     device.{field_name}, count(device.{field_name}) AS `count` 
                     FROM device 
@@ -127,9 +128,16 @@ def get_categories_stat(field_name):
   list_stat = mycursor.fetchall()
 
   return list_stat
+
+# Insert new service into services
+def insert_into_service(start_date, end_date, freq, sn, type_of_list):
+  dates = get_dates_in_interval(start_date, end_date, freq)
+  for date in dates:
+    mycursor.execute(f"""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES 
+                                               ({type_of_list}, {sn}, {date.date()}, {None})""")
 #--------------------------------------------------------------------------#
 
-# Connecting with Database
+# Connecting with database
 mydb, mycursor = database.mysql_connector()
 
 """Retrive Database Tables"""
@@ -139,10 +147,10 @@ db_tables = database.retrive_tables(mycursor, "*")
 
 """Our app"""
 app = Flask(__name__)
-app.secret_key = 'hlzgzxpzlllkgzrn' # Your Secret_Key
+app.secret_key = 'hlzgzxpzlllkgzrn' # Your Secret Key
 UPLOAD_FOLDER = "static/UPLOAD/"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-ALLOWED_EXTENSIONS_DOC = set(['pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg', 'webp'])
+ALLOWED_EXTENSIONS_DOC = set(['pdf', 'png', 'jpg', 'jpeg', 'webp'])
 
 #--------------------------------------------------------------------------#
 
@@ -162,8 +170,8 @@ def dashboard():
                     ON device.equipment_id = equipment.equipment_id 
                     GROUP BY equipment.equipment_name""")
     equipments = mycursor.fetchall()
-    technical_status = get_categories_stat("technical_status")
-    contracts = get_categories_stat("device_contract_type")
+    technical_status = get_dashboard_stat("technical_status")
+    contracts = get_dashboard_stat("device_contract_type")
 
     # Inspections Counts
     inspections = stat_of_services('inspection')
@@ -208,6 +216,7 @@ def add_device():
 
     status = -1
     if request.method == 'POST' :
+      # Get data from inputs
       equipment = request.form['equipment']
       category = request.form['category']
       model = request.form['model']
@@ -274,51 +283,51 @@ def add_device():
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
 
-      #try: 
-      # Insert Process
-      mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
-      equipment_id = mycursor.fetchone()
+      try:
+        # Insertion Process
 
-      mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
-      model_id = mycursor.fetchone()
+        # 1) Get id of equipment_name chosen
+        mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
+        equipment_id = mycursor.fetchone()
 
-      mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
-      manufacturer_id = mycursor.fetchone()
+        # 2) Get id of model_name chosen
+        mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
+        model_id = mycursor.fetchone()
 
-      mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
-      location_id = mycursor.fetchone()
+        # 3) Get id of manufacturer_id chosen
+        mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
+        manufacturer_id = mycursor.fetchone()
 
-      image_path = save_file(image, sn, "image") 
-      inspection_path = save_file(inspection_list, sn, "inspection")      
-      ppm_path = save_file(ppm_list, sn, 'ppm')      
-      calibration_path = save_file(calibration_list, sn, 'calibration')      
-      description_path = save_file(description_file, sn, 'description')
+        # 4) Get id of location_id chosen
+        mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
+        location_id = mycursor.fetchone()
 
-      mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `ppm_list`, `ppm_external`, `calibration_list`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-                                              (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, ppm_path, ppm_external, calibration_path, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
+        # 5) Save files
+        image_path = save_file(image, sn, "image") 
+        inspection_path = save_file(inspection_list, sn, "inspection")      
+        ppm_path = save_file(ppm_list, sn, 'ppm')      
+        calibration_path = save_file(calibration_list, sn, 'calibration')      
+        description_path = save_file(description_file, sn, 'description')
 
-      
-      # Inspection
-      inspectionsList = get_dates_in_interval(inspection_start_date, inspection_end_date, inspection_freq)
-      for date in inspectionsList:
-        mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
-                                                  ("Inspection", sn, date.date(), None))
-      # PPM
-      PPMsList = get_dates_in_interval(ppm_start_date, ppm_end_date, ppm_freq)
-      for date in PPMsList:
-        mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
-                                                  ("PPM", sn, date.date(), None))
-      # Calibration
-      calibrationsList = get_dates_in_interval(calibration_start_date, calibration_end_date, calibration_freq)
-      for date in calibrationsList:
-        mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
-                                                  ("Calibration", sn, date.date(), None))
+        # 6) Add the device
+        mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `ppm_list`, `ppm_external`, `calibration_list`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+                                                (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, ppm_path, ppm_external, calibration_path, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
 
-      status = 1
-      mydb.commit() # Work Is DONE
+        
+        # 7) Add services of the device
+        # Inspection
+        insert_into_service(inspection_start_date, inspection_end_date, inspection_freq, sn, "Inspection")
+        # PPM
+        insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
+        # Calibration
+        insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
 
-      # except:
-      #   status = 0
+        status = 1
+        mydb.commit() # Work Is DONE
+
+      except:
+        # ERROR
+        status = 0
       
     return render_template("add.html",
                           title="Add New Device",
@@ -333,12 +342,12 @@ def add_device():
 # Delete device
 @app.route("/delete-device")
 def delete_device():
-  # GET Serial Number from arguments
+  # GET serial number from arguments
   sn = get_argument("sn")
   
-  # Execute the DELETE Process
+  # Execute the delete Process
   mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
-  mydb.commit() # Work Is DONE
+  mydb.commit() # work Is done
 
   # Redirect to device page again
   return redirect(url_for('search'))
