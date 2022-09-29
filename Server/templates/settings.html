@@ -88,16 +88,16 @@
                         <div id="categ-Manufacturer">
                             {% for manufacturer in manufacturers %}
                             <div id="row-Manufacturer-{{manufacturer[0]}}" class="row mb-1">
-                                <div class="col-md-10">
+                                <div class="col-sm-10">
                                     <input id="Manufacturer-{{manufacturer[0]}}" readonly type="text" value="{{ manufacturer[1] }}" class="form-control form-control-sm" />
                                 </div>
                                 <input id="Manufacturer-id" type="hidden" value="{{ manufacturer[0] }}" />
-                                <div class="col-md-1">
-                                    <a id="Manufacturer-editIcon-{{manufacturer[0]}}" href="#/" onclick="editItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary me-2"></i></a>
-                                    <a id="Manufacturer-thump-{{manufacturer[0]}}" hidden href="#/" onclick="doneEdit('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary me-2"></i></a>
+                                <div class="col-sm-1">
+                                    <a id="Manufacturer-editIcon-{{manufacturer[0]}}" href="#/" onclick="editItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-border-color text-primary"></i></a>
+                                    <a id="Manufacturer-thump-{{manufacturer[0]}}" hidden href="#/" onclick="doneEdit('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-thumb-up text-primary"></i></a>
                                 </div>
-                                <div class="col-md-1">
-                                    <a href="#/" onclick="deleteItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary me-2"></i></a>
+                                <div class="col-sm-1">
+                                    <a href="#/" onclick="deleteItem('Manufacturer-{{manufacturer[0]}}')"><i class="dropdown-item-icon mdi mdi-delete text-primary"></i></a>
                                 </div>
                             </div>
                             {% endfor %}

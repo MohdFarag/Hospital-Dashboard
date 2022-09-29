@@ -10,7 +10,10 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/qrcode.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/html5-qrcode.js') }}"></script>
   <!-- pdfObject -->
-  <script type="text/javascript" src="{{ url_for('static', filename='js/PDFObject.js') }}"></script>
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/PDFObject.js') }}"></script> -->
+  <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/js-script.js') }}"></script>
+
 
 
   <!-- plugins:css -->
@@ -167,8 +170,8 @@
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"><a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2022. All rights reserved.</span>
           </div>
         </footer>
         <!-- partial -->
@@ -201,23 +204,23 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
-<script>
+  <script>
 
-  equipmentTypes = {% if equipments %} {{equipments | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  technicalStatus = {% if technical_status %} {{technical_status | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  contractType = {% if contracts %} {{contracts | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  inspection = {% if inspections %} {{inspections | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  ppm = {% if ppms %} {{ppms | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
-  calibration = {% if calibrations %} {{calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    equipmentTypes = {% if equipments %} {{equipments | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    technicalStatus = {% if technical_status %} {{technical_status | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    contractType = {% if contracts %} {{contracts | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    inspection = {% if inspections %} {{inspections | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    ppm = {% if ppms %} {{ppms | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
+    calibration = {% if calibrations %} {{calibrations | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}
 
-  buildChart(equipmentTypes, "equipmentTypes","pie");
-  buildChart(technicalStatus, "technicalStatus","doughnut");
-  buildChart(contractType, "contractType","pie");
-  buildChart(inspection, "inspection","doughnut");
-  buildChart(ppm, "ppm","doughnut");
-  buildChart(calibration, "calibration","doughnut");  
+    buildChart(equipmentTypes, "equipmentTypes","pie");
+    buildChart(technicalStatus, "technicalStatus","doughnut");
+    buildChart(contractType, "contractType","pie");
+    buildChart(inspection, "inspection","doughnut");
+    buildChart(ppm, "ppm","doughnut");
+    buildChart(calibration, "calibration","doughnut");  
 
-</script>
+  </script>
   
   <!-- End custom js for this page-->
 </body>

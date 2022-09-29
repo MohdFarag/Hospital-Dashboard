@@ -23,6 +23,31 @@ function prevImg(inputID,imgId){
     }   
 };
 
+function fetchRequest(formData) {
+    infoText = document.getElementById("qrstatus")
+
+    infoText.innerText = "Scanning QR Code...";
+    fetch("http://api.qrserver.com/v1/read-qr-code/", {
+        method: 'POST', body: formData
+    }).then(res => res.json()).then(result => {
+        result = result[0].symbol[0].data;
+        infoText.innerText = result ? "Upload QR Code to Scan" : "Couldn't scan QR Code";
+        if(!result) return;
+        document.getElementById("code").value = result;
+        updateQRCode(result);
+    }).catch(() => {
+        infoText.innerText = "Couldn't scan QR Code";
+    });
+}
+
+document.getElementById("qrcode-file").addEventListener("change", async e => {
+    let file = e.target.files[0];
+    if(!file) return;
+    let formData = new FormData();
+    formData.append('file', file);
+    fetchRequest(formData);
+});
+
 function changeQrInputToFile(selector){
     input = document.getElementById("code");
     qrcode = document.getElementById("qrcode");
@@ -35,25 +60,19 @@ function changeQrInputToFile(selector){
 
     if (selector=="file") {
         file.hidden = false;
-        file.name = "qrcode";
-        input.hidden = true;
-        document.getElementById("qrcodeDiv").hidden = false;
-
+        input.disabled = true;
         downloadQrcode.hidden = true;
         text.addEventListener("click", function(){ changeQrInputToFile("qrCode"); });
         text.innerHTML = "<b>OR</b> Generate QRCode ?" ;
-        qrcode.innerHTML = "";
-        QrcodeTextarea.name = "";
+        qrcode.value = "";
     }else{
         file.hidden = true;
-        file.name = "";
         input.hidden = false;
-        document.getElementById("qrcodeDiv").hidden = true;
-
+        input.disabled = false;
+        updateQRCode('');
         downloadQrcode.hidden = false;
         text.addEventListener("click", function(){ changeQrInputToFile("file"); });
         text.innerHTML = "<b>OR</b> Upload File ?" ;
-        QrcodeTextarea.name = "qrcode"
     }
 
 };

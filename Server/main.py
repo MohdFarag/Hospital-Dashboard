@@ -142,7 +142,7 @@ app = Flask(__name__)
 app.secret_key = 'hlzgzxpzlllkgzrn' # Your Secret_Key
 UPLOAD_FOLDER = "static/UPLOAD/"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-ALLOWED_EXTENSIONS_DOC = set(['pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS_DOC = set(['pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg', 'webp'])
 
 #--------------------------------------------------------------------------#
 
@@ -199,7 +199,7 @@ def dashboard():
 @app.route("/add-device", methods=['GET', 'POST'])
 def add_device(): 
   if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
+    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
 
     models = db_tables['model']
     locations = db_tables['location']
@@ -269,7 +269,7 @@ def add_device():
       description_file = request.files['description-file']
 
       code = request.form['code']
-      qrcode = request.form['qrcode'] ## TODO::QRCode
+      qrcode = request.form['qrcode']
 
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
@@ -838,14 +838,21 @@ def delete_service():
   id = get_argument("id")
   page = get_argument("page") 
   type = get_argument("type")
+  come = get_argument("come")
+  sn = get_argument("sn")
+  
   
   # Execute the DELETE Process
   mycursor.execute(f"""DELETE FROM service WHERE service_id='{id}';""")
   mydb.commit() # Work Is DONE
 
-  # Redirect to device page again
-  return redirect(f"/services?page={page}&type={type}")
-
+  if come == 'device':
+    # Redirect to device page again
+    return redirect(f"/device?page={page}&sn={sn}#services")
+  elif come == 'services':
+    # Redirect to services page again
+    return redirect(f"/services?page={page}&type={type}")
+    
 
 # Complete Service
 @app.route("/complete-service")
@@ -854,6 +861,9 @@ def complete_service():
     # GET sn&type from arguments
     id = get_argument("id")
     type = get_argument("type")
+    come = get_argument("come")
+    page = get_argument("page")
+    sn = get_argument("sn")
 
     today = pd.to_datetime("today")
 
@@ -862,6 +872,13 @@ def complete_service():
                         SET `done_date` = '{today.date()}'
                         WHERE service_id='{id}';""")
     mydb.commit() # Work Is DONE
+
+    if come == 'device':
+      # Redirect to page page again
+      return redirect(f"/device?page={page}&sn={sn}#services")
+    elif come == 'services':
+    # Redirect to services page again
+      return redirect(f"/services?page={page}&type={type}")
 
     # Redirect to device page again
     return redirect(f"/services?type={type}")
@@ -921,15 +938,13 @@ def service_order():
 @app.route("/settings", methods=['GET', 'POST'])
 def settings():
   if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer", "settings")
+    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
   
     # Lists
     models = db_tables['model']
     locations = db_tables['location']
     equipments = db_tables['equipment']
     manufacturers = db_tables['manufacturer']
-    settings = db_tables['settings']
-    service_period = settings[0][1]
     
     status = -1
     if request.method == 'POST' :
@@ -961,8 +976,7 @@ def settings():
                           equipments=equipments,
                           models=models,
                           locations=locations,
-                          manufacturers=manufacturers,
-                          service_period=service_period)
+                          manufacturers=manufacturers)
   else:
     return redirect(url_for('login'))
 
@@ -1019,6 +1033,12 @@ def logout():
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.html'), 404
+
+# Page 500
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('500.html'), 500
 
 # Run app
 if __name__ == "__main__":  

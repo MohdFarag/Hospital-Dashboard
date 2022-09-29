@@ -22,7 +22,7 @@
     };
   };
 
-  var states = ['need calibration', 'need accessory'];
+  var states = ['Need calibration', 'Need accessory'];
 
   $('#PF-problem').typeahead({
     hint: true,

@@ -104,7 +104,7 @@ def retrive_tables(mycursor, *args) :
     ## TODO::AUTOMATIC select to tables
     AllTables = dict()
     if "*" in args:
-        args = ["admin", "device", "equipment", "location", "manufacturer", "model", "service", "settings"]
+        args = ["admin", "device", "equipment", "location", "manufacturer", "model", "service"]
     
     for arg in args:
         AllTables[arg] = getTableData(mycursor, arg)

@@ -49,16 +49,22 @@
                     </div>
                 </div>
                 <div class="row mt-5">
-                    <div class="col-md-12">
-                        <div id="checklist"></div>
-                        <script>
-                            var options = {
-                                height: "450px",
-                                pdfOpenParams: { page: 1 },
-                                omitInlineStyles: true
-                            };
-                            PDFObject.embed("{{service[12]}}", "#checklist", options);
-                        </script>
+                    <div class="col-md-12 text-center">
+                        {% if service[1] == 'PPM' %}
+                            {% set url = service[13] %}
+                        {% elif service[1] == 'Inspection' %}
+                            {% set url = service[12] %}
+                        {% elif service[1] == 'Calibration' %}
+                            {% set url = service[14] %}
+                        {% endif %}
+                        
+                        {% set url_list = service[12].split('.') %}
+                        {% if url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="canvas"></canvas>                    
+                        <script>renderPdf('{{url}}',"canvas")</script>
+                        {% else %}
+                        <img src="{{url}}" class="canvasList" />
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row mt-5">

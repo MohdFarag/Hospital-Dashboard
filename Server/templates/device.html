@@ -106,9 +106,11 @@
                             <th>type</th>
                             <th>Scheduled Date</th>
                             <th>Done Date</th>
-                            <th>Status</th>
                             <th>Service Order</th>
                             <th>Done</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,17 +120,42 @@
                                     <td>{{service[1]}}</td>
                                     <td>{{service[3]}}</td>
                                     <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
-                                    <td>
-                                    {% if service[4] == None %}
-                                        <label class="badge badge-warning">NOT YET</label>
-                                    {% elif service[4].strftime('%Y-%m') <= service[3].strftime('%Y-%m') %}
-                                        <label class="badge badge-success">On Time</label>
-                                    {% elif service[4].strftime('%Y-%m') > service[3].strftime('%Y-%m') %}
-                                        <label class="badge badge-danger">LATE</label>
-                                    {% endif %}
-                                    </td>
                                     <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
-                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}&page={{currpage}}&come=device&sn={{device[0]}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                                    <td style="text-align: center;">
+                                        <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <!-- Text trigger modal -->
+                                        <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="staticBackdrop-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                              <div class="modal-content">
+                                                  <div class="modal-header">
+                                                  <h5 class="modal-title" id="staticBackdropLabel">Delete Service</h5>
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                      Are you sure to delete this service with id {{service[0]}} ?
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                  <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{currpage}}&come=device&sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
+                                                  </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if service[4] == None %}
+                                            <label class="badge badge-warning">NOT YET</label>
+                                        {% elif service[4].strftime('%Y-%m') <= service[3].strftime('%Y-%m') %}
+                                            <label class="badge badge-success">On Time</label>
+                                        {% elif service[4].strftime('%Y-%m') > service[3].strftime('%Y-%m') %}
+                                            <label class="badge badge-danger">LATE</label>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -137,39 +164,53 @@
                 </div>
                 <nav class="d-flex justify-content-center">
                     <ul class="pagination">
-                    <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
-                        <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage-1}}&type={{type}}" tabindex="-1">Previous</a>
-                    </li>
-                    {% for i in range(1,numofPages+1) %}
-                        <li class="page-item {% if i == currpage %} active {% endif %}">
-                            <a class="page-link" href="/device?sn={{device[0]}}&page={{i}}&type={{type}}">{{i}}</a>
+                        <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
+                            <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage-1}}&type={{type}}#services" tabindex="-1">Previous</a>
                         </li>
-                    {% endfor %}
-                    
-                    <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
-                        <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage+1}}&type={{type}}">Next</a>
-                    </li>
+                        {% for i in range(1,numofPages+1) %}
+                            <li class="page-item {% if i == currpage %} active {% endif %}">
+                                <a class="page-link" href="/device?sn={{device[0]}}&page={{i}}&type={{type}}#services">{{i}}</a>
+                            </li>
+                        {% endfor %}
+                        
+                        <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
+                            <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage+1}}&type={{type}}#services">Next</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
             
             <div class="card tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection">
-                <div class="card-body">
-                    <div id="inspection"></div>
-                    <script>PDFObject.embed("{{device[15]}}", "#inspection",{height: "700px"});</script>
+                <div class="card-body text-center">
+                    {% set url_list = device[15].split('.') %}
+                    {% if url_list[1] == 'pdf' %}
+                    <canvas class="canvasList" id="inspection-canvas"></canvas>                    
+                    <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
+                    {% else %}
+                    <img src="{{device[15]}}" class="canvasList" />
+                    {% endif %}
                 </div>
             </div>
             <div class="card tab-pane fade" id="ppm" role="tabpanel" aria-labelledby="ppm">
-                <div class="card-body">
-                    <div id="ppm"></div>
-                    <script>PDFObject.embed("{{device[16]}}", "#ppm",{height: "700px"});</script>
+                <div class="card-body text-center">
+                    {% set url_list = device[16].split('.') %}
+                    {% if url_list[1] == 'pdf' %}
+                    <canvas class="canvasList" id="ppm-canvas"></canvas>                    
+                    <script>renderPdf('{{device[16]}}',"ppm-canvas")</script>
+                    {% else %}
+                    <img src="{{device[16]}}" class="canvasList" />
+                    {% endif %}
                 </div>
             </div>
-
             <div class="card tab-pane fade" id="calibration" role="tabpanel" aria-labelledby="calibration">
-                <div class="card-body">
-                    <div id="calibration"></div>
-                    <script>PDFObject.embed("{{device[18]}}", "#calibration",{height: "700px"});</script>
+                <div class="card-body text-center">
+                    {% set url_list = device[18].split('.') %}
+                    {% if url_list[1] == 'pdf' %}
+                    <canvas class="canvasList" id="calibration-canvas"></canvas>                    
+                    <script>renderPdf('{{device[18]}}',"calibration-canvas")</script>
+                    {% else %}
+                    <img src="{{device[18]}}" class="canvasList" />
+                    {% endif %}
                 </div>
             </div>
         </div>

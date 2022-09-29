@@ -684,12 +684,13 @@
                   <label class="col-sm-1 col-form-label">Code</label>
                   <div class="col-sm-9">
                     <input id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
-                    <input hidden id="qrcode-file" name="qrcode" type="file" class="form-control form-control-sm" onchange="prevImg('qrcode-file', 'qrcodeImg')" />
+                    <input hidden id="qrcode-file" name="qrcode" type="file" class="form-control form-control-sm mt-2" />
                   </div>
                   <div class="col-md-2">
-                    <a style="line-height: 2;" id="textChangeQRcode" href="#/" onclick="changeQrInputToFile('file')" class="card-description text-decoration-none">
+                    <a style="line-height: 2;" id="textChangeQRcode" href="#/" onclick="changeQrInputToFile('file')" class="link text-decoration-none">
                       <b>OR</b> Upload File ?
                     </a>
+                    <p class="text-muted h5 mt-3" id="qrstatus">Upload QR Code to Read</p>
                   </div>
                 </div>
               </div>
@@ -698,9 +699,6 @@
               <div class="col-md-12">
                 <!-- This is where our QRCode will appear in. -->
                 <div class="mb-2 text-center" id="qrcode"></div>
-                <div hidden class="mb-2 text-center" id="qrcodeDiv">
-                  <img class="mb-2" id="qrcodeImg" />
-                </div>
               </div>
             </div>
             <div class="row mb-4 text-center">
