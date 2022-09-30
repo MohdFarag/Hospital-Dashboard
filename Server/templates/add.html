@@ -447,14 +447,15 @@
             </div>
           </fieldset>
           
-          <p class="card-description">Inspection List</p>
+          <p class="card-description">Inspection List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
                   <div class="col-sm-9">
-                    <input id="inspection-list" name="inspection-list" type="file" class="form-control form-control-sm" />
+                    <input id="Inspection-list" name="Inspection-list" type="file" class="form-control form-control-sm" />
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#InspectionModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
                   </div>
                 </div>
               </div>
@@ -462,7 +463,7 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-3">
-                    <select required id="inspection-freq" name="inspection-freq" class="form-control form-control-sm">
+                    <select required id="Inspection-freq" name="Inspection-freq" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Period ...</option>
                       <option value="Monthly">Monthly</option>
                       <option value="3 Months">3 Months</option>
@@ -471,18 +472,53 @@
                     </select>
                   </div>
                   <div class="col-sm-3">
-                    <input id="inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
+                    <input id="Inspection-start-date" name="Inspection-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
-                    <input id="inspection-end-date" name="inspection-end-date" type="date" class="form-control form-control-sm" />
+                    <input id="Inspection-end-date" name="Inspection-end-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inspection Modal -->
+            <div class="modal fade" id="InspectionModal" tabindex="-1" aria-labelledby="InspectionModalLabel" aria-hidden="false">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="InspectionModalLabel">Inspection Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <spam class="card-description text-muted h6">click on the title of checklist to see the items.</spam>
+                    <div class="col-md-12">
+                      <h5 data-bs-toggle="collapse" href="#categ-Inspection" role="button" aria-expanded="false" aria-controls="categ-Inspection">
+                        <i class="dropdown-item-icon mdi mdi-arrow-right-bold-circle text-primary"></i> Inspection Checklist
+                      </h5>
+
+                      <div class="collapse" id="categ-Inspection"></div>
+                      <div class="row mb-1">
+                          <div class="col-md-10">
+                              <input id="add-Inspection" type="text" class="form-control form-control-sm" placeholder="Add" />
+                          </div>
+                          <div class="col-md-2">
+                              <button onclick="addItem('Inspection')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                          </div>
+                      </div>
+                      <textarea hidden name="Inspection-list" id="list-Inspection"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button onclick="saveCheckList('Inspection')" type="button" class="btn btn-primary">Save Changes</button>
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
           
-          <p class="card-description">PPM List</p>
+          <p class="card-description">PPM List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
               <div class="col-md-6">
@@ -490,6 +526,7 @@
                   <label class="col-sm-3 col-form-label">PPM List file</label>
                   <div class="col-sm-7">
                     <input id="ppm-list" name="ppm-list" type="file" class="form-control form-control-sm" />
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#PPMModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
                   </div>
                   <div class="col-sm-2">
                     <input id="ppm-external" name="ppm-external" class="form-check-input" type="checkbox" />
@@ -519,9 +556,44 @@
                 </div>
               </div>
             </div>
+            
+            <!-- PPM Modal -->
+            <div class="modal fade" id="PPMModal" tabindex="-1" aria-labelledby="PPMModalLabel" aria-hidden="false">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="PPMModalLabel">PPM Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <spam class="card-description text-muted h6">click on the title of checklist to see the items.</spam>
+                    <div class="col-md-12">
+                      <h5 data-bs-toggle="collapse" href="#categ-PPM" role="button" aria-expanded="false" aria-controls="categ-PPM">
+                        <i class="dropdown-item-icon mdi mdi-arrow-right-bold-circle text-primary"></i> PPM Checklist
+                      </h5>
+
+                      <div class="collapse" id="categ-PPM"></div>
+                      <div class="row mb-1">
+                          <div class="col-md-10">
+                              <input id="add-PPM" type="text" class="form-control form-control-sm" placeholder="Add" />
+                          </div>
+                          <div class="col-md-2">
+                              <button onclick="addItem('PPM')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                          </div>
+                      </div>
+                      <textarea hidden name="PPM-list" id="list-PPM"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button onclick="saveCheckList('PPM')" type="button" class="btn btn-primary">Save Changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </fieldset>
 
-          <p class="card-description">Calibration List</p>
+          <p class="card-description">Calibration List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
               <div class="col-md-6">
@@ -529,6 +601,7 @@
                   <label class="col-sm-3 col-form-label">Calibration List file</label>
                   <div class="col-sm-7">
                     <input id="calibration-list" name="calibration-list" type="file" class="form-control form-control-sm" />
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#CalibrationModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
                   </div>
                   <div class="col-sm-2">
                     <input id name="calibration-external" class="form-check-input" type="checkbox" />
@@ -554,6 +627,41 @@
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
                     <input id="calibration-end-date" name="calibration-end-date" type="date" class="form-control form-control-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calibration Modal -->
+            <div class="modal fade" id="CalibrationModal" tabindex="-1" aria-labelledby="CalibrationModalLabel" aria-hidden="false">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="CalibrationModalLabel">Calibration Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <spam class="card-description text-muted h6">click on the title of checklist to see the items.</spam>
+                    <div class="col-md-12">
+                      <h5 data-bs-toggle="collapse" href="#categ-Calibration" role="button" aria-expanded="false" aria-controls="categ-Calibration">
+                        <i class="dropdown-item-icon mdi mdi-arrow-right-bold-circle text-primary"></i> Calibration Checklist
+                      </h5>
+
+                      <div class="collapse" id="categ-Calibration"></div>
+                      <div class="row mb-1">
+                          <div class="col-md-10">
+                              <input id="add-Calibration" type="text" class="form-control form-control-sm" placeholder="Add" />
+                          </div>
+                          <div class="col-md-2">
+                              <button onclick="addItem('Calibration')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
+                          </div>
+                      </div>
+                      <textarea hidden name="Calibration-list" id="list-Calibration"></textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button onclick="saveCheckList('Calibration')" type="button" class="btn btn-primary" >Save Changes</button>
                   </div>
                 </div>
               </div>

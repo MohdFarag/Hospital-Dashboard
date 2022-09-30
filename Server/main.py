@@ -112,7 +112,7 @@ def allowed_file(filename):
 def save_file(list, sn, fileName):
     if list and allowed_file(list.filename):
       filename = secure_filename(fileName + "." + list.filename.rsplit('.', 1)[1])
-      path = app.config['UPLOAD_FOLDER'] + sn + "/" 
+      path = app.config['UPLOAD_FOLDER'] + sn.translate("/", "") + "/" 
       os.makedirs(path, exist_ok=True)
       list.save(os.path.join(path, filename))
       return path + filename
@@ -862,7 +862,6 @@ def delete_service():
     # Redirect to services page again
     return redirect(f"/services?page={page}&type={type}")
     
-
 # Complete Service
 @app.route("/complete-service")
 def complete_service():
@@ -947,30 +946,41 @@ def service_order():
 @app.route("/settings", methods=['GET', 'POST'])
 def settings():
   if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
   
-    # Lists
-    models = db_tables['model']
-    locations = db_tables['location']
-    equipments = db_tables['equipment']
-    manufacturers = db_tables['manufacturer']
-    
     status = -1
     if request.method == 'POST' :
-      # Insert Equipments
-      statments = request.form['statments']
-      statmentsList = statments.split(";")
-    
-      try:
-        # Update Libraries
-        for statment in statmentsList:
-            mycursor.execute(statment)
-        mydb.commit()
-        status = 1
-        
-      except:
-        status = 0
-    
+      if request.form['settings'] == 'SAVE':      
+        # Insert Equipments
+        statments = request.form['statments']
+        statmentsList = statments.split(";")
+        try:
+          # Update Libraries
+          for statment in statmentsList:
+              mycursor.execute(statment)
+          mydb.commit()
+          status = 1
+          
+        except:
+          status = 0
+      elif request.form['settings'] == 'CHANGE':
+        username = request.form['username']
+        old_password = request.form['old-password']
+        password = request.form['password']
+        try:
+          # Check if account exists using MySQL
+          mycursor.execute(f"SELECT * FROM admin WHERE `passwd` = '{old_password}'")
+          # Fetch one record and return result
+          account = mycursor.fetchone()
+          if account :
+            # Update information
+            mycursor.execute(f"""UPDATE `admin` SET username='{username}', passwd='{password}' WHERE admin_id=0""")
+            mydb.commit()
+            return redirect(url_for('logout'))
+          else:
+            status = 0
+        except:
+          status = 0
+
     db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
   
     # Lists
@@ -1003,7 +1013,7 @@ def login():
       password  = request.form['password']
 
       # Check if account exists using MySQL
-      mycursor.execute('SELECT * FROM admin WHERE `username` = %s AND `passwd` = %s', (username, password,))
+      mycursor.execute(f"SELECT * FROM admin WHERE `username` = '{username}' AND `passwd` = '{password}'")
 
       # Fetch one record and return result
       account = mycursor.fetchone()

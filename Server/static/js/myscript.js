@@ -279,12 +279,13 @@ function addItem(list){
         modelValue = document.getElementById(list + "-" + inputHidden.value + "-1").value;
         equipmentValue = document.getElementById(list + "-" + inputHidden.value + "-2").value;
         statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + ",'" + addedValue + "'," + getEquipmentIdByName(addedEquipment) + ");";
+    }else if (list.includes("Inspection") || list.includes("Calibration") || list.includes("PPM")){  
+        textarea = document.getElementById("list-"+list);
     }else{
         value = document.getElementById(list + "-" + inputHidden.value).value;
         statment.value = statment.value + "INSERT INTO " + list + " VALUES (" + inputHidden.value + ",'" + addedValue + "');";
     }
     
-    updateNumberOfSections()
 };
 
 prevValue = ""
@@ -341,6 +342,8 @@ function doneEdit(list){
         modelValue = document.getElementById(list + "-" + id + "-1").value;
         equipmentValue = document.getElementById(list + "-" + id + "-2").value;
         statment.value = statment.value + "UPDATE " + list + " SET Model_name='" + modelValue + "', Equipment_id=" +  getEquipmentIdByName(equipmentValue) + " WHERE " + list + "_id="+ id + ";";
+    }else if (list.includes("Inspection") || list.includes("Calibration") || list.includes("PPM")){  
+        textarea = document.getElementById("list-"+list);
     }else{
         value = document.getElementById(list + "-" + id).value;
         statment.value = statment.value + "UPDATE " + list + " SET " + list + "_name='" + value + "' WHERE " + list + "_id="+ id + ";";
@@ -373,7 +376,11 @@ function deleteItem(list){
     }else{
         value = document.getElementById(list + "-" + id).value;
     }
-    statment.value = statment.value + "DELETE FROM " + list + " WHERE " + list + "_name='" + value + "';";
+    if (list.includes("Inspection") || list.includes("Calibration") || list.includes("PPM")){  
+        textarea = document.getElementById("list-"+list);
+    }else{
+        statment.value = statment.value + "DELETE FROM " + list + " WHERE " + list + "_name='" + value + "';";
+    }
 
     // REMOVE HTML ELEMENT
     row = document.getElementById("row" + "-" + list + "-" + id);
@@ -391,33 +398,6 @@ function deleteItem(list){
         }
     }
 
-    updateNumberOfSections()
-};
-
-/////////////////////////////////////////////////// 
-/// TODO :: UPDATE LIST OF EQUIPMENTS OF MODELS ///
-///////////////////////////////////////////////////
-
-function updateNumberOfSections(){
-    // Equipment 
-    equipmentDiv = document.getElementById("categ-Equipment");
-    equipments = equipmentDiv.querySelectorAll("#Equipment-id");
-    document.getElementById("num-equipment").value = equipments.length;
-
-    // Model
-    modelDiv = document.getElementById("categ-Model");
-    models = modelDiv.querySelectorAll("#Model-id");
-    document.getElementById("num-model").value = models.length;
-
-    // Manufacturer
-    ManufacturerDiv = document.getElementById("categ-Manufacturer");
-    manufacturers = ManufacturerDiv.querySelectorAll("#Manufacturer-id");
-    document.getElementById("num-manufacturer").value = manufacturers.length;
-
-    // Location
-    locationDiv = document.getElementById("categ-Location");
-    locations = locationDiv.querySelectorAll("#Location-id");
-    document.getElementById("num-location").value = locations.length;    
 };
 
 function getEquipmentIdByName(name){
@@ -430,4 +410,29 @@ function getEquipmentIdByName(name){
     }
     return id;
 };
+
+function checkRepassword(){
+    if ($('#password').val() == $('#re-password').val()) {
+        $('#repasswordHelpInline').html('Matching').css('color', 'green');
+        $('#adminchange').attr('disabled',false);
+    } else {
+        $('#repasswordHelpInline').html('Not Matching').css('color', 'red');
+        $('#adminchange').attr('disabled',true);
+    }
+};
+
+function saveCheckList(list){
+    textarea = document.getElementById("list-"+list);
+    textarea.value = ""
+    categ_list = document.getElementById("categ-"+list);
+    inputs = categ_list.querySelectorAll('input');
+
+    for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].id != list + '-id'){
+            val = inputs[i].value;
+            console.log(val);
+            textarea.value = textarea.value + val + ', ';
+        }
+    }
+}
 
