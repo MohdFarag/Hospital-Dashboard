@@ -1,6 +1,8 @@
 # Imports
+from shutil import rmtree
 from xml.dom.pulldom import ErrorHandler
 from flask import Flask, render_template, request, redirect, url_for, session, abort
+from sqlalchemy import true
 import database
 import pandas as pd
 import os
@@ -218,11 +220,13 @@ def add_device():
     status = -1
     if request.method == 'POST' :
       # Get data from inputs
+      sn = request.form['sn']
+      sn = sn.replace(" ","")
       equipment = request.form['equipment']
       category = request.form['category']
       model = request.form['model']
       manufacturer = request.form['manufacturer']
-      sn = request.form['sn']
+
       prod_date = request.form["prod-date"]
       if prod_date == '':
         prod_date = None
@@ -359,7 +363,9 @@ def delete_device():
   # Execute the delete Process
   mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
   mydb.commit() # work Is done
-
+  # Remove its data
+  rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=true)
+  
   # Redirect to device page again
   return redirect(url_for('search'))
 
