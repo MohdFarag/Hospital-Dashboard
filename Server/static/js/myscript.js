@@ -422,8 +422,12 @@ function checkRepassword(){
 };
 
 function saveCheckList(list){
-    textarea = document.getElementById("list-"+list);
-    textarea.value = ""
+    // Textarea Element
+    textarea = document.getElementById(list+"-checklist");
+
+    // Input file
+    inputFile = document.getElementById(list+"-list");
+
     categ_list = document.getElementById("categ-"+list);
     inputs = categ_list.querySelectorAll('input');
 
@@ -435,4 +439,3 @@ function saveCheckList(list){
         }
     }
 }
-

@@ -241,11 +241,14 @@ def add_device():
         contract_end_date = None
       
       inspection_list = request.files['inspection-list']
+      inspection_checklist = request.form['inspection-checklist']
+
       inspection_freq = request.form['inspection-freq']
       inspection_start_date = request.form['inspection-start-date']
       inspection_end_date = request.form['inspection-end-date']
 
       ppm_list = request.files['ppm-list']
+      ppm_checklist = request.form['ppm-checklist']
       ppm_external = request.form.getlist('ppm-external')
       if ppm_external: ppm_external = True 
       else : ppm_external = False
@@ -255,6 +258,7 @@ def add_device():
 
 
       calibration_list = request.files['calibration-list']
+      calibration_checklist = request.form['calibration-checklist']
       calibration_external = request.form.getlist('calibration-external')
       if calibration_external: calibration_external = True 
       else : calibration_external = False
@@ -310,8 +314,8 @@ def add_device():
         description_path = save_file(description_file, sn, 'description')
 
         # 6) Add the device
-        mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `ppm_list`, `ppm_external`, `calibration_list`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-                                                (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, ppm_path, ppm_external, calibration_path, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
+        mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
+                                                (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, inspection_checklist, ppm_path, ppm_checklist, ppm_external, calibration_path, calibration_checklist, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
 
         
         # 7) Add services of the device
@@ -758,10 +762,13 @@ def device():
       contract_end_date, 
       terms,
       terms_file, 
-      inspection_list, 
+      inspection_list,
+      inspection_checklist, 
       ppm_list, 
+      ppm_checklist,
       ppm_external,
-      calibration_list, 
+      calibration_list,
+      calibration_checklist, 
       calibration_external,
       technical_status, 
       problem, 
@@ -913,8 +920,11 @@ def service_order():
                                 contract_start_date,
                                 contract_end_date,
                                 inspection_list,
-                                ppm_list,
+                                inspection_checklist, 
+                                ppm_list, 
+                                ppm_checklist,
                                 calibration_list,
+                                calibration_checklist, 
                                 technical_status,
                                 TRC,
                                 Code,

@@ -455,7 +455,7 @@
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
                   <div class="col-sm-9">
                     <input id="Inspection-list" name="Inspection-list" type="file" class="form-control form-control-sm" />
-                    <a href="#/" data-bs-toggle="modal" data-bs-target="#InspectionModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#InspectionModal" class="link text-decoration-none"><b>And</b> make the checklist</a>
                   </div>
                 </div>
               </div>
@@ -506,7 +506,7 @@
                               <button onclick="addItem('Inspection')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                           </div>
                       </div>
-                      <textarea hidden name="Inspection-list" id="list-Inspection"></textarea>
+                      <textarea hidden name="Inspection-checklist" id="Inspection-checklist"></textarea>
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -526,7 +526,7 @@
                   <label class="col-sm-3 col-form-label">PPM List file</label>
                   <div class="col-sm-7">
                     <input id="ppm-list" name="ppm-list" type="file" class="form-control form-control-sm" />
-                    <a href="#/" data-bs-toggle="modal" data-bs-target="#PPMModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#PPMModal" class="link text-decoration-none"><b>And</b> make the checklist</a>
                   </div>
                   <div class="col-sm-2">
                     <input id="ppm-external" name="ppm-external" class="form-check-input" type="checkbox" />
@@ -581,7 +581,7 @@
                               <button onclick="addItem('PPM')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                           </div>
                       </div>
-                      <textarea hidden name="PPM-list" id="list-PPM"></textarea>
+                      <textarea hidden id="PPM-checklist" name="ppm-checklist"></textarea>
                     </div>
                   </div>
                   <div class="modal-footer">
@@ -601,7 +601,7 @@
                   <label class="col-sm-3 col-form-label">Calibration List file</label>
                   <div class="col-sm-7">
                     <input id="calibration-list" name="calibration-list" type="file" class="form-control form-control-sm" />
-                    <a href="#/" data-bs-toggle="modal" data-bs-target="#CalibrationModal" class="link text-decoration-none"><b>OR</b> make your checklist</a>
+                    <a href="#/" data-bs-toggle="modal" data-bs-target="#CalibrationModal" class="link text-decoration-none"><b>And</b> make the checklist</a>
                   </div>
                   <div class="col-sm-2">
                     <input id name="calibration-external" class="form-check-input" type="checkbox" />
@@ -656,7 +656,7 @@
                               <button onclick="addItem('Calibration')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                           </div>
                       </div>
-                      <textarea hidden name="Calibration-list" id="list-Calibration"></textarea>
+                      <textarea hidden id="Calibration-checklist" name="calibration-checklist"></textarea>
                     </div>
                   </div>
                   <div class="modal-footer">

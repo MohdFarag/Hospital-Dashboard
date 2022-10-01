@@ -22,7 +22,7 @@
                         <img style="width: 150px;" src="{{ url_for('static', filename='images/logo1.jpg') }}" />
                     </div>
                     <div id="qrcode" class="col-md-2">
-                        <center><img style="width: 150px;" src="{{service[18]}}" /></center>
+                        <center><img style="width: 150px;" src="{{service[21]}}" /></center>
                     </div>
                     <div class="col-md-5 text-end mt-4">
                         <img style="height: 100px;" src="{{ url_for('static', filename='images/logo1.png') }}" />
@@ -46,7 +46,7 @@
                                         <th class="text-muted">Model</th>
                                         <th>{{service[4]}}</th>
                                         <th class="text-muted">Code</th>
-                                        <th>{{service[17]}}</th>
+                                        <th>{{service[20]}}</th>
                                     </tr>
                                     <tr>
                                         <th class="text-muted">S/N</th>
@@ -62,19 +62,37 @@
                 <div class="row mt-5">
                     <div class="col-md-12 text-center">
                         {% if service[1] == 'PPM' %}
-                            {% set url = service[13] %}
+                            {% set url = service[14] %}
+                            {% set checklists = service[15] %}
                         {% elif service[1] == 'Inspection' %}
                             {% set url = service[12] %}
+                            {% set checklists = service[13] %}
                         {% elif service[1] == 'Calibration' %}
-                            {% set url = service[14] %}
+                            {% set url = service[16] %}
+                            {% set checklists = service[17] %}
                         {% endif %}
                         
-                        {% set url_list = service[12].split('.') %}
-                        {% if url_list[1] == 'pdf' %}
-                        <canvas class="canvasList" id="canvas"></canvas>                    
-                        <script>renderPdf('{{url}}',"canvas")</script>
+                        {% if checklists == '' %} 
+                            {% set url_list = url.split('.') %}
+                            {% if url_list[1] == 'pdf' %}
+                            <canvas class="canvasList" id="canvas"></canvas>                    
+                            <script>renderPdf('{{url}}',"canvas")</script>
+                            {% else %}
+                            <img src="{{url}}" class="canvasList" />
+                            {% endif %}
                         {% else %}
-                        <img src="{{url}}" class="canvasList" />
+                            {% for list in checklists %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        {{list}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
                         {% endif %}
                     </div>
                 </div>

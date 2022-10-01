@@ -20,6 +20,9 @@
                 <li class="nav-item">
                     <a class="nav-link" id="calibration-tab" data-bs-toggle="tab" href="#calibration" role="tab" aria-selected="false">Calibration</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="terms-tab" data-bs-toggle="tab" href="#terms" role="tab" aria-selected="false">Terms</a>
+                </li>
             </ul>
             <div>
                 <div class="btn-wrapper">
@@ -77,10 +80,6 @@
                             <tr>
                                 <td>Code</td>
                                 <td>{{device[23]}}</td>
-                            </tr>
-                            <tr>
-                                <td>Terms</td>
-                                <td>{% if device[13] == "" %} __ {% else %} {{device[13]}} {% endif %}</td>
                             </tr>
                         </table>
                     </div>
@@ -181,36 +180,169 @@
             </div>
             
             <div class="card tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection">
-                <div class="card-body text-center">
-                    {% set url_list = device[15].split('.') %}
-                    {% if url_list[1] == 'pdf' %}
-                    <canvas class="canvasList" id="inspection-canvas"></canvas>                    
-                    <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
-                    {% else %}
-                    <img src="{{device[15]}}" class="canvasList" />
-                    {% endif %}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-center">
+                            {% set url_list = device[15].split('.') %}
+                            {% if url_list[1] == 'pdf' %}
+                            <canvas class="canvasList" id="inspection-canvas"></canvas>                    
+                            <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
+                            {% else %}
+                            <img src="{{device[15]}}" class="canvasList" />
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {% if  device[16] != '' %}
+                                <h4>CheckList</h4>
+                                {% set checklists = device[16].split(',') %}
+                                {% for list in checklists %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input">
+                                            {{list}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="card tab-pane fade" id="ppm" role="tabpanel" aria-labelledby="ppm">
-                <div class="card-body text-center">
-                    {% set url_list = device[16].split('.') %}
-                    {% if url_list[1] == 'pdf' %}
-                    <canvas class="canvasList" id="ppm-canvas"></canvas>                    
-                    <script>renderPdf('{{device[16]}}',"ppm-canvas")</script>
-                    {% else %}
-                    <img src="{{device[16]}}" class="canvasList" />
-                    {% endif %}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-center">
+                            {% if device[19] == 1 %}
+                            <div class="form-check">
+                                <label class="form-check-label fw-bold">
+                                  <input type="checkbox" class="form-check-input" checked disabled>
+                                  External
+                                </label>
+                              </div>
+                            {% elif device[19] == 0 %}
+                            <div class="form-check">
+                                <label class="form-check-label fw-bold">
+                                  <input type="checkbox" class="form-check-input" disabled>
+                                  External
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-sm-12">
+                            {% set url_list = device[17].split('.') %}
+                            {% if url_list[1] == 'pdf' %}
+                            <canvas class="canvasList" id="ppm-canvas"></canvas>                    
+                            <script>renderPdf('{{device[17]}}',"ppm-canvas")</script>
+                            {% else %}
+                            <img src="{{device[17]}}" class="canvasList" />
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {% if  device[18] != '' %}
+                                <h4>CheckList</h4>
+                                {% set checklists = device[18].split(',') %}
+                                {% for list in checklists %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" checked disabled>
+                                            {{list}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="card tab-pane fade" id="calibration" role="tabpanel" aria-labelledby="calibration">
-                <div class="card-body text-center">
-                    {% set url_list = device[18].split('.') %}
-                    {% if url_list[1] == 'pdf' %}
-                    <canvas class="canvasList" id="calibration-canvas"></canvas>                    
-                    <script>renderPdf('{{device[18]}}',"calibration-canvas")</script>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-center">
+                            {% if device[22] == 1 %}
+                            <div class="form-check">
+                                <label class="form-check-label fw-bold">
+                                  <input type="checkbox" class="form-check-input" checked disabled>
+                                  External
+                                </label>
+                            </div>
+                            {% elif device[22] == 0 %}
+                            <div class="form-check">
+                                <label class="form-check-label fw-bold">
+                                  <input type="checkbox" class="form-check-input" disabled>
+                                  External
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-sm-12">
+                            {% set url_list = device[20].split('.') %}
+                            {% if url_list[1] == 'pdf' %}
+                            <canvas class="canvasList" id="calibration-canvas"></canvas>                    
+                            <script>renderPdf('{{device[20]}}',"calibration-canvas")</script>
+                            {% else %}
+                            <img src="{{device[20]}}" class="canvasList" />
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {% if  device[21] != '' %}
+                                <h4>CheckList</h4>
+                                {% set checklists = device[21].split(',') %}
+                                {% for list in checklists %}
+                                <p>{{device[21]}}</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" checked disabled>
+                                            {{list}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card tab-pane fade" id="terms" role="tabpanel" aria-labelledby="terms">
+                <div class="card-body">
+                    <h3>Description | Terms</h3>
+                    {% set url_list = device[14].split('.') %}
+                    <div class="text-center">
+                    {% if device[14] == "" %}
+
+                    {% elif url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="terms"></canvas>                    
+                        <script>renderPdf('{{device[14]}}',"terms")</script>
                     {% else %}
-                    <img src="{{device[18]}}" class="canvasList" />
+                        <img src="{{device[14]}}" class="canvasList" />
                     {% endif %}
+                    </div>
+                    <p class="mt-4">
+                        {% if device[13] == "" %} ___ {% else %} {{device[13]}} {% endif %}
+                    </p>
                 </div>
             </div>
         </div>
