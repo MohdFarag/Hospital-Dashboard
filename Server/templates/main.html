@@ -9,12 +9,6 @@
   <!-- QR Code -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/qrcode.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/html5-qrcode.js') }}"></script>
-  <!-- pdfObject -->
-  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/PDFObject.js') }}"></script> -->
-  <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/js-script.js') }}"></script>
-
-
 
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='vendors/feather/feather.css') }}">
@@ -33,7 +27,10 @@
   <!-- printStyle:css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/printStyle.css') }}" media="print">
   <!-- endPrintStyle -->
-  
+  <!-- pdfObject -->
+  <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/pdfjs-script.js') }}"></script> 
+  <!-- ICON -->
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" />
 </head>
 <body>
@@ -203,8 +200,9 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cookie.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/typeahead.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/chart.js') }}"></script> 
   <script type="text/javascript" src="{{ url_for('static', filename='js/myscript.js') }}"></script>
+  
   <script>
 
     equipmentTypes = {% if equipments %} {{equipments | tojson | safe}} {% else %} [["",1],["",1],["",1]] {% endif %}

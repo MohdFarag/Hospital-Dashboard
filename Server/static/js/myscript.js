@@ -438,4 +438,5 @@ function saveCheckList(list){
             textarea.value = textarea.value + val + ', ';
         }
     }
+    textarea.value = textarea.value.slice(0,-1);
 }

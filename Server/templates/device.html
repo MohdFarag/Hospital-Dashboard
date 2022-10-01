@@ -42,15 +42,15 @@
                             <h1 style="color: rgb(0, 88, 165);" class="display-4">{{device[4]}} {{device[3]}}</h1>
                             <h4><span style="color: rgb(0, 102, 255) ;">{{device[0]}}</span></h4>
                             <h4>{{device[2]}}</h4>
-                            <h4>{% if device[20] != "FF" %} {{device[20]}} - {{device[21]}} {% else %} {{device[20]}} {% endif %}</h4>
+                            <h4>{% if device[23] != "FF" %} {{device[23]}} - {{device[24]}} {% else %} {{device[23]}} {% endif %}</h4>
                             <h4>TRC: {{device[22]}}</h4>
                         </div>
                         <div class="col-md-1 text-md-end">
                             <h4 class="card-description">{{device[1]}}</h4> 
-                            <h5>{{device[5].strftime('%Y')}}</h5>   
+                            <h5>{% if device[5] != None %} {{device[5].strftime('%Y')}} {% else %} N/A {% endif %}</h5>   
                         </div>
                         <div id="qrcode" class="col-md-2">
-                            <center><img style="width: 310px;" src="{{device[24]}}" /></center>
+                            <center><img style="width: 310px;" src="{{device[27]}}" /></center>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -61,7 +61,7 @@
                             </tr>
                             <tr>
                                 <td>Supply Date</td>
-                                <td>{{device[6].strftime('%Y')}}</td>
+                                <td>{% if device[6] != None %} {{device[6].strftime('%Y')}} {% else %} N/A {% endif %}</td>
                             </tr>
                             <tr>
                                 <td>Location</td>
@@ -70,8 +70,16 @@
                             <tr>
                                 <td>Contract</td>
                                 <td>
-                                    {% if device[10] != "Local" %}
-                                        {{device[10]}} <br> From <b style="color: rgb(0, 61, 114);">{{device[11]}}</b> TO <b style="color: rgb(0, 61, 114);">{{device[12]}}</b>
+                                    {% if device[10] == "Local" %}
+                                        {{device[10]}} <br> 
+                                        From 
+                                        <b style="color: rgb(0, 61, 114);">
+                                            {% if device[11] != None %} {{device[11]}} {% else %} N/A {% endif %}
+                                        </b> 
+                                        TO 
+                                        <b style="color: rgb(0, 61, 114);">
+                                            {% if device[12] != None %} {{device[12]}} {% else %} N/A {% endif %}
+                                        </b>
                                     {% else %} 
                                         {{device[10]}} 
                                     {% endif %}
@@ -79,7 +87,7 @@
                             </tr>
                             <tr>
                                 <td>Code</td>
-                                <td>{{device[23]}}</td>
+                                <td>{{device[26]}}</td>
                             </tr>
                         </table>
                     </div>
@@ -187,7 +195,7 @@
                             {% if url_list[1] == 'pdf' %}
                             <canvas class="canvasList" id="inspection-canvas"></canvas>                    
                             <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
-                            {% else %}
+                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
                             <img src="{{device[15]}}" class="canvasList" />
                             {% endif %}
                         </div>
@@ -236,13 +244,13 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-center">
                             {% set url_list = device[17].split('.') %}
                             {% if url_list[1] == 'pdf' %}
                             <canvas class="canvasList" id="ppm-canvas"></canvas>                    
                             <script>renderPdf('{{device[17]}}',"ppm-canvas")</script>
-                            {% else %}
+                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
                             <img src="{{device[17]}}" class="canvasList" />
                             {% endif %}
                         </div>
@@ -257,7 +265,7 @@
                                     <div class="col-md-6">
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" checked disabled>
+                                            <input type="checkbox" class="form-check-input">
                                             {{list}}
                                             </label>
                                         </div>
@@ -291,29 +299,28 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-center">
                             {% set url_list = device[20].split('.') %}
                             {% if url_list[1] == 'pdf' %}
                             <canvas class="canvasList" id="calibration-canvas"></canvas>                    
                             <script>renderPdf('{{device[20]}}',"calibration-canvas")</script>
-                            {% else %}
+                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
                             <img src="{{device[20]}}" class="canvasList" />
                             {% endif %}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            {% if  device[21] != '' %}
+                            {% if device[21] != '' %}
                                 <h4>CheckList</h4>
                                 {% set checklists = device[21].split(',') %}
                                 {% for list in checklists %}
-                                <p>{{device[21]}}</p>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" checked disabled>
+                                            <input type="checkbox" class="form-check-input">
                                             {{list}}
                                             </label>
                                         </div>
@@ -331,14 +338,14 @@
                     <h3>Description | Terms</h3>
                     {% set url_list = device[14].split('.') %}
                     <div class="text-center">
-                    {% if device[14] == "" %}
+                        {% if device[14] == "" %}
 
-                    {% elif url_list[1] == 'pdf' %}
-                        <canvas class="canvasList" id="terms"></canvas>                    
-                        <script>renderPdf('{{device[14]}}',"terms")</script>
-                    {% else %}
-                        <img src="{{device[14]}}" class="canvasList" />
-                    {% endif %}
+                        {% elif url_list[1] == 'pdf' %}
+                            <canvas class="canvasList" id="terms-canvas"></canvas>                    
+                            <script>renderPdf('{{device[14]}}',"terms-canvas")</script>
+                        {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
+                            <img src="{{device[14]}}" class="canvasList" />
+                        {% endif %}
                     </div>
                     <p class="mt-4">
                         {% if device[13] == "" %} ___ {% else %} {{device[13]}} {% endif %}

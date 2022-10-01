@@ -72,7 +72,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
                   <div class="col-sm-9">
-                    <input required id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
+                    <input id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -80,7 +80,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Supply Date</label>
                   <div class="col-sm-9">
-                    <input required id="supp-date" name="supp-date" type="date" class="form-control form-control-sm" />
+                    <input id="supp-date" name="supp-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -436,11 +436,11 @@
                     </select>
                   </div>
                   <div class="col-sm-4">
-                    <input required id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
+                    <input id="contract-start-date" name="contract-start-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                   <label id="To" style="display: none;" class="text-center fw-bold col-sm-1 col-form-label">To</label>
                   <div class="col-sm-4">
-                    <input required id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
+                    <input id="contract-end-date" name="contract-end-date" style="display: none;" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -454,7 +454,7 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
                   <div class="col-sm-9">
-                    <input id="Inspection-list" name="Inspection-list" type="file" class="form-control form-control-sm" />
+                    <input id="inspection-list" name="inspection-list" type="file" class="form-control form-control-sm" />
                     <a href="#/" data-bs-toggle="modal" data-bs-target="#InspectionModal" class="link text-decoration-none"><b>And</b> make the checklist</a>
                   </div>
                 </div>
@@ -463,7 +463,7 @@
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Frequency</label>
                   <div class="col-sm-3">
-                    <select required id="Inspection-freq" name="Inspection-freq" class="form-control form-control-sm">
+                    <select required id="Inspection-freq" name="inspection-freq" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Period ...</option>
                       <option value="Monthly">Monthly</option>
                       <option value="3 Months">3 Months</option>
@@ -472,11 +472,11 @@
                     </select>
                   </div>
                   <div class="col-sm-3">
-                    <input id="Inspection-start-date" name="Inspection-start-date" type="date" class="form-control form-control-sm" />
+                    <input id="Inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
                   </div>
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
-                    <input id="Inspection-end-date" name="Inspection-end-date" type="date" class="form-control form-control-sm" />
+                    <input id="Inspection-end-date" name="inspection-end-date" type="date" class="form-control form-control-sm" />
                   </div>
                 </div>
               </div>
@@ -506,7 +506,7 @@
                               <button onclick="addItem('Inspection')" type="button" class="btn btn-inverse-primary btn-rounded btn-sm">+</button>
                           </div>
                       </div>
-                      <textarea hidden name="Inspection-checklist" id="Inspection-checklist"></textarea>
+                      <textarea hidden id="Inspection-checklist" name="inspection-checklist"></textarea>
                     </div>
                   </div>
                   <div class="modal-footer">

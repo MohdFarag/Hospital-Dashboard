@@ -1,5 +1,6 @@
 # Imports
-from flask import Flask, render_template, request, redirect, url_for, session
+from xml.dom.pulldom import ErrorHandler
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 import database
 import pandas as pd
 import os
@@ -112,7 +113,7 @@ def allowed_file(filename):
 def save_file(list, sn, fileName):
     if list and allowed_file(list.filename):
       filename = secure_filename(fileName + "." + list.filename.rsplit('.', 1)[1])
-      path = app.config['UPLOAD_FOLDER'] + sn.translate("/", "") + "/" 
+      path = app.config['UPLOAD_FOLDER'] + sn.replace("/", "") + "/" 
       os.makedirs(path, exist_ok=True)
       list.save(os.path.join(path, filename))
       return path + filename
@@ -223,7 +224,11 @@ def add_device():
       manufacturer = request.form['manufacturer']
       sn = request.form['sn']
       prod_date = request.form["prod-date"]
+      if prod_date == '':
+        prod_date = None
       supp_date = request.form["supp-date"]
+      if supp_date == '':
+        supp_date = None
       location = request.form['location']
       country = request.form['country']
       image = request.files['image']
@@ -287,51 +292,53 @@ def add_device():
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
 
-      try:
-        # Insertion Process
+      # try:
+      # Insertion Process
 
-        # 1) Get id of equipment_name chosen
-        mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
-        equipment_id = mycursor.fetchone()
+      # 1) Get id of equipment_name chosen
+      mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
+      equipment_id = mycursor.fetchone()
 
-        # 2) Get id of model_name chosen
-        mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
-        model_id = mycursor.fetchone()
+      # 2) Get id of model_name chosen
+      mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
+      model_id = mycursor.fetchone()
 
-        # 3) Get id of manufacturer_id chosen
-        mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
-        manufacturer_id = mycursor.fetchone()
+      # 3) Get id of manufacturer_id chosen
+      mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
+      manufacturer_id = mycursor.fetchone()
 
-        # 4) Get id of location_id chosen
-        mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
-        location_id = mycursor.fetchone()
+      # 4) Get id of location_id chosen
+      mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
+      location_id = mycursor.fetchone()
 
-        # 5) Save files
-        image_path = save_file(image, sn, "image") 
-        inspection_path = save_file(inspection_list, sn, "inspection")      
-        ppm_path = save_file(ppm_list, sn, 'ppm')      
-        calibration_path = save_file(calibration_list, sn, 'calibration')      
-        description_path = save_file(description_file, sn, 'description')
+      # 5) Save files
+      image_path = save_file(image, sn, "image")
+      inspection_path = save_file(inspection_list, sn, "inspection")      
+      ppm_path = save_file(ppm_list, sn, 'ppm')
+      calibration_path = save_file(calibration_list, sn, 'calibration')      
+      description_path = save_file(description_file, sn, 'description')
 
-        # 6) Add the device
-        mycursor.execute("""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", 
-                                                (sn, category, equipment_id[0], model_id[0], manufacturer_id[0], prod_date, supp_date, location_id[0], country, image_path, contract, contract_start_date, contract_end_date, description, description_path, inspection_path, inspection_checklist, ppm_path, ppm_checklist, ppm_external, calibration_path, calibration_checklist, calibration_external, technical_status[0], problem, trc[0], code, qrcode, createdAt, None ))
+      print(f"""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES 
+                                              ('{sn}','{category}','{equipment_id[0]}','{model_id[0]}','{manufacturer_id[0]}',{prod_date},{supp_date},'{location_id[0]}','{country}','{image_path}','{contract}',{contract_start_date},{contract_end_date},'{description}','{description_path}','{inspection_path}','{inspection_checklist}','{ppm_path}','{ppm_checklist}','{ppm_external}','{calibration_path}','{calibration_checklist}','{calibration_external}','{technical_status[0]}','{problem}','{trc[0]}','{code}','','{createdAt}',{None})""")
+      # 6) Add the device
+      mycursor.execute(f"""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES 
+                                              ('{sn}','{category}','{equipment_id[0]}','{model_id[0]}','{manufacturer_id[0]}',{prod_date},{supp_date},'{location_id[0]}','{country}','{image_path}','{contract}',{contract_start_date},{contract_end_date},'{description}','{description_path}','{inspection_path}','{inspection_checklist}','{ppm_path}','{ppm_checklist}',{ppm_external},'{calibration_path}','{calibration_checklist}',{calibration_external},'{technical_status[0]}','{problem}','{trc[0]}','{code}','{qrcode}','{createdAt}',{None})""")
 
-        
-        # 7) Add services of the device
-        # Inspection
-        insert_into_service(inspection_start_date, inspection_end_date, inspection_freq, sn, "Inspection")
-        # PPM
-        insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
-        # Calibration
-        insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
+      
+      # 7) Add services of the device
+      # Inspection
+      insert_into_service(inspection_start_date, inspection_end_date, inspection_freq, sn, "Inspection")
+      # PPM
+      insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
+      # Calibration
+      insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
 
-        status = 1
-        mydb.commit() # Work Is DONE
+      status = 1
+      mydb.commit() # Work Is DONE
 
-      except:
-        # ERROR
-        status = 0
+      # except:
+      #   # ERROR
+      #   status = 0
       
     return render_template("add.html",
                           title="Add New Device",
@@ -530,52 +537,6 @@ def search():
                           Code LIKE '%{searchValue}%'""")
     Contracts = mycursor.fetchall()
 
-    mycursor.execute(f"""SELECT 
-                        MIN(`contract_start_date`), 
-                        MAX(`contract_start_date`),
-                        MIN(`contract_end_date`), 
-                        MAX(`contract_end_date`)
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    contractDates = mycursor.fetchone()
-
-    mycursor.execute(f"""SELECT 
-                        MIN(`device_production_date`), 
-                        MAX(`device_production_date`),
-                        MIN(`device_supply_date`), 
-                        MAX(`device_supply_date`)
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    infoDates = mycursor.fetchone()
-
     mycursor.execute(f"""SELECT DISTINCT `technical_status` FROM `device`
                         LEFT JOIN equipment
                           ON device.equipment_id = equipment.equipment_id
@@ -618,25 +579,14 @@ def search():
       equipment = get_sql_for_search('equipment', 'equipment_name')
       model = get_sql_for_search('model', 'model_name')
       manufacturer = get_sql_for_search('manufacturer', 'manufacturer_name')
-      
-      production_date_start = request.form['production-date-start']
-      production_date_end = request.form['production-date-end']
-      supply_date_start = request.form['supply-date-start']
-      supply_date_end = request.form['supply-date-end']
 
       location = get_sql_for_search('location', 'location_name')
       country = get_sql_for_search('country', 'device_country')
       contract = get_sql_for_search('contract', 'device_contract_type')
 
-      contract_start_date_start = request.form['contract-start-date-start']
-      contract_start_date_end = request.form['contract-start-date-end']
-      contract_end_date_start = request.form['contract-end-date-start']
-      contract_end_date_end = request.form['contract-end-date-end']
-
       technical_status = get_sql_for_search('technical-status','technical_status')
       trc = get_sql_for_search('trc','trc')
       
-
       mycursor.execute(f"""SELECT 
                           device_sn, 
                           equipment_name, 
@@ -671,11 +621,7 @@ def search():
                           {country}
                           {contract}
                           {technical_status}
-                          {trc}
-                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
-                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
-                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
-                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'
+                          {trc[:-3]}
                         LIMIT {currpage},{perPage}""")
       data = mycursor.fetchall()
 
@@ -703,11 +649,7 @@ def search():
                           {country}
                           {contract}
                           {technical_status}
-                          {trc}
-                          device_production_date >= '{production_date_start}' AND device_production_date <= '{production_date_end}' AND
-                          device_supply_date >= '{supply_date_start}' AND device_supply_date <= '{supply_date_end}' AND
-                          contract_start_date >= '{contract_start_date_start}' AND contract_start_date <= '{contract_start_date_end}' AND
-                          contract_end_date >= '{contract_end_date_start}' AND contract_end_date <= '{contract_end_date_end}'""")
+                          {trc[:-3]}""")
       numOfResults = mycursor.fetchone()[0]
 
     return render_template("search.html",
@@ -723,8 +665,6 @@ def search():
                     Locations=Locations,
                     Countries=Countries,
                     Contracts=Contracts,
-                    infoDates=infoDates,
-                    contractDates=contractDates,
                     TechStatus=TechStatus,
                     TRCS=TRCS)
   else:
@@ -789,14 +729,19 @@ def device():
     WHERE device_sn=%s""",(sn,))
     device = mycursor.fetchone()
 
+    # If serial number is false flow error
+    if device == None:
+      abort(404, description="Resource not found")
+
     mycursor.execute(f"SELECT * FROM service WHERE device_sn='{sn}' ORDER BY scheduled_date Asc LIMIT {currpage},{perPage} ")
     services = mycursor.fetchall()
 
     mycursor.execute(f"SELECT COUNT(service_id) FROM service WHERE device_sn='{sn}'")
     numOfResults = mycursor.fetchone()[0]
 
+    title = device[0]
     return render_template("device.html",
-                            title=device[0],
+                            title=title,
                             services=services,
                             device=device,
                             numOfResults=numOfResults,
@@ -942,6 +887,8 @@ def service_order():
                          on device.location_id = location.location_id 
                          Where service_id={id}""")
     service = mycursor.fetchone()
+    if service == None:
+      abort(404, description="Resource not found")
 
     today = pd.to_datetime("today")
     return render_template("serviceOrder.html",

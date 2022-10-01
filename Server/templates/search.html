@@ -96,28 +96,6 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 form-1-box fadeInUp">
-                                <!-- Contract Start Date -->
-                                <fieldset class="form-group border p-3">
-                                    <legend class="w-auto px-2">Production Date</legend>
-                                    <input value="{{infoDates[0]}}" min='{{infoDates[0]}}' max='{{infoDates[1]}}' class="form-control form-control-sm" name="production-date-start"  type="date">
-                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
-                                    <input value="{{infoDates[1]}}" min='{{infoDates[0]}}' max='{{infoDates[1]}}' class="form-control form-control-sm" name="production-date-end"  type="date">
-                                </fieldset>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 form-1-box fadeInUp">
-                                <!-- Contract End Date -->
-                                <fieldset class="form-group border p-3">
-                                    <legend class="w-auto px-2">Supply Date</legend>
-                                    <input value="{{infoDates[2]}}" min='{{infoDates[2]}}' max='{{infoDates[3]}}' class="form-control form-control-sm" name="supply-date-start" type="date">
-                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
-                                    <input value="{{infoDates[3]}}" min='{{infoDates[2]}}' max='{{infoDates[3]}}' class="form-control form-control-sm" name="supply-date-end" type="date">
-                                </fieldset>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 form-1-box fadeInUp">
                                 <!-- Locations -->
                                 <fieldset class="form-group border p-3">
                                     <legend class="w-auto px-2">Locations</legend>
@@ -142,7 +120,7 @@
                                             <strong>
                                                 <img class="img-checkbox" src="{{ url_for('static', filename='images/flags/1x1/') }}{{ country[0] }}.svg" alt="{{country[0]}}" title="{{country[0]}}" />
                                             </strong>
-                                    </label>
+                                        </label>
                                         {% endfor %}
                                     </div>
                                 </fieldset>
@@ -159,28 +137,6 @@
                                         <label class="form-check-label" for="{{contract[0]}}"><strong>{{contract[0]}}</strong></label>
                                         {% endfor %}
                                     </div>
-                                </fieldset>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 form-1-box fadeInUp">
-                                <!-- Contract Start Date -->
-                                <fieldset class="form-group border p-3">
-                                    <legend class="w-auto px-2">Contract Start Date</legend>
-                                    <input value="{{contractDates[0]}}" min='{{contractDates[0]}}' max='{{contractDates[1]}}' class="form-control form-control-sm" name="contract-start-date-start"  type="date">
-                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
-                                    <input value="{{contractDates[1]}}" min='{{contractDates[0]}}' max='{{contractDates[1]}}' class="form-control form-control-sm" name="contract-start-date-end"  type="date">
-                                </fieldset>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 form-1-box fadeInUp">
-                                <!-- Contract End Date -->
-                                <fieldset class="form-group border p-3">
-                                    <legend class="w-auto px-2">Contract End Date</legend>
-                                    <input value="{{contractDates[2]}}" min='{{contractDates[2]}}' max='{{contractDates[3]}}' class="form-control form-control-sm" name="contract-end-date-start"  type="date">
-                                    <center><strong>ـــــــــــــــــــــــــــــــــــــــــــــToـــــــــــــــــــــــــــــــــــــــــــــ</strong></center>
-                                    <input value="{{contractDates[3]}}" min='{{contractDates[2]}}' max='{{contractDates[3]}}' class="form-control form-control-sm" name="contract-end-date-end"  type="date">
                                 </fieldset>
                             </div>
                         </div>
@@ -241,7 +197,6 @@
                       <th>Equipment</th>
                       <th>Model</th>
                       <th>Manufacturer</th>
-                      <th>Production Date</th>
                       <th>Location</th>
                       <th>Country</th>
                       <th>Code</th>
@@ -256,7 +211,6 @@
                         <td>{{device[1]}}</td>
                         <td>{{device[2]}}</td>
                         <td>{{device[3]}}</td>
-                        <td>{{device[4].strftime('%Y')}}</td>
                         <td>{{device[5]}}</td>
                         <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[6] }}.svg" alt="{{device[6]}}" title="{{device[6]}}" /></td>
                         <td>{{device[8]}}</td>
