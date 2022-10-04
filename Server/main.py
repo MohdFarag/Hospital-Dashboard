@@ -138,6 +138,27 @@ def insert_into_service(start_date, end_date, freq, sn, type_of_list):
   for date in dates:
     mycursor.execute(f"""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES 
                                                ({type_of_list}, {sn}, {date.date()}, {None})""")
+
+def select_distinct(searchValue, field_name):
+    mycursor.execute(f"""SELECT DISTINCT `{field_name}`
+                      FROM `device`
+                      LEFT JOIN equipment
+                        ON device.equipment_id = equipment.equipment_id
+                      LEFT JOIN model
+                        ON device.model_id = model.model_id
+                      LEFT JOIN manufacturer
+                        ON device.manufacturer_id = manufacturer.manufacturer_id
+                      LEFT JOIN location
+                        ON device.location_id = location.location_id 
+                      WHERE
+                        device_sn LIKE '%{searchValue}%' OR
+                        equipment_name LIKE '%{searchValue}%' OR
+                        model_name LIKE '%{searchValue}%' OR
+                        manufacturer_name LIKE '%{searchValue}%' OR
+                        location_name LIKE '%{searchValue}%' OR
+                        Code LIKE '%{searchValue}%'""")
+    data = mycursor.fetchall()
+    return data
 #--------------------------------------------------------------------------#
 
 # Connecting with database
@@ -322,11 +343,10 @@ def add_device():
       calibration_path = save_file(calibration_list, sn, 'calibration')      
       description_path = save_file(description_file, sn, 'description')
 
-      print(f"""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES 
-                                              ('{sn}','{category}','{equipment_id[0]}','{model_id[0]}','{manufacturer_id[0]}',{prod_date},{supp_date},'{location_id[0]}','{country}','{image_path}','{contract}',{contract_start_date},{contract_end_date},'{description}','{description_path}','{inspection_path}','{inspection_checklist}','{ppm_path}','{ppm_checklist}','{ppm_external}','{calibration_path}','{calibration_checklist}','{calibration_external}','{technical_status[0]}','{problem}','{trc[0]}','{code}','','{createdAt}',{None})""")
       # 6) Add the device
-      mycursor.execute(f"""INSERT INTO device (`device_sn`, `category`,  `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt` ,`updatedAt`) VALUES 
-                                              ('{sn}','{category}','{equipment_id[0]}','{model_id[0]}','{manufacturer_id[0]}',{prod_date},{supp_date},'{location_id[0]}','{country}','{image_path}','{contract}',{contract_start_date},{contract_end_date},'{description}','{description_path}','{inspection_path}','{inspection_checklist}','{ppm_path}','{ppm_checklist}',{ppm_external},'{calibration_path}','{calibration_checklist}',{calibration_external},'{technical_status[0]}','{problem}','{trc[0]}','{code}','{qrcode}','{createdAt}',{None})""")
+      mycursor.execute("""INSERT INTO device (`device_sn`, `category`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt`, `updatedAt`) VALUES
+                      (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                      (sn,category,equipment_id[0],model_id[0],manufacturer_id[0],prod_date,supp_date,location_id[0],country,image_path,contract,contract_start_date,contract_end_date,description,description_path,inspection_path,inspection_checklist,ppm_path,ppm_checklist,ppm_external,calibration_path,calibration_checklist,calibration_external,technical_status[0],problem,trc[0],code,qrcode,createdAt,None))
 
       
       # 7) Add services of the device
@@ -357,30 +377,34 @@ def add_device():
 # Delete device
 @app.route("/delete-device")
 def delete_device():
-  # GET serial number from arguments
-  sn = get_argument("sn")
-  
-  # Execute the delete Process
-  mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
-  mydb.commit() # work Is done
-  # Remove its data
-  rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=true)
-  
-  # Redirect to device page again
-  return redirect(url_for('search'))
+  if 'loggedin' in session and session['loggedin'] == True:
+    # GET serial number from arguments
+    sn = get_argument("sn")
+    
+    # Execute the delete Process
+    mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
+    mydb.commit() # work Is done
+    # Remove its data
+    rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=true)
+    
+    # Redirect to device page again
+    return redirect(url_for('search'))
+  else:
+    return redirect(url_for('login'))
 
 # Search on devices
 @app.route("/search", methods=['GET', 'POST'])
 def search(): 
   if 'loggedin' in session and session['loggedin'] == True:
-    perPage = 10
-    startAt = 0
+    per_page = 10
+    starts_at = 0
     if request.args.get('page'):
-      startAt = int(request.args.get('page')) - 1
-    if startAt <= 0:
-      startAt = 0
-    currpage = startAt*perPage
+      starts_at = int(request.args.get('page')) - 1
+    if starts_at <= 0:
+      starts_at = 0
+    curr_page = starts_at*per_page
 
+    # Get search Value
     searchValue = get_argument('searchValue')
 
     mycursor.execute(f"""SELECT 
@@ -409,9 +433,10 @@ def search():
                           manufacturer_name LIKE '%{searchValue}%' OR
                           location_name LIKE '%{searchValue}%' OR
                           Code LIKE '%{searchValue}%'
-                        LIMIT {currpage},{perPage}""")
+                        LIMIT {curr_page},{per_page}""")
     data = mycursor.fetchall()
 
+    # Count the data
     mycursor.execute(f"""SELECT COUNT(device_sn)
                         FROM `device`
                         LEFT JOIN equipment
@@ -429,156 +454,18 @@ def search():
                           manufacturer_name LIKE '%{searchValue}%' OR
                           location_name LIKE '%{searchValue}%' OR
                           Code LIKE '%{searchValue}%'""")
-    numOfResults = mycursor.fetchone()[0]
+    num_of_results = mycursor.fetchone()[0]
     
-    mycursor.execute(f"""SELECT DISTINCT `equipment_name` 
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Equipments = mycursor.fetchall()
+    equipments = select_distinct(searchValue, 'equipment_name')
+    models = select_distinct(searchValue, 'model_name')
+    manufacturers = select_distinct(searchValue, 'manufacturer_name')
+    locations = select_distinct(searchValue, 'location_name')
+    countries = select_distinct(searchValue, 'device_country')
+    contracts = select_distinct(searchValue, 'device_contract_type')
+    technicals_status = select_distinct(searchValue, 'technical_status')
+    trcs = select_distinct(searchValue, 'TRC')
 
-    mycursor.execute(f"""SELECT DISTINCT `model_name`
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Models = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `manufacturer_name`
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Manufacturers = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `location_name`
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Locations = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `device_country` FROM `device`
-                      LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Countries = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `device_contract_type` FROM `device`
-                          LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    Contracts = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `technical_status` FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    TechStatus = mycursor.fetchall()
-
-    mycursor.execute(f"""SELECT DISTINCT `TRC` FROM `device`
-                          LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
-    TRCS = mycursor.fetchall()
-
+    # When search
     if request.method == 'POST' :
       searchValue = request.form['searchValue']
       category = get_sql_for_search('category', 'category')
@@ -628,7 +515,7 @@ def search():
                           {contract}
                           {technical_status}
                           {trc[:-3]}
-                        LIMIT {currpage},{perPage}""")
+                        LIMIT {curr_page},{per_page}""")
       data = mycursor.fetchall()
 
       mycursor.execute(f"""SELECT COUNT(device_sn) FROM `device`
@@ -656,23 +543,23 @@ def search():
                           {contract}
                           {technical_status}
                           {trc[:-3]}""")
-      numOfResults = mycursor.fetchone()[0]
+      num_of_results = mycursor.fetchone()[0]
 
     return render_template("search.html",
                     title="Devices",
-                    numOfResults=numOfResults,
+                    num_of_results=num_of_results,
                     devices=data,
                     search_value=searchValue,
-                    numofPages=math.ceil(numOfResults/perPage),
-                    currpage=startAt+1,
-                    Equipments=Equipments,
-                    Models=Models,
-                    Manufacturers=Manufacturers,
-                    Locations=Locations,
-                    Countries=Countries,
-                    Contracts=Contracts,
-                    TechStatus=TechStatus,
-                    TRCS=TRCS)
+                    num_of_pages=math.ceil(num_of_results/per_page),
+                    curr_page=starts_at+1,
+                    equipments=equipments,
+                    models=models,
+                    manufacturers=manufacturers,
+                    locations=locations,
+                    countries=countries,
+                    contracts=contracts,
+                    technicals_status=technicals_status,
+                    trcs=trcs)
   else:
     return redirect(url_for('login'))
 
@@ -680,19 +567,18 @@ def search():
 @app.route("/device", methods=['GET', 'POST'])
 def device():
   if 'loggedin' in session and session['loggedin'] == True:
-    perPage = 10
-    startAt = 0
+    per_page = 10
+    starts_at = 0
     
     if request.args.get('page'):
-      startAt = int(request.args.get('page')) - 1
+      starts_at = int(request.args.get('page')) - 1
 
-    if startAt <= 0:
-      startAt = 0
-    currpage = startAt*perPage
+    if starts_at <= 0:
+      starts_at = 0
+    curr_page = starts_at*per_page
 
     sn = get_argument('sn')
-    mycursor.execute("""
-    SELECT 
+    mycursor.execute("""SELECT 
       device_sn, 
       category,
       equipment_name, 
@@ -739,20 +625,20 @@ def device():
     if device == None:
       abort(404, description="Resource not found")
 
-    mycursor.execute(f"SELECT * FROM service WHERE device_sn='{sn}' ORDER BY scheduled_date Asc LIMIT {currpage},{perPage} ")
+    mycursor.execute(f"SELECT * FROM service WHERE device_sn='{sn}' ORDER BY scheduled_date Asc LIMIT {curr_page},{per_page} ")
     services = mycursor.fetchall()
 
     mycursor.execute(f"SELECT COUNT(service_id) FROM service WHERE device_sn='{sn}'")
-    numOfResults = mycursor.fetchone()[0]
+    num_of_results = mycursor.fetchone()[0]
 
     title = device[0]
     return render_template("device.html",
                             title=title,
                             services=services,
                             device=device,
-                            numOfResults=numOfResults,
-                            numofPages=int(numOfResults/perPage)+1,
-                            currpage=startAt+1,)
+                            num_of_results=num_of_results,
+                            num_of_pages=int(num_of_results/per_page)+1,
+                            curr_page=starts_at+1,)
   else:
     return redirect(url_for('login'))
 
@@ -762,15 +648,15 @@ def device():
 @app.route("/services", methods=['GET', 'POST'])
 def services():
   if 'loggedin' in session and session['loggedin'] == True:
-    perPage = 10
-    startAt = 0
+    per_page = 10
+    starts_at = 0
     
     if request.args.get('page'):
-      startAt = int(request.args.get('page')) - 1
+      starts_at = int(request.args.get('page')) - 1
 
-    if startAt <= 0:
-      startAt = 0
-    currpage = startAt*perPage
+    if starts_at <= 0:
+      starts_at = 0
+    curr_page = starts_at*per_page
 
     type = get_argument("type")
     sentence = ""
@@ -782,18 +668,18 @@ def services():
     mycursor.execute(f"""SELECT * FROM service
                          {sentence}
                          ORDER BY scheduled_date Asc 
-                         LIMIT {currpage},{perPage}""")
+                         LIMIT {curr_page},{per_page}""")
     data = mycursor.fetchall()
 
     mycursor.execute(f"""SELECT COUNT(service_id) FROM service {sentence}""")
-    numOfResults = mycursor.fetchone()[0]
+    num_of_results = mycursor.fetchone()[0]
 
     return render_template("services.html",
                           title="Services",
-                          numOfResults=numOfResults,
-                          numofPages=int(numOfResults/perPage)+1,
+                          num_of_results=num_of_results,
+                          num_of_pages=int(num_of_results/per_page)+1,
                           services=data,
-                          currpage=startAt+1,
+                          curr_page=starts_at+1,
                           type=type)
   else:
     return redirect(url_for('login'))
@@ -912,19 +798,20 @@ def settings():
   
     status = -1
     if request.method == 'POST' :
-      if request.form['settings'] == 'SAVE':      
-        # Insert Equipments
+      if request.form['settings'] == 'SAVE':   
+        # Insert equipments
         statments = request.form['statments']
         statmentsList = statments.split(";")
+
         try:
           # Update Libraries
           for statment in statmentsList:
-              mycursor.execute(statment)
-          mydb.commit()
+            mycursor.execute(statment)
+            mydb.commit()
           status = 1
-          
         except:
           status = 0
+
       elif request.form['settings'] == 'CHANGE':
         username = request.form['username']
         old_password = request.form['old-password']
@@ -941,6 +828,7 @@ def settings():
             return redirect(url_for('logout'))
           else:
             status = 0
+
         except:
           status = 0
 
