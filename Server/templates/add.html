@@ -13,18 +13,29 @@
           There is Error !
         </div>
         
-        <form enctype="multipart/form-data" action="{{ url_for('add_device') }}" method="POST">
+        <!-- Add device form -->
+        <form class="row g-3 needs-validation" novalidate enctype="multipart/form-data" action="{{ url_for('add_device') }}" method="POST">
+          
+          <!-- INFO Inputs-->
           <p class="card-description">Info</p>
           <fieldset class="rect">
             <div class="row">
+              <!-- S/N input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
                   <div class="col-sm-9">
                     <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text" onchange="createDownloadQr()" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please write S/N.
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- Category input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Category</label>
@@ -35,11 +46,18 @@
                       <option value="MG">MG</option>
                       <option value="EM">EM</option>
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose category.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
+              <!-- Equipment input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Equipment Name</label>
@@ -50,9 +68,16 @@
                       <option value="{{equipment[1]}}">{{ equipment[1] }}</option>
                       {% endfor %}
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose equipment.
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- Model input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Model</label>
@@ -63,72 +88,97 @@
                       <option data-option="{{model[2]}}" value="{{ model[1] }}">{{ model[1] }}</option>
                       {% endfor %}
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose model.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
+              <!-- Production Date input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
                   <div class="col-sm-9">
                     <input id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
+                    <div class="invalid-feedback">
+                      Choose production date if you know or it will be N/A.
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- Supply Date input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Supply Date</label>
                   <div class="col-sm-9">
                     <input id="supp-date" name="supp-date" type="date" class="form-control form-control-sm" />
+                    <div class="invalid-feedback">
+                      Choose supply date if you know or it will be N/A.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
+              <!-- Picture input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Picture</label>
                   <div class="col-sm-9">
                     <input id="image" name="image" type="file" class="form-control form-control-sm" />
+                    <div class="invalid-feedback">
+                      Choose image if exist.
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- Manufacturer input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
                   <div class="col-sm-9">
                     <select required id="manufacturer" name="manufacturer" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Manufacturer ...</option>
-
                       {% for manufacturer in manufacturers %}
                       <option>{{ manufacturer[1] }}</option>
                       {% endfor %}
-
                     </select>
+                    <div class="invalid-feedback">
+                      Please choose manufacturer.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
+              <!-- Location input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Location</label>
                   <div class="col-sm-9">
-                    <select required id="location" name="location" class="form-control form-control-sm">
+                    <select id="location" name="location" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose location...</option>               
                       {% for location in locations %}
                       <option>{{ location[1] }}</option>
                       {% endfor %}
                     </select>
+                    <div class="invalid-feedback">
+                      Please choose location.
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- Country input -->
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Country</label>
                   <div class="col-sm-9">
-                    <select required id="country" name="country" class="form-control form-control-sm">
+                    <select id="country" name="country" class="form-control form-control-sm">
                       <option value="" label="Select a country ... " selected="selected">Select a country ...
                       </option>
                       <optgroup id="country-optgroup-Africa" label="Africa">
@@ -403,12 +453,16 @@
                         <option value="WF" label="Wallis and Futuna">Wallis and Futuna</option>
                       </optgroup>
                     </select>
+                    <div class="invalid-feedback">
+                      Please choose country if you know.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </fieldset>
           
+          <!-- CONTRACT Inputs -->
           <p class="card-description">Contract</p>
           <fieldset class="rect">
             <div class="row">
@@ -416,12 +470,18 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Contract type</label>
                   <div class="col-sm-9">
-                    <select onchange="contractTypes()" name="contract-type" id="contract-type" class="form-control form-control-sm">
+                    <select required onchange="contractTypes()" name="contract-type" id="contract-type" class="form-control form-control-sm">
                       <option value="" selected>Choose Contract type ...</option>
                       <option>Warranty</option>
                       <option>Local</option>
                       <option>Contract of Maintenance</option>
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please Choose Contract-type.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -446,7 +506,8 @@
               </div>
             </div>
           </fieldset>
-          
+
+          <!-- Inspection Inputs -->
           <p class="card-description">Inspection List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
@@ -470,13 +531,31 @@
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the frequency of inspection.
+                    </div>
                   </div>
                   <div class="col-sm-3">
-                    <input id="Inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
+                    <input required id="Inspection-start-date" name="inspection-start-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the start date of inspection.
+                    </div>
                   </div>
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
-                    <input id="Inspection-end-date" name="inspection-end-date" type="date" class="form-control form-control-sm" />
+                    <input required id="Inspection-end-date" name="inspection-end-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the end date of inspection.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -518,6 +597,7 @@
             </div>
           </fieldset>
           
+          <!-- PPM Inputs -->
           <p class="card-description">PPM List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
@@ -545,13 +625,31 @@
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the frequency of ppm.
+                    </div>
                   </div>
                   <div class="col-sm-3">
-                    <input id="ppm-start-date" name="ppm-start-date" type="date" class="form-control form-control-sm" />
+                    <input required id="ppm-start-date" name="ppm-start-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the start date of ppm.
+                    </div>
                   </div>
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
-                    <input id="ppm-end-date" name="ppm-end-date" type="date" class="form-control form-control-sm" />
+                    <input required id="ppm-end-date" name="ppm-end-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the end date of ppm.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -593,6 +691,7 @@
             </div>
           </fieldset>
 
+          <!-- Calibration Inputs -->
           <p class="card-description">Calibration List &MediumSpace; <span class="card-description text-danger">Must be one page</span></p>
           <fieldset class="rect">
             <div class="row">
@@ -620,13 +719,31 @@
                       <option value="6 Months">6 Months</option>
                       <option value="Annually">Annually</option>
                     </select>
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the frequency of calibration.
+                    </div>
                   </div>
                   <div class="col-sm-3">
-                    <input id="calibration-start-date" name="calibration-start-date" type="date" class="form-control form-control-sm" />
+                    <input required id="calibration-start-date" name="calibration-start-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the start date of calibration.
+                    </div>
                   </div>
                   <label class="col-sm-1 col-form-label">TO</label>
                   <div class="col-sm-3">
-                    <input id="calibration-end-date" name="calibration-end-date" type="date" class="form-control form-control-sm" />
+                    <input required id="calibration-end-date" name="calibration-end-date" type="date" class="form-control form-control-sm" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please choose the end date of calibration.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -667,9 +784,11 @@
               </div>
             </div>
           </fieldset>
-
+          
+          <!-- Others Inputs -->
           <fieldset class="rect">
             <div class="row">
+              <!-- Technical Status Input -->
               <div class="col-md-8">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Technical Status</label>
@@ -699,6 +818,7 @@
                   </div>
                 </div>
               </div>
+              <!-- Problem Inputs -->
               <div class="col-md-4">
                 <div class="form-group row">
                   <label id="problem-id" style="display: none;" class="col-sm-3 col-form-label">Problem</label>
@@ -727,6 +847,7 @@
               </div>
             </div>
             <div class="row">
+              <!-- TRC Inputs -->
               <div class="col-md-12">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">TRC</label>
@@ -767,6 +888,7 @@
               </div>
             </div>          
             <div class="row">
+              <!-- Terms & Description Inputs -->
               <div class="col-md-12">
                 <div class="form-group row">
                   <label class="col-sm-2 col-form-label">Description | Terms</label>
@@ -791,7 +913,13 @@
                 <div class="form-group row">
                   <label class="col-sm-1 col-form-label">Code</label>
                   <div class="col-sm-9">
-                    <input id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                    <input required id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
+                    <div class="valid-feedback">
+                      Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                      Please write the code
+                    </div>
                     <input hidden id="qrcode-file" name="qrcode" type="file" class="form-control form-control-sm mt-2" />
                   </div>
                   <div class="col-md-2">
@@ -875,8 +1003,28 @@
         }
     }
   }
-
   giveSelection(equipment.value);
+
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
 
 </script>
 

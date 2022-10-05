@@ -1,15 +1,22 @@
+# Imports
 import mysql.connector
 from log import almaza_logger
+
+# Constants of DB
+HOST = "localhost"
+USER = "root"
+PASSWD = "01140345493"
+DATABASE = "almazadb"
 
 # Connecting with Database
 def mysql_connector():
     try:
         mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="01140345493",
-        database="almazadb")
-
+            host=HOST,
+            user=USER,
+            passwd=PASSWD,
+            database=DATABASE
+        )
         almaza_logger.info('Server connected to database successfully.')
 
     except Exception as e:
@@ -20,9 +27,7 @@ def mysql_connector():
 
     return mydb, mycursor
 
-
 """Retrive Database Tables"""
-
 def getTableData(mycursor, tableName):
 
     'Retrieve all table data'
@@ -100,7 +105,6 @@ def service(mycursor) :
     table = mycursor.fetchall()
 
     return table
-
 
 # Retrive all data in the database
 def retrive_tables(mycursor, *args) :

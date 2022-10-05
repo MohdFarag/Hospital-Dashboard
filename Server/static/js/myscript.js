@@ -4,15 +4,17 @@ function changeTerms(selector){
     file = document.getElementById("description-file")
     textChangeTerms = document.getElementById("textChangeTerms")
     textChangeTerms.removeAttribute("onclick")
-
+    
     if (selector=="file") {
         file.hidden = false
         input.hidden = true
         textChangeTerms.addEventListener("click", function(){ changeTerms("disc"); });
+        textChangeTerms.innerHTML = "Want to Write Paragraph ?"
     }else{
         file.hidden = true
         input.hidden = false
         textChangeTerms.addEventListener("click", function(){ changeTerms("file"); });
+        textChangeTerms.innerHTML = "Want to Upload File ?"
     }
 };
 

@@ -174,7 +174,7 @@ try:
   db_tables = database.retrive_tables(mycursor, "*")
   almaza_logger.info('All tables retrieved successfully.')
 except Exception as e:
-  almaza_logger.info('Field to retrieve all tables.')
+  almaza_logger.exception('Field to retrieve all tables.')
   exit()
 
 #--------------------------------------------------------------------------#
@@ -919,7 +919,9 @@ def login():
           session['loggedin'] = True
           session['id'] = account[0]
           session['username'] = account[1]
+          almaza_logger.info(f'admin:{username} logged in succefully.')
           status = True
+
           # Redirect to dashboard page
           return redirect(url_for('dashboard'))
       else:
@@ -934,9 +936,12 @@ def login():
 @app.route("/logout")
 def logout():
   # Remove session data, this will log the user out
+  username = session['username']
   session.pop('loggedin', None)
   session.pop('id', None)
   session.pop('username', None)
+  almaza_logger.info(f'admin {username} logged out succefully.')
+
   # Redirect to login page
   return redirect(url_for('login'))
 
