@@ -1,15 +1,19 @@
 import mysql.connector
+from log import almaza_logger
 
 # Connecting with Database
 def mysql_connector():
+    try:
+        mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="01140345493",
+        database="almazadb")
 
-    mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd="01140345493",
-    database="almazadb"
-    )
-    print("Connected to database..")
+        almaza_logger.info('Server connected to database successfully.')
+
+    except Exception as e:
+        almaza_logger.exception('Server Failed to connect to database.')
 
     # Initialize our cursor
     mycursor = mydb.cursor(buffered=True)

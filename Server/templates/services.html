@@ -7,7 +7,7 @@
             <div class="d-sm-flex justify-content-between align-items-start">
               <div>
                 <h4 class="card-title card-title-dash">Operations {{type}}</h4>
-                <p class="card-subtitle card-subtitle-dash">{{numOfResults}} Results.</p>
+                <p class="card-subtitle card-subtitle-dash">{{num_of_results}} Results.</p>
               </div>
               <div>
                 <button class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-alarm-plus"></i> Add new service</button>
@@ -58,7 +58,7 @@
                                         </div>
                                         <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{currpage}}&come=services" type="button" class="btn btn-primary">Yes</a>
+                                        <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=services" type="button" class="btn btn-primary">Yes</a>
                                         </div>
                                     </div>
                                   </div>
@@ -81,15 +81,15 @@
         </div>
         <nav class="d-flex justify-content-center">
           <ul class="pagination">
-            <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
-              <a class="page-link" href="/services?page={{currpage-1}}&type={{type}}" tabindex="-1">Previous</a>
+            <li class="page-item {% if curr_page<=1 %} disabled {% endif %}">
+              <a class="page-link" href="/services?page={{curr_page-1}}&type={{type}}" tabindex="-1">Previous</a>
             </li>
-            {% for i in range(1,numofPages+1) %}
-            <li class="page-item {% if i == currpage %} active {% endif %}"><a class="page-link" href="/services?page={{i}}&type={{type}}">{{i}}</a></li>
+            {% for i in range(1,num_of_pages+1) %}
+            <li class="page-item {% if i == curr_page %} active {% endif %}"><a class="page-link" href="/services?page={{i}}&type={{type}}">{{i}}</a></li>
             {% endfor %}
             
-            <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
-              <a class="page-link" href="/services?page={{currpage+1}}&type={{type}}">Next</a>
+            <li class="page-item {% if curr_page>=num_of_pages %} disabled {% endif %}">
+              <a class="page-link" href="/services?page={{curr_page+1}}&type={{type}}">Next</a>
             </li>
           </ul>
         </nav>

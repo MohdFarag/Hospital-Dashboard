@@ -128,7 +128,7 @@
                                     <td>{{service[3]}}</td>
                                     <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
                                     <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
-                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}&page={{currpage}}&come=device&sn={{device[0]}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
                                     <td style="text-align: center;">
                                         <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
                                     </td>
@@ -148,7 +148,7 @@
                                                   </div>
                                                   <div class="modal-footer">
                                                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                  <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{currpage}}&come=device&sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
+                                                  <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
                                                   </div>
                                               </div>
                                             </div>
@@ -171,17 +171,17 @@
                 </div>
                 <nav class="d-flex justify-content-center">
                     <ul class="pagination">
-                        <li class="page-item {% if currpage<=1 %} disabled {% endif %}">
-                            <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage-1}}&type={{type}}#services" tabindex="-1">Previous</a>
+                        <li class="page-item {% if curr_page<=1 %} disabled {% endif %}">
+                            <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page-1}}&type={{type}}#services" tabindex="-1">Previous</a>
                         </li>
-                        {% for i in range(1,numofPages+1) %}
-                            <li class="page-item {% if i == currpage %} active {% endif %}">
+                        {% for i in range(1,num_of_pages+1) %}
+                            <li class="page-item {% if i == curr_page %} active {% endif %}">
                                 <a class="page-link" href="/device?sn={{device[0]}}&page={{i}}&type={{type}}#services">{{i}}</a>
                             </li>
                         {% endfor %}
                         
-                        <li class="page-item {% if currpage>=numofPages %} disabled {% endif %}">
-                            <a class="page-link" href="/device?sn={{device[0]}}&page={{currpage+1}}&type={{type}}#services">Next</a>
+                        <li class="page-item {% if curr_page>=num_of_pages %} disabled {% endif %}">
+                            <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page+1}}&type={{type}}#services">Next</a>
                         </li>
                     </ul>
                 </nav>

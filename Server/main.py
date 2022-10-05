@@ -1,13 +1,17 @@
 # Imports
-from shutil import rmtree
-from xml.dom.pulldom import ErrorHandler
-from flask import Flask, render_template, request, redirect, url_for, session, abort
-from sqlalchemy import true
 import database
+
 import pandas as pd
-import os
-from werkzeug.utils import secure_filename
 import math
+
+import os
+from shutil import rmtree
+
+from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, session, abort
+
+from log import almaza_logger
+
 #--------------------------------------------------------------------------#
 
 """Functions"""
@@ -159,22 +163,35 @@ def select_distinct(searchValue, field_name):
                         Code LIKE '%{searchValue}%'""")
     data = mycursor.fetchall()
     return data
+
 #--------------------------------------------------------------------------#
 
 # Connecting with database
 mydb, mycursor = database.mysql_connector()
 
 """Retrive Database Tables"""
-db_tables = database.retrive_tables(mycursor, "*")
+try:
+  db_tables = database.retrive_tables(mycursor, "*")
+  almaza_logger.info('All tables retrieved successfully.')
+except Exception as e:
+  almaza_logger.info('Field to retrieve all tables.')
+  exit()
 
 #--------------------------------------------------------------------------#
 
 """Our app"""
 app = Flask(__name__)
-app.secret_key = 'hlzgzxpzlllkgzrn' # Your Secret Key
-UPLOAD_FOLDER = "static/UPLOAD/"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS_DOC = set(['pdf', 'png', 'jpg', 'jpeg', 'webp'])
+
+# Configuration
+app.config.from_object('config.Config')
+
+# Using a development configuration
+app.config.from_object('config.DevConfig')
+## Using a production configuration
+# app.config.from_object('config.ProdConfig')
+
+almaza_logger.info('Settings are setted successfully.')
 
 #--------------------------------------------------------------------------#
 
@@ -211,6 +228,7 @@ def dashboard():
     this_month = {  "need_inspection": need_inspection,
                     "need_ppm": need_ppm,
                     "need_calibration": need_calibration }
+    
     
     return render_template("index.html",
                        title="Dashboard",
@@ -317,52 +335,53 @@ def add_device():
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
 
-      # try:
-      # Insertion Process
+      try:
+        # Insertion Process
 
-      # 1) Get id of equipment_name chosen
-      mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
-      equipment_id = mycursor.fetchone()
+        # 1) Get id of equipment_name chosen
+        mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
+        equipment_id = mycursor.fetchone()
 
-      # 2) Get id of model_name chosen
-      mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
-      model_id = mycursor.fetchone()
+        # 2) Get id of model_name chosen
+        mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
+        model_id = mycursor.fetchone()
 
-      # 3) Get id of manufacturer_id chosen
-      mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
-      manufacturer_id = mycursor.fetchone()
+        # 3) Get id of manufacturer_id chosen
+        mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
+        manufacturer_id = mycursor.fetchone()
 
-      # 4) Get id of location_id chosen
-      mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
-      location_id = mycursor.fetchone()
+        # 4) Get id of location_id chosen
+        mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
+        location_id = mycursor.fetchone()
 
-      # 5) Save files
-      image_path = save_file(image, sn, "image")
-      inspection_path = save_file(inspection_list, sn, "inspection")      
-      ppm_path = save_file(ppm_list, sn, 'ppm')
-      calibration_path = save_file(calibration_list, sn, 'calibration')      
-      description_path = save_file(description_file, sn, 'description')
+        # 5) Save files
+        image_path = save_file(image, sn, "image")
+        inspection_path = save_file(inspection_list, sn, "inspection")      
+        ppm_path = save_file(ppm_list, sn, 'ppm')
+        calibration_path = save_file(calibration_list, sn, 'calibration')      
+        description_path = save_file(description_file, sn, 'description')
 
-      # 6) Add the device
-      mycursor.execute("""INSERT INTO device (`device_sn`, `category`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt`, `updatedAt`) VALUES
-                      (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                      (sn,category,equipment_id[0],model_id[0],manufacturer_id[0],prod_date,supp_date,location_id[0],country,image_path,contract,contract_start_date,contract_end_date,description,description_path,inspection_path,inspection_checklist,ppm_path,ppm_checklist,ppm_external,calibration_path,calibration_checklist,calibration_external,technical_status[0],problem,trc[0],code,qrcode,createdAt,None))
+        # 6) Add the device
+        mycursor.execute("""INSERT INTO device (`device_sn`, `category`, `equipment_id`, `model_id`, `manufacturer_id`, `device_production_date`, `device_supply_date`, `location_id`, `device_country`, `image`, `device_contract_type`, `contract_start_date`, `contract_end_date`, `terms`, `terms_file`, `inspection_list`, `inspection_checklist`, `ppm_list`, `ppm_checklist`, `ppm_external`, `calibration_list`, `calibration_checklist`, `calibration_external`, `technical_status`, `problem`, `TRC`, `code`, `qrcode`, `createdAt`, `updatedAt`) VALUES
+                        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                        (sn,category,equipment_id[0],model_id[0],manufacturer_id[0],prod_date,supp_date,location_id[0],country,image_path,contract,contract_start_date,contract_end_date,description,description_path,inspection_path,inspection_checklist,ppm_path,ppm_checklist,ppm_external,calibration_path,calibration_checklist,calibration_external,technical_status[0],problem,trc[0],code,qrcode,createdAt,None))
 
-      
-      # 7) Add services of the device
-      # Inspection
-      insert_into_service(inspection_start_date, inspection_end_date, inspection_freq, sn, "Inspection")
-      # PPM
-      insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
-      # Calibration
-      insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
+        
+        # 7) Add services of the device
+        # Inspection
+        insert_into_service(inspection_start_date, inspection_end_date, inspection_freq, sn, "Inspection")
+        # PPM
+        insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
+        # Calibration
+        insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
 
-      status = 1
-      mydb.commit() # Work Is DONE
+        status = 1
+        mydb.commit() # Process is done
+        almaza_logger.info(f'succeded to add new device with sn {sn}.')
 
-      # except:
-      #   # ERROR
-      #   status = 0
+      except Exception as e:
+        almaza_logger.exception('Failed to add new device.')
+        status = 0
       
     return render_template("add.html",
                           title="Add New Device",
@@ -381,18 +400,24 @@ def delete_device():
     # GET serial number from arguments
     sn = get_argument("sn")
     
-    # Execute the delete Process
-    mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
-    mydb.commit() # work Is done
-    # Remove its data
-    rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=true)
+    try:
+      # Remove device data
+      rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=True)
+
+      # Execute the delete Process
+      mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
+      mydb.commit() # Process is done
+      almaza_logger.info(f'Device with sn {sn} deleted successfully.')
+    
+    except Exception as e:
+      almaza_logger.exception(f'Failed to deleted device with sn {sn}')
     
     # Redirect to device page again
     return redirect(url_for('search'))
   else:
     return redirect(url_for('login'))
 
-# Search on devices
+# Search On Devices
 @app.route("/search", methods=['GET', 'POST'])
 def search(): 
   if 'loggedin' in session and session['loggedin'] == True:
@@ -563,7 +588,7 @@ def search():
   else:
     return redirect(url_for('login'))
 
-# Device profile page
+# Device Profile Page
 @app.route("/device", methods=['GET', 'POST'])
 def device():
   if 'loggedin' in session and session['loggedin'] == True:
@@ -644,7 +669,7 @@ def device():
 
 #-----------Services-----------#
 
-# Services page
+# Services Page
 @app.route("/services", methods=['GET', 'POST'])
 def services():
   if 'loggedin' in session and session['loggedin'] == True:
@@ -694,10 +719,14 @@ def delete_service():
   come = get_argument("come")
   sn = get_argument("sn")
   
-  
-  # Execute the DELETE Process
-  mycursor.execute(f"""DELETE FROM service WHERE service_id='{id}';""")
-  mydb.commit() # Work Is DONE
+  # Execute the DELETE process
+  try:
+    mycursor.execute(f"""DELETE FROM service WHERE service_id='{id}';""")
+    mydb.commit() # Process is done
+    almaza_logger.info(f'Service with sn {id} deleted successfully.')
+    
+  except Exception as e:
+    almaza_logger.exception(f'Failed to delete service with sn {id}')
 
   if come == 'device':
     # Redirect to device page again
@@ -720,11 +749,16 @@ def complete_service():
     today = pd.to_datetime("today")
 
     # Execute the DELETE Process
-    mycursor.execute(f"""UPDATE service
-                        SET `done_date` = '{today.date()}'
-                        WHERE service_id='{id}';""")
-    mydb.commit() # Work Is DONE
-
+    try:
+      mycursor.execute(f"""UPDATE service
+                          SET `done_date` = '{today.date()}'
+                          WHERE service_id='{id}';""")
+      mydb.commit() # Process is done
+      almaza_logger.info(f'Service with sn {id} completed successfully.')
+    
+    except Exception as e:
+      almaza_logger.exception(f'Failed to complete service with sn {id}')
+      
     if come == 'device':
       # Redirect to page page again
       return redirect(f"/device?page={page}&sn={sn}#services")
@@ -737,7 +771,7 @@ def complete_service():
   else:
     return redirect(url_for('login'))
 
-# service-order
+# Service Order
 @app.route("/service-order")
 def service_order():
   if 'loggedin' in session and session['loggedin'] == True:
@@ -789,14 +823,14 @@ def service_order():
                             today=today)
   else:
     return redirect(url_for('login'))
+
 #-----------Settings-----------#
 
 # Settings
 @app.route("/settings", methods=['GET', 'POST'])
 def settings():
   if 'loggedin' in session and session['loggedin'] == True:
-  
-    status = -1
+    status = -1 # Default
     if request.method == 'POST' :
       if request.form['settings'] == 'SAVE':   
         # Insert equipments
@@ -808,9 +842,14 @@ def settings():
           for statment in statmentsList:
             mycursor.execute(statment)
             mydb.commit()
+          
           status = 1
-        except:
+          almaza_logger.info('Libraries in settings updated successfully.')
+
+        except Exception as e:
+          almaza_logger.exception('Failed to update libraries in settings.')
           status = 0
+
 
       elif request.form['settings'] == 'CHANGE':
         username = request.form['username']
@@ -825,11 +864,16 @@ def settings():
             # Update information
             mycursor.execute(f"""UPDATE `admin` SET username='{username}', passwd='{password}' WHERE admin_id=0""")
             mydb.commit()
+            
+            status = 1
+            almaza_logger.info('Admin information updated successfully.')
+
             return redirect(url_for('logout'))
           else:
             status = 0
 
-        except:
+        except Exception as e:
+          almaza_logger.exception('Failed to update admin information.')
           status = 0
 
     db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
@@ -850,7 +894,7 @@ def settings():
   else:
     return redirect(url_for('login'))
 
-#-----------Login and Logout-----------#
+#-----------Login & Logout-----------#
 
 # Login
 @app.route("/", methods=['GET', 'POST'])
@@ -896,7 +940,7 @@ def logout():
   # Redirect to login page
   return redirect(url_for('login'))
 
-#-----------ERRORS-----------#
+#-----------Error Handler-----------#
 
 # Page 404
 @app.errorhandler(404)
@@ -910,7 +954,11 @@ def internal_server_error(e):
     # note that we set the 500 status explicitly
     return render_template('500.html'), 500
 
-# Run app
+#--------------------------------------------------------------------------#
+
+#-----------__main__-----------#
+
+# Run the app in debug mode
 if __name__ == "__main__":  
   app.run(debug=True,port=9000)
 
