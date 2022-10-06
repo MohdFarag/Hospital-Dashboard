@@ -5,13 +5,26 @@
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Add New Device</h4>
+        {% with messages = get_flashed_messages(category_filter=["info"]) %}  
+          {% if messages %}  
+                {% for msg in messages %}  
+                  <div class="alert alert-success" role="alert">
+                    {{msg}}
+                  </div>
+                {% endfor %}  
+          {% endif %}  
+        {% endwith %}  
+
+        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+          {% if errors %} 
+            <div class="alert alert-danger" role="alert">
+              {% for msg in errors %}
+              <li>{{msg}}</li>
+              {% endfor %}
+            </div>
+          {% endif %} 
+        {% endwith %}  
         
-        <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">
-          Device Added successfully.
-        </div>
-        <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">
-          There is Error !
-        </div>
         
         <!-- Add device form -->
         <form class="row g-3 needs-validation" novalidate enctype="multipart/form-data" action="{{ url_for('add_device') }}" method="POST">
@@ -24,7 +37,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">S/N</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input required id="sn" name="sn" placeholder="Enter Serial Number ..." type="text" onchange="createDownloadQr()" class="form-control form-control-sm" />
                     <div class="valid-feedback">
                       Looks good!
@@ -39,7 +52,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Category</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select required id="category" name="category" class="form-control form-control-sm">
                       <option selected="selected" value="">Choose Category Name ...</option>
                       <option value="BM">BM</option>
@@ -61,7 +74,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Equipment Name</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select required onchange="giveSelection(this.value)" id="equipment" name="equipment" class="form-control form-control-sm">
                       <option selected="selected" value="">Choose Equipment Name ...</option>
                       {% for equipment in equipments %}
@@ -81,7 +94,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Model</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select required id="model" name="model" class="form-control form-control-sm">
                       <option data-option="" selected="selected" value="" >Choose Equipment First ...</option>
                       {% for model in models %}
@@ -103,7 +116,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Production Date</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input id="prod-date" name="prod-date" type="date" class="form-control form-control-sm" />
                     <div class="invalid-feedback">
                       Choose production date if you know or it will be N/A.
@@ -115,7 +128,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Supply Date</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input id="supp-date" name="supp-date" type="date" class="form-control form-control-sm" />
                     <div class="invalid-feedback">
                       Choose supply date if you know or it will be N/A.
@@ -129,7 +142,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Picture</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input id="image" name="image" type="file" class="form-control form-control-sm" />
                     <div class="invalid-feedback">
                       Choose image if exist.
@@ -141,7 +154,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Manufacturer</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select required id="manufacturer" name="manufacturer" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose Manufacturer ...</option>
                       {% for manufacturer in manufacturers %}
@@ -160,7 +173,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Location</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select id="location" name="location" class="form-control form-control-sm">
                       <option selected="selected" value="" >Choose location...</option>               
                       {% for location in locations %}
@@ -177,7 +190,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Country</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select id="country" name="country" class="form-control form-control-sm">
                       <option value="" label="Select a country ... " selected="selected">Select a country ...
                       </option>
@@ -469,7 +482,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Contract type</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <select required onchange="contractTypes()" name="contract-type" id="contract-type" class="form-control form-control-sm">
                       <option value="" selected>Choose Contract type ...</option>
                       <option>Warranty</option>
@@ -514,7 +527,7 @@
               <div class="col-md-6">
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label">Inspection List file</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input id="inspection-list" name="inspection-list" type="file" class="form-control form-control-sm" />
                     <a href="#/" data-bs-toggle="modal" data-bs-target="#InspectionModal" class="link text-decoration-none"><b>And</b> make the checklist</a>
                   </div>
@@ -794,35 +807,36 @@
                   <label class="col-sm-3 col-form-label">Technical Status</label>
                   <div class="col-sm-3">
                     <div class="form-check">
-                      <label class="form-check-label">
-                        <input onclick="statusChange('FF')" id="technical-status" name="technical-status" value="FF" type="radio" class="form-check-input">
+                      <label for="FF" class="form-check-label">
+                        <input required onclick="statusChange('FF')" id="technical-status" name="technical-status" value="FF" type="radio" class="form-check-input">
                         FF
                       </label>
                     </div>
                   </div>
                   <div class="col-sm-3">
                     <div class="form-check">
-                      <label class="form-check-label">
-                        <input onclick="statusChange('PF')" id="technical-status" name="technical-status" value="PF" type="radio" class="form-check-input">
+                      <label for="PF" class="form-check-label">
+                        <input required onclick="statusChange('PF')" id="technical-status" name="technical-status" value="PF" type="radio" class="form-check-input">
                         PF
                       </label>
                     </div>
                   </div>
                   <div class="col-sm-3">
                     <div class="form-check">
-                      <label class="form-check-label">
-                        <input onclick="statusChange('NF')" id="technical-status" name="technical-status" value="NF" type="radio" class="form-check-input">
+                      <label for="NF" class="form-check-label">
+                        <input required onclick="statusChange('NF')" id="technical-status" name="technical-status" value="NF" type="radio" class="form-check-input">
                         NF
                       </label>
                     </div>
                   </div>
+                  <div class="invalid-feedback">Please choose technical status.</div>
                 </div>
               </div>
               <!-- Problem Inputs -->
               <div class="col-md-4">
                 <div class="form-group row">
                   <label id="problem-id" style="display: none;" class="col-sm-3 col-form-label">Problem</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input id="PF-problem" name="PF-problem" style="display: none;" placeholder="Problem" type="text" class="form-control" />
                     <select id="NF-problem" name="NF-problem" style="display: none;" class="form-control form-control-sm">
                       <option selected>Choose ...</option>
@@ -854,7 +868,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input id="trc" name="trc" value="1" type="radio" class="form-check-input">
+                        <input required id="trc" name="trc" value="1" type="radio" class="form-check-input">
                         1
                       </label>
                     </div>
@@ -862,7 +876,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input id="trc" name="trc" value="2" type="radio" class="form-check-input">
+                        <input required id="trc" name="trc" value="2" type="radio" class="form-check-input">
                         2
                       </label>
                     </div>
@@ -870,7 +884,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input id="trc" name="trc" value="3" type="radio" class="form-check-input">
+                        <input required id="trc" name="trc" value="3" type="radio" class="form-check-input">
                         3
                       </label>
                     </div>
@@ -878,7 +892,7 @@
                   <div class="col-sm-2">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input id="trc" name="trc" value="4" type="radio" class="form-check-input">
+                        <input required id="trc" name="trc" value="4" type="radio" class="form-check-input">
                         4
                       </label>
                     </div>
@@ -912,7 +926,7 @@
               <div class="col-md-12">
                 <div class="form-group row">
                   <label class="col-sm-1 col-form-label">Code</label>
-                  <div class="col-sm-9">
+                  <div class="col-sm-9 position-relative">
                     <input required id="code" name="code" type="text" class="form-control form-control-sm-plaintext" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();" value="" />
                     <div class="valid-feedback">
                       Looks good!

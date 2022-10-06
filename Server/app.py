@@ -1,16 +1,24 @@
 # Imports
+from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
+
 import database
 
 import pandas as pd
 import math
+import datetime
 
 import os
 from shutil import rmtree
-
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, url_for, session, abort
 
 from log import almaza_logger
+
+# from werkzeug.middleware.proxy_fix import ProxyFix
+
+#--------------------------------------------------------------------------#
+
+"""Constants"""
+ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'webp'])
 
 #--------------------------------------------------------------------------#
 
@@ -28,15 +36,6 @@ def services_of_current_month(type):
 
   return data
 
-# Get Request
-def get_argument(argName):
-  if request.args.get(argName):
-    field = request.args.get(argName)
-  else:
-    field = ""
-  
-  return field
-
 # Get SQL [IN] sentence for search
 def get_sql_for_search(givenName, fieldName):
   given_list = request.form.getlist(givenName)
@@ -46,7 +45,7 @@ def get_sql_for_search(givenName, fieldName):
     output_string += f"'{str(item)}'"+","
 
   if len(given_list) > 0:
-    output_string = f"`{fieldName}` IN ({output_string[:-1]}) AND"
+    output_string = f"AND `{fieldName}` IN ({output_string[:-1]})"
   else:
     output_string = ""
 
@@ -110,10 +109,31 @@ def get_dates_in_interval(start_date, end_date, freq):
 
     return dates_list 
 
+# Check date
+def check_date(date_input, name):
+  if date_input == '':
+      date_input = None
+
+  if date_input != None:
+    # Date
+    try:
+      pd.date_range(date_input, date_input)
+    except ValueError as e:
+        flash(f"The {name} date is invalid.", "error")
+    
+  return date_input
+
+# Insert new service into services
+def insert_into_service(start_date, end_date, freq, sn, type_of_list):
+  dates = get_dates_in_interval(start_date, end_date, freq)
+  for date in dates:
+    mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
+                                              (type_of_list, sn, date.date(), None))
+
 # Check extention of files
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS_DOC
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 # Save file
 def save_file(list, sn, fileName):
@@ -136,31 +156,42 @@ def get_dashboard_stat(field_name):
 
   return list_stat
 
-# Insert new service into services
-def insert_into_service(start_date, end_date, freq, sn, type_of_list):
-  dates = get_dates_in_interval(start_date, end_date, freq)
-  for date in dates:
-    mycursor.execute(f"""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES 
-                                               ({type_of_list}, {sn}, {date.date()}, {None})""")
-
-def select_distinct(searchValue, field_name):
-    mycursor.execute(f"""SELECT DISTINCT `{field_name}`
+# Select Distinct
+def select_distinct(search_word, field_name):
+    print(f"""SELECT DISTINCT {field_name}
                       FROM `device`
-                      LEFT JOIN equipment
+                      JOIN equipment
                         ON device.equipment_id = equipment.equipment_id
-                      LEFT JOIN model
+                      JOIN model
                         ON device.model_id = model.model_id
-                      LEFT JOIN manufacturer
+                      JOIN manufacturer
                         ON device.manufacturer_id = manufacturer.manufacturer_id
-                      LEFT JOIN location
+                      JOIN location
                         ON device.location_id = location.location_id 
                       WHERE
-                        device_sn LIKE '%{searchValue}%' OR
-                        equipment_name LIKE '%{searchValue}%' OR
-                        model_name LIKE '%{searchValue}%' OR
-                        manufacturer_name LIKE '%{searchValue}%' OR
-                        location_name LIKE '%{searchValue}%' OR
-                        Code LIKE '%{searchValue}%'""")
+                        device_sn LIKE '%{search_word}%' OR
+                        equipment_name LIKE '%{search_word}%' OR
+                        model_name LIKE '%{search_word}%' OR
+                        manufacturer_name LIKE '%{search_word}%' OR
+                        location_name LIKE '%{search_word}%' OR
+                        Code LIKE '%{search_word}%'""")
+    mycursor.execute(f"""SELECT DISTINCT {field_name}
+                      FROM `device`
+                      JOIN equipment
+                        ON device.equipment_id = equipment.equipment_id
+                      JOIN model
+                        ON device.model_id = model.model_id
+                      JOIN manufacturer
+                        ON device.manufacturer_id = manufacturer.manufacturer_id
+                      JOIN location
+                        ON device.location_id = location.location_id 
+                      WHERE
+                        device_sn LIKE '%{search_word}%' OR
+                        equipment_name LIKE '%{search_word}%' OR
+                        model_name LIKE '%{search_word}%' OR
+                        manufacturer_name LIKE '%{search_word}%' OR
+                        location_name LIKE '%{search_word}%' OR
+                        Code LIKE '%{search_word}%'""")
     data = mycursor.fetchall()
     return data
 
@@ -181,19 +212,16 @@ except Exception as e:
 
 """Our app"""
 app = Flask(__name__)
-ALLOWED_EXTENSIONS_DOC = set(['pdf', 'png', 'jpg', 'jpeg', 'webp'])
-
 # Configuration
 app.config.from_object('config.Config')
-
 # Using a development configuration
 app.config.from_object('config.DevConfig')
-## Using a production configuration
+# Using a production configuration
 # app.config.from_object('config.ProdConfig')
-
-almaza_logger.info('Settings are setted successfully.')
+# app.wsgi_app = ProxyFix(app.wsgi_app)
 
 #--------------------------------------------------------------------------#
+almaza_logger.info('Settings are setted successfully.')
 
 """ Routes of Pages """
 # Dashboard
@@ -256,24 +284,23 @@ def add_device():
     equipments = db_tables['equipment']
     manufacturers = db_tables['manufacturer']
 
-    status = -1
     if request.method == 'POST' :
       # Get data from inputs
       sn = request.form['sn']
       sn = sn.replace(" ","")
+
       equipment = request.form['equipment']
       category = request.form['category']
       model = request.form['model']
       manufacturer = request.form['manufacturer']
 
       prod_date = request.form["prod-date"]
-      if prod_date == '':
-        prod_date = None
+      prod_date = check_date(prod_date, "production")
       supp_date = request.form["supp-date"]
-      if supp_date == '':
-        supp_date = None
+      supp_date = check_date(supp_date, "supply")
+      
       location = request.form['location']
-      country = request.form['country']
+      country = request.form['country'].lower()
       image = request.files['image']
       
       contract = request.form['contract-type']
@@ -282,18 +309,18 @@ def add_device():
         contract = contract + " - " + maintenance_contract_type
 
       contract_start_date = request.form['contract-start-date']
-      if contract_start_date == '':
-        contract_start_date = None
+      contract_start_date = check_date(contract_start_date, "start date of contract")
       contract_end_date = request.form['contract-end-date']
-      if contract_end_date == '':
-        contract_end_date = None
+      contract_end_date = check_date(contract_end_date, "end date of contract")
       
       inspection_list = request.files['inspection-list']
       inspection_checklist = request.form['inspection-checklist']
 
       inspection_freq = request.form['inspection-freq']
       inspection_start_date = request.form['inspection-start-date']
+      inspection_start_date = check_date(inspection_start_date, "start date of inspection")
       inspection_end_date = request.form['inspection-end-date']
+      inspection_end_date = check_date(inspection_end_date, "end date of inspection")
 
       ppm_list = request.files['ppm-list']
       ppm_checklist = request.form['ppm-checklist']
@@ -302,8 +329,9 @@ def add_device():
       else : ppm_external = False
       ppm_freq = request.form['ppm-freq']
       ppm_start_date = request.form['ppm-start-date']
+      ppm_start_date = check_date(ppm_start_date, "start date of ppm")
       ppm_end_date = request.form['ppm-end-date']
-
+      ppm_end_date = check_date(ppm_end_date, "end date of ppm")
 
       calibration_list = request.files['calibration-list']
       calibration_checklist = request.form['calibration-checklist']
@@ -312,7 +340,9 @@ def add_device():
       else : calibration_external = False
       calibration_freq = request.form['calibration-freq']
       calibration_start_date = request.form['calibration-start-date']
+      calibration_start_date = check_date(calibration_start_date, "start date of calibration")
       calibration_end_date = request.form['calibration-end-date']
+      calibration_end_date = check_date(calibration_end_date, "end date of calibration")
           
       technical_status = request.form.getlist('technical-status')
       PF_problem = request.form['PF-problem']
@@ -335,9 +365,15 @@ def add_device():
       createdAt = pd.to_datetime("today")
       createdAt = f"{createdAt.year}-{createdAt.month}-{createdAt.day}"
 
-      try:
-        # Insertion Process
+      # Validation
+      # S/N
+      mycursor.execute(f"SELECT device_sn FROM device WHERE `device_sn` = '{sn}'")
+      sn_exist = mycursor.fetchone()
+      if sn_exist:
+        flash("The Serial Number is used before!", "error")
 
+      # Insertion Process
+      try:
         # 1) Get id of equipment_name chosen
         mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
         equipment_id = mycursor.fetchone()
@@ -374,18 +410,15 @@ def add_device():
         insert_into_service(ppm_start_date, ppm_end_date, ppm_freq, sn, "PPM")
         # Calibration
         insert_into_service(calibration_start_date, calibration_end_date, calibration_freq, sn, "Calibration")
-
-        status = 1
         mydb.commit() # Process is done
-        almaza_logger.info(f'succeded to add new device with sn {sn}.')
-
+        flash("Device Added successfully.","info")
+        
+        almaza_logger.info(f'Succeded to add new device with sn {sn}.')
       except Exception as e:
         almaza_logger.exception('Failed to add new device.')
-        status = 0
       
     return render_template("add.html",
                           title="Add New Device",
-                          status=status,
                           equipments=equipments,
                           models=models,
                           locations=locations,
@@ -398,7 +431,7 @@ def add_device():
 def delete_device():
   if 'loggedin' in session and session['loggedin'] == True:
     # GET serial number from arguments
-    sn = get_argument("sn")
+    sn = request.args.get("sn", "")
     
     try:
       # Remove device data
@@ -430,7 +463,7 @@ def search():
     curr_page = starts_at*per_page
 
     # Get search Value
-    searchValue = get_argument('searchValue')
+    search_word = request.args.get("searchValue", "")
 
     mycursor.execute(f"""SELECT 
                           device_sn, 
@@ -452,12 +485,12 @@ def search():
                         LEFT JOIN location
                           ON device.location_id = location.location_id 
                         WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'
+                          device_sn LIKE '%{search_word}%' OR
+                          equipment_name LIKE '%{search_word}%' OR
+                          model_name LIKE '%{search_word}%' OR
+                          manufacturer_name LIKE '%{search_word}%' OR
+                          location_name LIKE '%{search_word}%' OR
+                          Code LIKE '%{search_word}%'
                         LIMIT {curr_page},{per_page}""")
     data = mycursor.fetchall()
 
@@ -473,26 +506,26 @@ def search():
                         LEFT JOIN location
                           ON device.location_id = location.location_id 
                         WHERE
-                          device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%'""")
+                          device_sn LIKE '%{search_word}%' OR
+                          equipment_name LIKE '%{search_word}%' OR
+                          model_name LIKE '%{search_word}%' OR
+                          manufacturer_name LIKE '%{search_word}%' OR
+                          location_name LIKE '%{search_word}%' OR
+                          Code LIKE '%{search_word}%'""")
     num_of_results = mycursor.fetchone()[0]
     
-    equipments = select_distinct(searchValue, 'equipment_name')
-    models = select_distinct(searchValue, 'model_name')
-    manufacturers = select_distinct(searchValue, 'manufacturer_name')
-    locations = select_distinct(searchValue, 'location_name')
-    countries = select_distinct(searchValue, 'device_country')
-    contracts = select_distinct(searchValue, 'device_contract_type')
-    technicals_status = select_distinct(searchValue, 'technical_status')
-    trcs = select_distinct(searchValue, 'TRC')
+    equipments = select_distinct(search_word, 'equipment_name')
+    models = select_distinct(search_word, 'model_name')
+    manufacturers = select_distinct(search_word, 'manufacturer_name')
+    locations = select_distinct(search_word, 'location_name')
+    countries = select_distinct(search_word, 'device_country')
+    contracts = select_distinct(search_word, 'device_contract_type')
+    technicals_status = select_distinct(search_word, 'technical_status')
+    trcs = select_distinct(search_word, 'TRC')
 
     # When search
     if request.method == 'POST' :
-      searchValue = request.form['searchValue']
+      search_word = request.form['searchValue']
       category = get_sql_for_search('category', 'category')
       equipment = get_sql_for_search('equipment', 'equipment_name')
       model = get_sql_for_search('model', 'model_name')
@@ -505,6 +538,42 @@ def search():
       technical_status = get_sql_for_search('technical-status','technical_status')
       trc = get_sql_for_search('trc','trc')
       
+      print(f"""SELECT 
+                          device_sn, 
+                          equipment_name, 
+                          model_name, 
+                          manufacturer_name, 
+                          device_production_date, 
+                          location_name, 
+                          device_country, 
+                          device_contract_type, 
+                          Code
+                        FROM `device`
+                        LEFT JOIN equipment
+                          ON device.equipment_id = equipment.equipment_id
+                        LEFT JOIN model
+                          ON device.model_id = model.model_id
+                        LEFT JOIN manufacturer
+                          ON device.manufacturer_id = manufacturer.manufacturer_id
+                        LEFT JOIN location
+                          ON device.location_id = location.location_id 
+                        WHERE
+                          (device_sn LIKE '%{search_word}%' OR
+                          equipment_name LIKE '%{search_word}%' OR
+                          model_name LIKE '%{search_word}%' OR
+                          manufacturer_name LIKE '%{search_word}%' OR
+                          location_name LIKE '%{search_word}%' OR
+                          Code LIKE '%{search_word}%')
+                          {category}
+                          {equipment}
+                          {model}
+                          {manufacturer}
+                          {location}
+                          {country}
+                          {contract}
+                          {technical_status}
+                          {trc}
+                        LIMIT {curr_page},{per_page}""")
       mycursor.execute(f"""SELECT 
                           device_sn, 
                           equipment_name, 
@@ -525,12 +594,12 @@ def search():
                         LEFT JOIN location
                           ON device.location_id = location.location_id 
                         WHERE
-                          (device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%') AND
+                          (device_sn LIKE '%{search_word}%' OR
+                          equipment_name LIKE '%{search_word}%' OR
+                          model_name LIKE '%{search_word}%' OR
+                          manufacturer_name LIKE '%{search_word}%' OR
+                          location_name LIKE '%{search_word}%' OR
+                          Code LIKE '%{search_word}%') AND
                           {category}
                           {equipment}
                           {model}
@@ -553,12 +622,12 @@ def search():
                         LEFT JOIN location
                           ON device.location_id = location.location_id 
                         WHERE
-                          (device_sn LIKE '%{searchValue}%' OR
-                          equipment_name LIKE '%{searchValue}%' OR
-                          model_name LIKE '%{searchValue}%' OR
-                          manufacturer_name LIKE '%{searchValue}%' OR
-                          location_name LIKE '%{searchValue}%' OR
-                          Code LIKE '%{searchValue}%') AND
+                          (device_sn LIKE '%{search_word}%' OR
+                          equipment_name LIKE '%{search_word}%' OR
+                          model_name LIKE '%{search_word}%' OR
+                          manufacturer_name LIKE '%{search_word}%' OR
+                          location_name LIKE '%{search_word}%' OR
+                          Code LIKE '%{search_word}%') AND
                           {category}
                           {equipment}
                           {model}
@@ -574,7 +643,7 @@ def search():
                     title="Devices",
                     num_of_results=num_of_results,
                     devices=data,
-                    search_value=searchValue,
+                    search_word=search_word,
                     num_of_pages=math.ceil(num_of_results/per_page),
                     curr_page=starts_at+1,
                     equipments=equipments,
@@ -602,7 +671,7 @@ def device():
       starts_at = 0
     curr_page = starts_at*per_page
 
-    sn = get_argument('sn')
+    sn = request.args.get("sn", "")
     mycursor.execute("""SELECT 
       device_sn, 
       category,
@@ -683,7 +752,7 @@ def services():
       starts_at = 0
     curr_page = starts_at*per_page
 
-    type = get_argument("type")
+    type = request.args.get("type", "")
     sentence = ""
     today = pd.to_datetime("today")
 
@@ -713,11 +782,11 @@ def services():
 @app.route("/delete-service")
 def delete_service():
   # GET Serial Number from arguments
-  id = get_argument("id")
-  page = get_argument("page") 
-  type = get_argument("type")
-  come = get_argument("come")
-  sn = get_argument("sn")
+  id = request.args.get("id", "")
+  page = request.args.get("page", "")
+  type = request.args.get("type", "")
+  come = request.args.get("come", "")
+  sn = request.args.get("sn", "")
   
   # Execute the DELETE process
   try:
@@ -740,11 +809,11 @@ def delete_service():
 def complete_service():
   if 'loggedin' in session and session['loggedin'] == True:
     # GET sn&type from arguments
-    id = get_argument("id")
-    type = get_argument("type")
-    come = get_argument("come")
-    page = get_argument("page")
-    sn = get_argument("sn")
+    id = request.args.get("id", "")
+    type = request.args.get("type", "")
+    come = request.args.get("come", "")
+    page = request.args.get("page", "")
+    sn = request.args.get("sn", "")
 
     today = pd.to_datetime("today")
 
@@ -776,7 +845,7 @@ def complete_service():
 def service_order():
   if 'loggedin' in session and session['loggedin'] == True:
     # GET sn from arguments
-    id = get_argument("id")
+    id = request.args.get("id", "")
     mycursor.execute(f"""SELECT service_id,
                                 service_type,
                                 service.device_sn
@@ -961,9 +1030,4 @@ def internal_server_error(e):
 
 #--------------------------------------------------------------------------#
 
-#-----------__main__-----------#
-
-# Run the app in debug mode
-if __name__ == "__main__":  
-  app.run(debug=True,port=9000)
 

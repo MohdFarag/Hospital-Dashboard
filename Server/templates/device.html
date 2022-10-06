@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <img class="img-fluid img-thumbnail" src="{{device[9]}}" title="{{device[4]}} {{device[3]}}" alt="{{device[4]}} {{device[3]}}" />
+                            <img class="img-fluid img-thumbnail" src="{{device[9]}}" />
                         </div>
                         <div class="col-md-5">
                             <h1 style="color: rgb(0, 88, 165);" class="display-4">{{device[4]}} {{device[3]}}</h1>
@@ -50,14 +50,14 @@
                             <h5>{% if device[5] != None %} {{device[5].strftime('%Y')}} {% else %} N/A {% endif %}</h5>   
                         </div>
                         <div id="qrcode" class="col-md-2">
-                            <center><img style="width: 310px;" src="{{device[27]}}" /></center>
+                            <center><img title="qrcode" alt="qrcode" style="width: 310px;" src="{{device[27]}}" /></center>
                         </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
                             <tr>
                                 <td>Country</td>
-                                <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[8] }}.svg" alt="{{device[8]}}" title="{{device[8]}}" /> </td>
+                                <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[8]|lower }}.svg" alt="{{device[8]}}" title="{{device[8]}}" /> </td>
                             </tr>
                             <tr>
                                 <td>Supply Date</td>
@@ -70,7 +70,7 @@
                             <tr>
                                 <td>Contract</td>
                                 <td>
-                                    {% if device[10] == "Local" %}
+                                    {% if device[10] != "Local" %}
                                         {{device[10]}} <br> 
                                         From 
                                         <b style="color: rgb(0, 61, 114);">

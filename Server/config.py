@@ -15,6 +15,7 @@ class Config:
     TEMPLATES_FOLDER = 'templates'
     UPLOAD_FOLDER = "static/UPLOAD/"
 
+
 class ProdConfig(Config):
     FLASK_ENV = 'production'
     DEBUG = False
