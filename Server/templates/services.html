@@ -38,23 +38,45 @@
                             <td>{{service[3]}}</td>
                             <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {% endif %}</td>
                             <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i> Print Service Order</button></a></td>
-                            <td><a href="/complete-service?id={{service[0]}}&type={{type}}&come=services"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i> Done</button></a></td>
+                            <td>
+                              <a href="#/" data-bs-toggle="modal" data-bs-target="#complete-{{service[0]}}">
+                                <button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i> Done</button>
+                              </a>
+                              <!-- Modal -->
+                              <div class="modal fade" id="complete-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="completeBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                      <h5 class="modal-title" id="completeBackdropLabel">Complete Service</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                          Are you sure to Complete this service with id {{service[0]}} ?
+                                      </div>
+                                      <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                      <a href="/complete-service?id={{service[0]}}&type={{type}}&come=services" type="button" class="btn btn-primary">Yes</a>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
                             <td style="text-align: center;">
                               <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
                             </td>
                             <td style="text-align: center;">
                               <!-- Text trigger modal -->
-                              <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
+                              <a href="#/" data-bs-toggle="modal" data-bs-target="#delete-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
                               <!-- Modal -->
-                              <div class="modal fade" id="staticBackdrop-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal fade" id="delete-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteBackdropLabel" aria-hidden="true">
                                   <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel">Delete Service</h5>
+                                        <h5 class="modal-title" id="deleteBackdropLabel">Delete Service</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Are you sure to delete this service with id {{service[0]}} ?
+                                            <span class="text-danger">Are you sure to delete this service with id {{service[0]}} ?</span>
                                         </div>
                                         <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

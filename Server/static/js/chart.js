@@ -4,6 +4,12 @@
 */
 'use strict';
 
+var backgroundColors = ["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6", "#00b7c7", "#5ad45a", "#8be04e", "#ebdc78"]
+
+var borderColors = [
+    'rgba(255, 255, 255, 1)'
+]
+
 
 function pieChart(labelsList, counts, id){
     var options = {
@@ -17,19 +23,8 @@ function pieChart(labelsList, counts, id){
     var chartTypesData = {
         datasets: [{
         data: counts,
-        backgroundColor: [
-            'rgba(92, 212, 40, 1)',
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
-            'rgba(212, 40, 195, 1)'
-        ],
-        borderColor: [
-            'rgba(255, 255, 255, 1)'
-        ],
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
         }],
     
         // These labels appear in the legend and in the tooltips when hovering different arcs
@@ -57,19 +52,8 @@ function doughnutChart(labelsList, counts, id){
     var chartTypesData = {
         datasets: [{
         data: counts,
-        backgroundColor: [
-            'rgba(92, 212, 40, 1)',
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
-            'rgba(212, 40, 195, 1)'
-        ],
-        borderColor: [
-            'rgba(255, 255, 255, 1)'
-        ],
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
         }],
     
         // These labels appear in the legend and in the tooltips when hovering different arcs

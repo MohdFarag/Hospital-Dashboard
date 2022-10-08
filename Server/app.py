@@ -237,8 +237,18 @@ def dashboard():
                     FROM device
                     LEFT JOIN equipment
                     ON device.equipment_id = equipment.equipment_id 
-                    GROUP BY equipment.equipment_name""")
+                    GROUP BY equipment.equipment_name
+                    ORDER BY count DESC
+                    LIMIT 7""")
     equipments = mycursor.fetchall()
+    sum_of_counted_devices = 0
+    for equipment in equipments:
+      sum_of_counted_devices += equipment[1]
+    others_count = len(devices) - sum_of_counted_devices
+    other_tuple = ("Others", others_count)
+    equipments.append(other_tuple)
+
+
     technical_status = get_dashboard_stat("technical_status")
     contracts = get_dashboard_stat("device_contract_type")
 
@@ -444,6 +454,28 @@ def delete_device():
     
     except Exception as e:
       almaza_logger.exception(f'Failed to deleted device with sn {sn}')
+    
+    # Redirect to device page again
+    return redirect(url_for('search'))
+  else:
+    return redirect(url_for('login'))
+
+# Delete device
+@app.route("/delete-devices")
+def delete_devices():
+  if 'loggedin' in session and session['loggedin'] == True:
+
+    try:
+      # Remove device data
+      rmtree(app.config['UPLOAD_FOLDER'] ,ignore_errors=True)
+
+      # Execute the delete Process
+      mycursor.execute(f"""DELETE FROM Device;""")
+      mydb.commit() # Process is done
+      almaza_logger.info(f'All devices deleted successfully.')
+    
+    except Exception as e:
+      almaza_logger.exception(f'Failed to delete all deviecs.')
     
     # Redirect to device page again
     return redirect(url_for('search'))
