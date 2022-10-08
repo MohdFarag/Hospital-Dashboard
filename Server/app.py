@@ -268,7 +268,7 @@ def dashboard():
                     "need_calibration": need_calibration }
     
     
-    return render_template("index.html",
+    return render_template("dashboard.html",
                        title="Dashboard",
                        num_of_devices=len(devices),
                        this_month=this_month,
