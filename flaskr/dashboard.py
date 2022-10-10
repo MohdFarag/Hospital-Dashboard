@@ -1,19 +1,23 @@
-# Imports
-from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
-
-import database
-
-import pandas as pd
-import math
-import datetime
-
 import os
 from shutil import rmtree
 from werkzeug.utils import secure_filename
 
-from log import almaza_logger
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, url_for
+)
+from werkzeug.exceptions import abort
 
-# from werkzeug.middleware.proxy_fix import ProxyFix
+from flaskr.auth import login_required
+from flaskr.database import mysql_connector, retrive_tables
+
+import pandas as pd
+import math
+
+from flaskr.log import almaza_logger
+
+#--------------------------------------------------------------------------#
+
+bp = Blueprint('dashboard', __name__)
 
 #--------------------------------------------------------------------------#
 
@@ -23,9 +27,9 @@ ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg', 'webp'])
 #--------------------------------------------------------------------------#
 
 """Functions"""
-
 # Get services of current month
 def services_of_current_month(type):
+  _,mycursor = mysql_connector()
   today_date = pd.to_datetime("today")
 
   where_sentence = f"WHERE service_type='{type}' AND year(`scheduled_date`)={today_date.year} AND month(`scheduled_date`)={today_date.month} AND `done_date` IS NULL"
@@ -53,6 +57,7 @@ def get_sql_for_search(givenName, fieldName):
 
 # Get stat services
 def stat_of_services(service_type):
+    _,mycursor = mysql_connector()
     mycursor.execute(f""" SELECT 
     service_type, count(service.service_type)
     FROM service
@@ -125,6 +130,7 @@ def check_date(date_input, name):
 
 # Insert new service into services
 def insert_into_service(start_date, end_date, freq, sn, type_of_list):
+  _,mycursor = mysql_connector()
   dates = get_dates_in_interval(start_date, end_date, freq)
   for date in dates:
     mycursor.execute("""INSERT INTO `service` (`service_type`, `device_sn`, `scheduled_date`, `done_date`) VALUES (%s, %s, %s, %s)""",
@@ -139,7 +145,7 @@ def allowed_file(filename):
 def save_file(list, sn, fileName):
     if list and allowed_file(list.filename):
       filename = secure_filename(fileName + "." + list.filename.rsplit('.', 1)[1])
-      path = app.config['UPLOAD_FOLDER'] + sn.replace("/", "") + "/" 
+      path = bp.config['UPLOAD_FOLDER'] + sn.replace("/", "") + "/" 
       os.makedirs(path, exist_ok=True)
       list.save(os.path.join(path, filename))
       return path + filename
@@ -148,6 +154,7 @@ def save_file(list, sn, fileName):
 
 # Get dashboard statistics
 def get_dashboard_stat(field_name):
+  _,mycursor = mysql_connector()
   mycursor.execute(f""" SELECT 
                     device.{field_name}, count(device.{field_name}) AS `count` 
                     FROM device 
@@ -158,23 +165,7 @@ def get_dashboard_stat(field_name):
 
 # Select Distinct
 def select_distinct(search_word, field_name):
-    print(f"""SELECT DISTINCT {field_name}
-                      FROM `device`
-                      JOIN equipment
-                        ON device.equipment_id = equipment.equipment_id
-                      JOIN model
-                        ON device.model_id = model.model_id
-                      JOIN manufacturer
-                        ON device.manufacturer_id = manufacturer.manufacturer_id
-                      JOIN location
-                        ON device.location_id = location.location_id 
-                      WHERE
-                        device_sn LIKE '%{search_word}%' OR
-                        equipment_name LIKE '%{search_word}%' OR
-                        model_name LIKE '%{search_word}%' OR
-                        manufacturer_name LIKE '%{search_word}%' OR
-                        location_name LIKE '%{search_word}%' OR
-                        Code LIKE '%{search_word}%'""")
+    _,mycursor = mysql_connector()
     mycursor.execute(f"""SELECT DISTINCT {field_name}
                       FROM `device`
                       JOIN equipment
@@ -197,38 +188,20 @@ def select_distinct(search_word, field_name):
 
 #--------------------------------------------------------------------------#
 
-# Connecting with database
-mydb, mycursor = database.mysql_connector()
 
-"""Retrive Database Tables"""
-try:
-  db_tables = database.retrive_tables(mycursor, "*")
-  almaza_logger.info('All tables retrieved successfully.')
-except Exception as e:
-  almaza_logger.exception('Field to retrieve all tables.')
-  exit()
+# Home
+@bp.route("/")
+@login_required
+def Home():
+  return redirect(url_for('dashboard.dashboard'))
 
-#--------------------------------------------------------------------------#
-
-"""Our app"""
-app = Flask(__name__)
-# Configuration
-app.config.from_object('config.Config')
-# Using a development configuration
-app.config.from_object('config.DevConfig')
-# Using a production configuration
-# app.config.from_object('config.ProdConfig')
-# app.wsgi_app = ProxyFix(app.wsgi_app)
-
-#--------------------------------------------------------------------------#
-almaza_logger.info('Settings are setted successfully.')
-
-""" Routes of Pages """
 # Dashboard
-@app.route("/dashboard")
+@bp.route("/dashboard")
+@login_required
 def dashboard():
-  if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "device", "equipment")
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+    db_tables = retrive_tables(mycursor, "device", "equipment")
     devices = db_tables["device"]
 
     # Equipments Counts
@@ -278,16 +251,16 @@ def dashboard():
                        inspections=inspections,
                        ppms=ppms,
                        calibrations=calibrations)
-  else:
-    return redirect(url_for('login'))
 
 #-----------Devices-----------#
 
 # Add new device
-@app.route("/add-device", methods=['GET', 'POST'])
+@bp.route("/add-device", methods=['GET', 'POST'])
+@login_required
 def add_device(): 
-  if 'loggedin' in session and session['loggedin'] == True:
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+    db_tables = retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
 
     models = db_tables['model']
     locations = db_tables['location']
@@ -433,19 +406,19 @@ def add_device():
                           models=models,
                           locations=locations,
                           manufacturers=manufacturers)
-  else:
-    return redirect(url_for('login'))
 
 # Delete device
-@app.route("/delete-device")
+@bp.route("/delete-device")
+@login_required
 def delete_device():
-  if 'loggedin' in session and session['loggedin'] == True:
+    # Connecting with database
+    mydb, mycursor = mysql_connector() 
     # GET serial number from arguments
     sn = request.args.get("sn", "")
     
     try:
       # Remove device data
-      rmtree(app.config['UPLOAD_FOLDER'] + sn ,ignore_errors=True)
+      rmtree(bp.config['UPLOAD_FOLDER'] + sn ,ignore_errors=True)
 
       # Execute the delete Process
       mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
@@ -457,17 +430,17 @@ def delete_device():
     
     # Redirect to device page again
     return redirect(url_for('search'))
-  else:
-    return redirect(url_for('login'))
-
+  
 # Delete device
-@app.route("/delete-devices")
+@bp.route("/delete-devices")
+@login_required
 def delete_devices():
-  if 'loggedin' in session and session['loggedin'] == True:
-
     try:
+      # Connecting with database
+      mydb, mycursor = mysql_connector() 
+
       # Remove device data
-      rmtree(app.config['UPLOAD_FOLDER'] ,ignore_errors=True)
+      rmtree(bp.config['UPLOAD_FOLDER'] ,ignore_errors=True)
 
       # Execute the delete Process
       mycursor.execute(f"""DELETE FROM Device;""")
@@ -479,13 +452,14 @@ def delete_devices():
     
     # Redirect to device page again
     return redirect(url_for('search'))
-  else:
-    return redirect(url_for('login'))
-
+  
 # Search On Devices
-@app.route("/search", methods=['GET', 'POST'])
-def search(): 
-  if 'loggedin' in session and session['loggedin'] == True:
+@bp.route("/search", methods=['GET', 'POST'])
+@login_required
+def search():   
+    # Connecting with database
+    mydb, mycursor = mysql_connector() 
+
     per_page = 10
     starts_at = 0
     if request.args.get('page'):
@@ -686,13 +660,14 @@ def search():
                     contracts=contracts,
                     technicals_status=technicals_status,
                     trcs=trcs)
-  else:
-    return redirect(url_for('login'))
-
+  
 # Device Profile Page
-@app.route("/device", methods=['GET', 'POST'])
-def device():
-  if 'loggedin' in session and session['loggedin'] == True:
+@bp.route("/device", methods=['GET', 'POST'])
+@login_required
+def device(): 
+    # Connecting with database
+    mydb, mycursor = mysql_connector() 
+
     per_page = 10
     starts_at = 0
     
@@ -765,15 +740,17 @@ def device():
                             num_of_results=num_of_results,
                             num_of_pages=int(num_of_results/per_page)+1,
                             curr_page=starts_at+1,)
-  else:
-    return redirect(url_for('login'))
-
+  
 #-----------Services-----------#
 
 # Services Page
-@app.route("/services", methods=['GET', 'POST'])
+@bp.route("/services", methods=['GET', 'POST'])
+@login_required
 def services():
-  if 'loggedin' in session and session['loggedin'] == True:
+    # Connecting with database
+    mydb, mycursor = mysql_connector() 
+
+    # Get arguments
     per_page = 10
     starts_at = 0
     
@@ -807,12 +784,14 @@ def services():
                           services=data,
                           curr_page=starts_at+1,
                           type=type)
-  else:
-    return redirect(url_for('login'))
-
+  
 # Delete Service 
-@app.route("/delete-service")
+@bp.route("/delete-service")
+@login_required
 def delete_service():
+  # Connecting with database
+  mydb, mycursor = mysql_connector() 
+
   # GET Serial Number from arguments
   id = request.args.get("id", "")
   page = request.args.get("page", "")
@@ -835,12 +814,15 @@ def delete_service():
   elif come == 'services':
     # Redirect to services page again
     return redirect(f"/services?page={page}&type={type}")
-    
+   
 # Complete Service
-@app.route("/complete-service")
+@bp.route("/complete-service")
+@login_required
 def complete_service():
-  if 'loggedin' in session and session['loggedin'] == True:
-    # GET sn&type from arguments
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+
+    # GET SN & type from arguments
     id = request.args.get("id", "")
     type = request.args.get("type", "")
     come = request.args.get("come", "")
@@ -869,13 +851,14 @@ def complete_service():
 
     # Redirect to device page again
     return redirect(f"/services?type={type}")
-  else:
-    return redirect(url_for('login'))
-
+  
 # Service Order
-@app.route("/service-order")
-def service_order():
-  if 'loggedin' in session and session['loggedin'] == True:
+@bp.route("/service-order")
+@login_required
+def service_order(): 
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+  
     # GET sn from arguments
     id = request.args.get("id", "")
     mycursor.execute(f"""SELECT service_id,
@@ -922,15 +905,16 @@ def service_order():
                             title="Service Order",
                             service=service,
                             today=today)
-  else:
-    return redirect(url_for('login'))
-
+  
 #-----------Settings-----------#
 
 # Settings
-@app.route("/settings", methods=['GET', 'POST'])
+@bp.route("/settings", methods=['GET', 'POST'])
+@login_required
 def settings():
-  if 'loggedin' in session and session['loggedin'] == True:
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+  
     status = -1 # Default
     if request.method == 'POST' :
       if request.form['settings'] == 'SAVE':   
@@ -977,7 +961,7 @@ def settings():
           almaza_logger.exception('Failed to update admin information.')
           status = 0
 
-    db_tables = database.retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
+    db_tables = retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
   
     # Lists
     models = db_tables['model']
@@ -992,74 +976,19 @@ def settings():
                           models=models,
                           locations=locations,
                           manufacturers=manufacturers)
-  else:
-    return redirect(url_for('login'))
-
-#-----------Login & Logout-----------#
-
-# Login
-@app.route("/", methods=['GET', 'POST'])
-def login():
-  if 'loggedin' in session and session['loggedin'] == True:
-    return redirect(url_for('dashboard'))
-  else:
-    status = True
-    if request.method == 'POST':
-      username  = request.form['username']
-      password  = request.form['password']
-
-      # Check if account exists using MySQL
-      mycursor.execute(f"SELECT * FROM admin WHERE `username` = '{username}' AND `passwd` = '{password}'")
-
-      # Fetch one record and return result
-      account = mycursor.fetchone()
-
-      # If account exists in accounts table in out database
-      if account:
-          # Create session data, we can access this data in other routes
-          session['loggedin'] = True
-          session['id'] = account[0]
-          session['username'] = account[1]
-          almaza_logger.info(f'admin:{username} logged in succefully.')
-          status = True
-
-          # Redirect to dashboard page
-          return redirect(url_for('dashboard'))
-      else:
-          # Account doesnt exist or username/password incorrect
-          status = False
-
-    return render_template("login.html",
-                          title="Login",
-                          status=status)
-
-# Logout
-@app.route("/logout")
-def logout():
-  # Remove session data, this will log the user out
-  username = session['username']
-  session.pop('loggedin', None)
-  session.pop('id', None)
-  session.pop('username', None)
-  almaza_logger.info(f'admin {username} logged out succefully.')
-
-  # Redirect to login page
-  return redirect(url_for('login'))
-
+  
 #-----------Error Handler-----------#
 
 # Page 404
-@app.errorhandler(404)
+@bp.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.html'), 404
 
 # Page 500
-@app.errorhandler(500)
+@bp.errorhandler(500)
 def internal_server_error(e):
     # note that we set the 500 status explicitly
     return render_template('500.html'), 500
 
 #--------------------------------------------------------------------------#
-
-

@@ -45,10 +45,10 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="{{ url_for('dashboard') }}">
+          <a class="navbar-brand brand-logo" href="{{ url_for('dashboard.dashboard') }}">
             <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="logo" />
           </a>
-          <a class="navbar-brand brand-logo-mini" href="{{ url_for('dashboard') }}">
+          <a class="navbar-brand brand-logo-mini" href="{{ url_for('dashboard.dashboard') }}">
             <img src="{{ url_for('static', filename='images/logo-mini.svg') }}" alt="logo" />
           </a>
         </div>
@@ -70,7 +70,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <form class="search-form" action="{{ url_for('search') }}">
+            <form class="search-form" action="{{ url_for('dashboard.search') }}">
               <i class="icon-search"></i>
               <input name="searchValue" type="search" class="form-control" placeholder="Search" title="Search">
             </form>
@@ -100,8 +100,8 @@
                 <img class="img-sm rounded-circle" src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold">{{ session.username }}</p>
               </div>
-              <a href="{{ url_for('settings') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-settings text-primary me-2"></i>Settings</a>
-              <a href="{{ url_for('logout') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+              <a href="{{ url_for('dashboard.settings') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-settings text-primary me-2"></i>Settings</a>
+              <a href="{{ url_for('auth.logout') }}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
         </ul>
@@ -127,31 +127,31 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('dashboard') }}">
+            <a class="nav-link" href="{{ url_for('dashboard.dashboard') }}">
               <i class="mdi mdi-view-dashboard menu-icon"></i>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('add_device') }}">
+            <a class="nav-link" href="{{ url_for('dashboard.add_device') }}">
               <i class="mdi mdi-plus-box menu-icon"></i>
               <span class="menu-title">Add New Device</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('search') }}">
+            <a class="nav-link" href="{{ url_for('dashboard.search') }}">
               <i class="mdi mdi-view-grid menu-icon"></i>
               <span class="menu-title">Devices List</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('services') }}">
+            <a class="nav-link" href="{{ url_for('dashboard.services') }}">
               <i class="mdi mdi-animation menu-icon"></i>
               <span class="menu-title">Services List</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('settings') }}">
+            <a class="nav-link" href="{{ url_for('dashboard.settings') }}">
               <i class="mdi mdi-settings menu-icon"></i>
               <span class="menu-title">Settings</span>
             </a>

@@ -8,7 +8,7 @@
             <div {% if status != 1 %} hidden {% endif %} class="alert alert-success" role="alert">Changes Done successfully. {{msg}}</div>
             <div {% if status != 0 %} hidden {% endif %} class="alert alert-danger" role="alert">There's Error !</div>
             
-            <form class="needs-validation" action="{{ url_for('settings') }}" method="POST">
+            <form class="needs-validation" action="{{ url_for('dashboard.settings') }}" method="POST">
                 <spam class="card-description text-muted h6">Click on the title of library to see the items.</spam>
                 <div class="row mt-3">
                     <div class="col-md-3">

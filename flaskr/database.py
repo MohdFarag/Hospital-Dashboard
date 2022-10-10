@@ -1,34 +1,58 @@
 # Imports
 import mysql.connector
-from log import almaza_logger
+from mysql.connector import errorcode
+import click
+from flask import current_app, g
 
-# Constants of DB
-HOST = "localhost"
-USER = "root"
-PASSWD = "01140345493"
-DATABASE = "almazadb"
+from flaskr.log import almaza_logger
+
 
 # Connecting with Database
 def mysql_connector():
     try:
-        mydb = mysql.connector.connect(
-            host=HOST,
-            user=USER,
-            passwd=PASSWD,
-            database=DATABASE
-        )
-        almaza_logger.info('Server connected to database successfully.')
-
-    except Exception as e:
-        almaza_logger.exception('Server Failed to connect to database.')
+        cnx = mysql.connector.connect(user ='root', password= '01140345493', host = '127.0.0.1',port='3306', database='almazadb')
+        almaza_logger.info('Server connected to database successfully')
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            almaza_logger.exception("Something is wrong with your username or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            almaza_logger.exception("Database does not exist")
+        else:
+            almaza_logger.exception(err)
+        return
+    else:
+        almaza_logger.exception('Server Failed to connect to database')
 
     # Initialize our cursor
-    mycursor = mydb.cursor(buffered=True)
+    cnx.reconnect()
+    mycursor = cnx.cursor()
+    return cnx, mycursor
 
-    return mydb, mycursor
+
+def close_db(e=None):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
+
+def init_db():
+    _,mycursor = mysql_connector()
+
+    with current_app.open_resource('schema.sql') as f:
+        mycursor.executemany(f.read().decode('utf8'))
+
+@click.command('init-db')
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 """Retrive Database Tables"""
-def getTableData(mycursor, tableName):
+def get_tables_data(mycursor, tableName):
 
     'Retrieve all table data'
 
@@ -115,6 +139,6 @@ def retrive_tables(mycursor, *args) :
         args = ["admin", "device", "equipment", "location", "manufacturer", "model", "service"]
     
     for arg in args:
-        AllTables[arg] = getTableData(mycursor, arg)
+        AllTables[arg] = get_tables_data(mycursor, arg)
 
     return AllTables
