@@ -429,7 +429,7 @@ def delete_device():
       almaza_logger.exception(f'Failed to deleted device with sn {sn}')
     
     # Redirect to device page again
-    return redirect(url_for('search'))
+    return redirect(url_for('dashboard.search'))
   
 # Delete device
 @bp.route("/delete-devices")
@@ -451,7 +451,7 @@ def delete_devices():
       almaza_logger.exception(f'Failed to delete all deviecs.')
     
     # Redirect to device page again
-    return redirect(url_for('search'))
+    return redirect(url_for('dashboard.search'))
   
 # Search On Devices
 @bp.route("/search", methods=['GET', 'POST'])
@@ -915,7 +915,6 @@ def settings():
     # Connecting with database
     mydb, mycursor = mysql_connector()
   
-    status = -1 # Default
     if request.method == 'POST' :
       if request.form['settings'] == 'SAVE':   
         # Insert equipments
@@ -927,14 +926,13 @@ def settings():
           for statment in statmentsList:
             mycursor.execute(statment)
             mydb.commit()
-          
-          status = 1
+          flash("Modifications in libraries changed successfully.", "info")
           almaza_logger.info('Libraries in settings updated successfully.')
 
         except Exception as e:
+          flash("Error !", "error")
+          flash(e, "error")
           almaza_logger.exception('Failed to update libraries in settings.')
-          status = 0
-
 
       elif request.form['settings'] == 'CHANGE':
         username = request.form['username']
@@ -948,18 +946,14 @@ def settings():
           if account :
             # Update information
             mycursor.execute(f"""UPDATE `admin` SET username='{username}', passwd='{password}' WHERE admin_id=0""")
-            mydb.commit()
-            
-            status = 1
-            almaza_logger.info('Admin information updated successfully.')
-
-            return redirect(url_for('logout'))
+            mydb.commit()            
+            flash('Admin information updated successfully, logout to update information.', "logininfo")
+            almaza_logger.info('Admin information updated successfully')
           else:
-            status = 0
-
+            flash("Password you entered is wrong.", "loginerror")
         except Exception as e:
+          flash("Failed to update admin information.", "loginerror")
           almaza_logger.exception('Failed to update admin information.')
-          status = 0
 
     db_tables = retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
   
@@ -971,7 +965,6 @@ def settings():
 
     return render_template("settings.html", 
                           title="Settings",
-                          status=status,
                           equipments=equipments,
                           models=models,
                           locations=locations,
@@ -991,4 +984,3 @@ def internal_server_error(e):
     # note that we set the 500 status explicitly
     return render_template('500.html'), 500
 
-#--------------------------------------------------------------------------#

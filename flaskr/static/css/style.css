@@ -151,3 +151,7 @@ img {
     font-weight: 500;
     font-size: 12px;
 }
+
+.fade{
+    transition: opacity 0.15s linear !important;
+}

@@ -2,6 +2,9 @@
 -- ------------------------------------------------------
 -- Server version	8.0.29
 
+CREATE SCHEMA IF NOT EXISTS `almazadb`;
+USE `almazadb`;
+
 -- Drops
 DROP TABLE IF EXISTS `admin`;
 DROP TABLE IF EXISTS `equipment`;
@@ -56,24 +59,24 @@ CREATE TABLE `device` (
   `device_supply_date` date,
   `location_id` int DEFAULT NULL,
   `device_country` varchar(55) NOT NULL,
-  `image` longtext,
+  `image` varchar(2083),
   `device_contract_type` varchar(55) NOT NULL,
   `contract_start_date` date DEFAULT NULL,
   `contract_end_date` date DEFAULT NULL,
   `terms` longtext,
-  `terms_file` longtext,
-  `inspection_list` longtext,
+  `terms_file` varchar(2083),
+  `inspection_list` varchar(2083),
   `inspection_checklist` longtext,
-  `ppm_list` longtext,
+  `ppm_list` varchar(2083),
   `ppm_checklist` longtext,
   `ppm_external` tinyint(1) DEFAULT NULL,
-  `calibration_list` longtext,
+  `calibration_list` varchar(2083),
   `calibration_checklist` longtext,
   `calibration_external` tinyint(1) DEFAULT NULL,
   `technical_status` varchar(55) NOT NULL,
   `problem` longtext NOT NULL,
   `TRC` int NOT NULL,
-  `Code` longtext NOT NULL,
+  `Code` varchar(150) NOT NULL,
   `qrCode` longtext NOT NULL,
   `createdAt` date NOT NULL,
   `updatedAt` date DEFAULT NULL,

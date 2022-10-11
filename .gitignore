@@ -130,5 +130,5 @@ dmypy.json
 
 # Others
 Server/static/UPLOAD/
-
+flaskr/.vscode
 

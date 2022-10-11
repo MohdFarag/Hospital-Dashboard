@@ -2,359 +2,354 @@
 {% block main %}
 
 <div class="home-tab">
-    <div class="col-12 grid-margin">    
-        <div class="d-sm-flex align-items-center justify-content-between border-bottom">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab" aria-selected="false">Services</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="inspection-tab" data-bs-toggle="tab" href="#inspection" role="tab" aria-selected="false">Inspection</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="ppm-tab" data-bs-toggle="tab" href="#ppm" role="tab" aria-selected="false">PPM</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="calibration-tab" data-bs-toggle="tab" href="#calibration" role="tab" aria-selected="false">Calibration</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="terms-tab" data-bs-toggle="tab" href="#terms" role="tab" aria-selected="false">Terms</a>
-                </li>
-            </ul>
-            <div>
-                <div class="btn-wrapper">
-                    <a href="#" onclick="window.print()" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+    <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab" aria-selected="false">Services</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="inspection-tab" data-bs-toggle="tab" href="#inspection" role="tab" aria-selected="false">Inspection</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="ppm-tab" data-bs-toggle="tab" href="#ppm" role="tab" aria-selected="false">PPM</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="calibration-tab" data-bs-toggle="tab" href="#calibration" role="tab" aria-selected="false">Calibration</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="terms-tab" data-bs-toggle="tab" href="#terms" role="tab" aria-selected="false">Terms</a>
+            </li>
+        </ul>
+        <div>
+            <div class="btn-wrapper">
+                <a href="#" onclick="window.print()" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+            </div>
+        </div>
+    </div>
+    <div id="PrimaryData" class="tab-content tab-content-basic">
+        <div class="card tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview" >
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img class="img-fluid img-thumbnail" src="{{device[9]}}" />
+                    </div>
+                    <div class="col-md-5">
+                        <h1 style="color: rgb(0, 88, 165);" class="display-4">{{device[4]}} {{device[3]}}</h1>
+                        <h4><span style="color: rgb(0, 102, 255) ;">{{device[0]}}</span></h4>
+                        <h4>{{device[2]}}</h4>
+                        <h4>{% if device[23] != "FF" %} {{device[23]}} - {{device[24]}} {% else %} {{device[23]}} {% endif %}</h4>
+                        <h4>TRC: {{device[25]}}</h4>
+                    </div>
+                    <div class="col-md-1 text-md-end">
+                        <h4 class="card-description">{{device[1]}}</h4> 
+                        <h5>{% if device[5] != None %} {{device[5].strftime('%Y')}} {% else %} N/A {% endif %}</h5>   
+                    </div>
+                    <div id="qrcode" class="col-md-2">
+                        <center><img title="qrcode" alt="qrcode" style="width: 310px;" src="{{device[27]}}" /></center>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <td>Country</td>
+                            <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[8]|lower }}.svg" alt="{{device[8]}}" title="{{device[8]}}" /> </td>
+                        </tr>
+                        <tr>
+                            <td>Supply Date</td>
+                            <td>{% if device[6] != None %} {{device[6].strftime('%Y')}} {% else %} N/A {% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td>{{device[7]}}</td>
+                        </tr>
+                        <tr>
+                            <td>Contract</td>
+                            <td>
+                                {% if device[10] != "Local" %}
+                                    {{device[10]}} <br> 
+                                    From 
+                                    <b style="color: rgb(0, 61, 114);">
+                                        {% if device[11] != None %} {{device[11]}} {% else %} N/A {% endif %}
+                                    </b> 
+                                    TO 
+                                    <b style="color: rgb(0, 61, 114);">
+                                        {% if device[12] != None %} {{device[12]}} {% else %} N/A {% endif %}
+                                    </b>
+                                {% else %} 
+                                    {{device[10]}} 
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Code</td>
+                            <td>{{device[26]}}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="tab-content tab-content-basic">
-       
-            <div class="card tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview" >
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <img class="img-fluid img-thumbnail" src="{{device[9]}}" />
-                        </div>
-                        <div class="col-md-5">
-                            <h1 style="color: rgb(0, 88, 165);" class="display-4">{{device[4]}} {{device[3]}}</h1>
-                            <h4><span style="color: rgb(0, 102, 255) ;">{{device[0]}}</span></h4>
-                            <h4>{{device[2]}}</h4>
-                            <h4>{% if device[23] != "FF" %} {{device[23]}} - {{device[24]}} {% else %} {{device[23]}} {% endif %}</h4>
-                            <h4>TRC: {{device[25]}}</h4>
-                        </div>
-                        <div class="col-md-1 text-md-end">
-                            <h4 class="card-description">{{device[1]}}</h4> 
-                            <h5>{% if device[5] != None %} {{device[5].strftime('%Y')}} {% else %} N/A {% endif %}</h5>   
-                        </div>
-                        <div id="qrcode" class="col-md-2">
-                            <center><img title="qrcode" alt="qrcode" style="width: 310px;" src="{{device[27]}}" /></center>
-                        </div>
+
+        <div class="card tab-pane fade" id="services" role="tabpanel" aria-labelledby="services">
+            <div class="card-body">
+                <div class="d-sm-flex justify-content-between align-items-start">
+                    <div>
+                    <h4 class="card-title card-title-dash">Operations {{type}}</h4>
+                    <p class="card-subtitle card-subtitle-dash">{{num_of_results}} Results.</p>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table">
+                    <div>
+                    <button class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-alarm-plus"></i> Add new service</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                        <th>id</th>
+                        <th>type</th>
+                        <th>Scheduled Date</th>
+                        <th>Done Date</th>
+                        <th>Service Order</th>
+                        <th>Done</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
                             <tr>
-                                <td>Country</td>
-                                <td><img src="{{ url_for('static', filename='images/flags/1x1/') }}{{ device[8]|lower }}.svg" alt="{{device[8]}}" title="{{device[8]}}" /> </td>
-                            </tr>
-                            <tr>
-                                <td>Supply Date</td>
-                                <td>{% if device[6] != None %} {{device[6].strftime('%Y')}} {% else %} N/A {% endif %}</td>
-                            </tr>
-                            <tr>
-                                <td>Location</td>
-                                <td>{{device[7]}}</td>
-                            </tr>
-                            <tr>
-                                <td>Contract</td>
+                                <td>{{service[0]}}</td>
+                                <td>{{service[1]}}</td>
+                                <td>{{service[3]}}</td>
+                                <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
+                                <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
+                                <td><a href="/complete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
+                                <td style="text-align: center;">
+                                    <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
+                                </td>
+                                <td style="text-align: center;">
+                                    <!-- Text trigger modal -->
+                                    <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="staticBackdropLabel">Delete Service</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure to delete this service with id {{service[0]}} ?
+                                                </div>
+                                                <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
-                                    {% if device[10] != "Local" %}
-                                        {{device[10]}} <br> 
-                                        From 
-                                        <b style="color: rgb(0, 61, 114);">
-                                            {% if device[11] != None %} {{device[11]}} {% else %} N/A {% endif %}
-                                        </b> 
-                                        TO 
-                                        <b style="color: rgb(0, 61, 114);">
-                                            {% if device[12] != None %} {{device[12]}} {% else %} N/A {% endif %}
-                                        </b>
-                                    {% else %} 
-                                        {{device[10]}} 
+                                    {% if service[4] == None %}
+                                        <label class="badge badge-warning">NOT YET</label>
+                                    {% elif service[4].strftime('%Y-%m') <= service[3].strftime('%Y-%m') %}
+                                        <label class="badge badge-success">On Time</label>
+                                    {% elif service[4].strftime('%Y-%m') > service[3].strftime('%Y-%m') %}
+                                        <label class="badge badge-danger">LATE</label>
                                     {% endif %}
                                 </td>
                             </tr>
-                            <tr>
-                                <td>Code</td>
-                                <td>{{device[26]}}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-    
-            <div class="card tab-pane fade" id="services" role="tabpanel" aria-labelledby="services">
-                <div class="card-body">
-                    <div class="d-sm-flex justify-content-between align-items-start">
-                        <div>
-                        <h4 class="card-title card-title-dash">Operations {{type}}</h4>
-                        <p class="card-subtitle card-subtitle-dash">{{num_of_results}} Results.</p>
-                        </div>
-                        <div>
-                        <button class="btn btn-primary btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-alarm-plus"></i> Add new service</button>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table">
-                        <thead>
-                            <tr>
-                            <th>id</th>
-                            <th>type</th>
-                            <th>Scheduled Date</th>
-                            <th>Done Date</th>
-                            <th>Service Order</th>
-                            <th>Done</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                            <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for service in services %}
-                                <tr>
-                                    <td>{{service[0]}}</td>
-                                    <td>{{service[1]}}</td>
-                                    <td>{{service[3]}}</td>
-                                    <td>{% if service[4] == None %} __ {% else %} {{service[4]}} {%endif%}</td>
-                                    <td><a href="/service-order?id={{service[0]}}&type={{type}}"><button class="btn btn-dark btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-printer"></i>Print Service Order</button></a></td>
-                                    <td><a href="/complete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}"><button class="btn btn-success btn-sm text-white mb-0 me-0" type="button"><i class="mdi mdi-subdirectory-arrow-right"></i>Done</button></a></td>
-                                    <td style="text-align: center;">
-                                        <a href="#/" class="search-item-link"><i class="mdi mdi-pencil-box text-warning"></i></a>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <!-- Text trigger modal -->
-                                        <a href="#/" data-bs-toggle="modal" data-bs-target="#staticBackdrop-{{service[0]}}" class="search-item-link"><i class="mdi mdi-delete-forever text-danger"></i></a>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="staticBackdrop-{{service[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                              <div class="modal-content">
-                                                  <div class="modal-header">
-                                                  <h5 class="modal-title" id="staticBackdropLabel">Delete Service</h5>
-                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                  </div>
-                                                  <div class="modal-body">
-                                                      Are you sure to delete this service with id {{service[0]}} ?
-                                                  </div>
-                                                  <div class="modal-footer">
-                                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                  <a href="/delete-service?id={{service[0]}}&type={{type}}&page={{curr_page}}&come=device&sn={{device[0]}}" type="button" class="btn btn-primary">Yes</a>
-                                                  </div>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if service[4] == None %}
-                                            <label class="badge badge-warning">NOT YET</label>
-                                        {% elif service[4].strftime('%Y-%m') <= service[3].strftime('%Y-%m') %}
-                                            <label class="badge badge-success">On Time</label>
-                                        {% elif service[4].strftime('%Y-%m') > service[3].strftime('%Y-%m') %}
-                                            <label class="badge badge-danger">LATE</label>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
-                <nav class="d-flex justify-content-center">
-                    <ul class="pagination">
-                        <li class="page-item {% if curr_page<=1 %} disabled {% endif %}">
-                            <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page-1}}&type={{type}}#services" tabindex="-1">Previous</a>
-                        </li>
-                        {% for i in range(1,num_of_pages+1) %}
-                            <li class="page-item {% if i == curr_page %} active {% endif %}">
-                                <a class="page-link" href="/device?sn={{device[0]}}&page={{i}}&type={{type}}#services">{{i}}</a>
-                            </li>
                         {% endfor %}
-                        
-                        <li class="page-item {% if curr_page>=num_of_pages %} disabled {% endif %}">
-                            <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page+1}}&type={{type}}#services">Next</a>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+            <nav class="d-flex justify-content-center">
+                <ul class="pagination">
+                    <li class="page-item {% if curr_page<=1 %} disabled {% endif %}">
+                        <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page-1}}&type={{type}}#services" tabindex="-1">Previous</a>
+                    </li>
+                    {% for i in range(1,num_of_pages+1) %}
+                        <li class="page-item {% if i == curr_page %} active {% endif %}">
+                            <a class="page-link" href="/device?sn={{device[0]}}&page={{i}}&type={{type}}#services">{{i}}</a>
                         </li>
-                    </ul>
-                </nav>
-            </div>
-            
-            <div class="card tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-center">
-                            {% set url_list = device[15].split('.') %}
-                            {% if url_list[1] == 'pdf' %}
-                            <canvas class="canvasList" id="inspection-canvas"></canvas>                    
-                            <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
-                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
-                            <img src="{{device[15]}}" class="canvasList" />
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            {% if  device[16] != '' %}
-                                <h4>CheckList</h4>
-                                {% set checklists = device[16].split(',') %}
-                                {% for list in checklists %}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input">
-                                            {{list}}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card tab-pane fade" id="ppm" role="tabpanel" aria-labelledby="ppm">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-center">
-                            {% if device[19] == 1 %}
-                            <div class="form-check">
-                                <label class="form-check-label fw-bold">
-                                  <input type="checkbox" class="form-check-input" checked disabled>
-                                  External
-                                </label>
-                              </div>
-                            {% elif device[19] == 0 %}
-                            <div class="form-check">
-                                <label class="form-check-label fw-bold">
-                                  <input type="checkbox" class="form-check-input" disabled>
-                                  External
-                                </label>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-center">
-                            {% set url_list = device[17].split('.') %}
-                            {% if url_list[1] == 'pdf' %}
-                            <canvas class="canvasList" id="ppm-canvas"></canvas>                    
-                            <script>renderPdf('{{device[17]}}',"ppm-canvas")</script>
-                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
-                            <img src="{{device[17]}}" class="canvasList" />
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            {% if  device[18] != '' %}
-                                <h4>CheckList</h4>
-                                {% set checklists = device[18].split(',') %}
-                                {% for list in checklists %}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input">
-                                            {{list}}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card tab-pane fade" id="calibration" role="tabpanel" aria-labelledby="calibration">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-center">
-                            {% if device[22] == 1 %}
-                            <div class="form-check">
-                                <label class="form-check-label fw-bold">
-                                  <input type="checkbox" class="form-check-input" checked disabled>
-                                  External
-                                </label>
-                            </div>
-                            {% elif device[22] == 0 %}
-                            <div class="form-check">
-                                <label class="form-check-label fw-bold">
-                                  <input type="checkbox" class="form-check-input" disabled>
-                                  External
-                                </label>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-center">
-                            {% set url_list = device[20].split('.') %}
-                            {% if url_list[1] == 'pdf' %}
-                            <canvas class="canvasList" id="calibration-canvas"></canvas>                    
-                            <script>renderPdf('{{device[20]}}',"calibration-canvas")</script>
-                            {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
-                            <img src="{{device[20]}}" class="canvasList" />
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            {% if device[21] != '' %}
-                                <h4>CheckList</h4>
-                                {% set checklists = device[21].split(',') %}
-                                {% for list in checklists %}
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input">
-                                            {{list}}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card tab-pane fade" id="terms" role="tabpanel" aria-labelledby="terms">
-                <div class="card-body">
-                    <h3>Description | Terms</h3>
-                    {% set url_list = device[14].split('.') %}
-                    <div class="text-center">
-                        {% if device[14] == "" %}
-
-                        {% elif url_list[1] == 'pdf' %}
-                            <canvas class="canvasList" id="terms-canvas"></canvas>                    
-                            <script>renderPdf('{{device[14]}}',"terms-canvas")</script>
+                    {% endfor %}
+                    
+                    <li class="page-item {% if curr_page>=num_of_pages %} disabled {% endif %}">
+                        <a class="page-link" href="/device?sn={{device[0]}}&page={{curr_page+1}}&type={{type}}#services">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="card tab-pane fade" id="inspection" role="tabpanel" aria-labelledby="inspection">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        {% set url_list = device[15].split('.') %}
+                        {% if url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="inspection-canvas"></canvas>                    
+                        <script>renderPdf('{{device[15]}}',"inspection-canvas")</script>
                         {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
-                            <img src="{{device[14]}}" class="canvasList" />
+                        <img src="{{device[15]}}" class="canvasList" />
                         {% endif %}
                     </div>
-                    <p class="mt-4">
-                        {% if device[13] == "" %} ___ {% else %} {{device[13]}} {% endif %}
-                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        {% if  device[16] != '' %}
+                            <h4>CheckList</h4>
+                            {% set checklists = device[16].split(',') %}
+                            {% for list in checklists %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        {{list}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-        
-        
-    </div>
+
+        <div class="card tab-pane fade" id="ppm" role="tabpanel" aria-labelledby="ppm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        {% if device[19] == 1 %}
+                        <div class="form-check">
+                            <label class="form-check-label fw-bold">
+                                <input type="checkbox" class="form-check-input" checked disabled>
+                                External
+                            </label>
+                            </div>
+                        {% elif device[19] == 0 %}
+                        <div class="form-check">
+                            <label class="form-check-label fw-bold">
+                                <input type="checkbox" class="form-check-input" disabled>
+                                External
+                            </label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        {% set url_list = device[17].split('.') %}
+                        {% if url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="ppm-canvas"></canvas>                    
+                        <script>renderPdf('{{device[17]}}',"ppm-canvas")</script>
+                        {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
+                        <img src="{{device[17]}}" class="canvasList" />
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        {% if  device[18] != '' %}
+                            <h4>CheckList</h4>
+                            {% set checklists = device[18].split(',') %}
+                            {% for list in checklists %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        {{list}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card tab-pane fade" id="calibration" role="tabpanel" aria-labelledby="calibration">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        {% if device[22] == 1 %}
+                        <div class="form-check">
+                            <label class="form-check-label fw-bold">
+                                <input type="checkbox" class="form-check-input" checked disabled>
+                                External
+                            </label>
+                        </div>
+                        {% elif device[22] == 0 %}
+                        <div class="form-check">
+                            <label class="form-check-label fw-bold">
+                                <input type="checkbox" class="form-check-input" disabled>
+                                External
+                            </label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-center">
+                        {% set url_list = device[20].split('.') %}
+                        {% if url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="calibration-canvas"></canvas>                    
+                        <script>renderPdf('{{device[20]}}',"calibration-canvas")</script>
+                        {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
+                        <img src="{{device[20]}}" class="canvasList" />
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        {% if device[21] != '' %}
+                            <h4>CheckList</h4>
+                            {% set checklists = device[21].split(',') %}
+                            {% for list in checklists %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input">
+                                        {{list}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card tab-pane fade" id="terms" role="tabpanel" aria-labelledby="terms">
+            <div class="card-body">
+                <h3>Description | Terms</h3>
+                {% set url_list = device[14].split('.') %}
+                <div class="text-center">
+                    {% if device[14] == "" %}
+
+                    {% elif url_list[1] == 'pdf' %}
+                        <canvas class="canvasList" id="terms-canvas"></canvas>                    
+                        <script>renderPdf('{{device[14]}}',"terms-canvas")</script>
+                    {% elif url_list[1] in ['png', 'jpg', 'jpeg', 'webp'] %}
+                        <img src="{{device[14]}}" class="canvasList" />
+                    {% endif %}
+                </div>
+                <p class="mt-4">
+                    {% if device[13] == "" %} ___ {% else %} {{device[13]}} {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>                
 </div>
 {% endblock %}

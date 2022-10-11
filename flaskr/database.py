@@ -6,11 +6,18 @@ from flask import current_app, g
 
 from flaskr.log import almaza_logger
 
+config = {
+    'user': 'root', 
+    'password': '01140345493', 
+    'host': '127.0.0.1', 
+    'port': '3306', 
+    'database': 'almazadb'
+}
 
 # Connecting with Database
 def mysql_connector():
     try:
-        cnx = mysql.connector.connect(user ='root', password= '01140345493', host = '127.0.0.1',port='3306', database='almazadb')
+        g.db = mysql.connector.connect(**config)
         almaza_logger.info('Server connected to database successfully')
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -21,12 +28,9 @@ def mysql_connector():
             almaza_logger.exception(err)
         return
     else:
-        almaza_logger.exception('Server Failed to connect to database')
-
-    # Initialize our cursor
-    cnx.reconnect()
-    mycursor = cnx.cursor()
-    return cnx, mycursor
+        # Initialize our cursor
+        mycursor = g.db.cursor(buffered=True)
+        return g.db, mycursor
 
 
 def close_db(e=None):

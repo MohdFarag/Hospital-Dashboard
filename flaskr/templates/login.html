@@ -34,9 +34,17 @@
               </div>
               <h4>Hello!</h4>
               <h6 class="fw-light">Sign in to continue.</h6>
-              <div {% if status == True %} hidden {% endif %} class="alert alert-danger" role="alert">
-                Username or password is wrong !
-              </div>
+   
+              {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                {% if errors %} 
+                  <div class="alert alert-danger" role="alert">
+                    {% for msg in errors %}
+                    <li>{{msg}}</li>
+                    {% endfor %}
+                  </div>
+                {% endif %} 
+              {% endwith %}  
+      
               <form action="{{ url_for('auth.login') }}" method="POST" class="pt-3">
                 <div class="form-group">
                   <input type="text" name="username" class="form-control form-control-lg" id="username" placeholder="Username">

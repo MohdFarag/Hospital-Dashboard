@@ -15,11 +15,12 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
     _,mycursor = mysql_connector()
-    status = True
     if request.method == 'POST':
       username  = request.form['username']
       password  = request.form['password']
 
+      # pw_hash = generate_password_hash(password)
+      
       # Check if account exists using MySQL
       mycursor.execute(f"SELECT * FROM admin WHERE `username` = '{username}' AND `passwd` = '{password}'")
 
@@ -34,17 +35,15 @@ def login():
           session['id'] = account[0]
           session['username'] = account[1]
           almaza_logger.info(f'admin:{username} logged in succefully.')
-          status = True
 
           # Redirect to dashboard page
           return redirect(url_for('index'))
       else:
           # Account doesnt exist or username/password incorrect
-          status = False
+          flash("We didn't recognize the username or password you entered.", "error")
 
     return render_template("login.html",
-                          title="Login",
-                          status=status)
+                          title="Login")
 
 
 @bp.before_app_request
@@ -67,7 +66,7 @@ def logout():
   almaza_logger.info(f'admin {username} logged out succefully.')
 
   # Redirect to login page
-  return redirect(url_for('login'))
+  return redirect(url_for('auth.login'))
 
 # Auth
 def login_required(view):
