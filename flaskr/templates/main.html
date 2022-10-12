@@ -1,6 +1,9 @@
 <!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html lang="en">
-
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -29,7 +32,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/printStyle.css') }}" media="print">
   <!-- endPrintStyle -->
   <!-- pdfObject -->
-  <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="{{ url_for('static', filename='js/pdf.css') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/pdfjs-script.js') }}"></script> 
   <!-- ICON -->
   <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" />
@@ -66,7 +69,7 @@
               <span class="input-group-addon input-group-prepend border-right">
                 <span class="icon-calendar input-group-text calendar-icon"></span>
               </span>
-              <input type="text" class="form-control">
+              <input title="calender" type="text" class="form-control">
             </div>
           </li>
           <li class="nav-item">
@@ -172,7 +175,7 @@
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"><a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block"><a rel="noopener noreferrer" href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2022. All rights reserved.</span>
           </div>
         </footer>
