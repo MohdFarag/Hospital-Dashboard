@@ -155,3 +155,11 @@ img {
 .fade{
     transition: opacity 0.15s linear !important;
 }
+
+textarea {
+    height: auto !important;
+}
+
+.textChangeQrcode{
+    line-height: 2;
+}

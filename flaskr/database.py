@@ -3,7 +3,6 @@ import mysql.connector
 from mysql.connector import errorcode
 import click
 from flask import current_app, g
-
 from flaskr.log import almaza_logger
 
 config = {
@@ -18,7 +17,6 @@ config = {
 def mysql_connector():
     try:
         g.db = mysql.connector.connect(**config)
-        almaza_logger.info('Server connected to database successfully')
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             almaza_logger.exception("Something is wrong with your username or password")

@@ -14,11 +14,11 @@ import pandas as pd
 import math
 
 from flaskr.log import almaza_logger
-
+from flaskr.config import Config
 #--------------------------------------------------------------------------#
 
 bp = Blueprint('dashboard', __name__)
-
+UPLOAD_FOLDER = Config.UPLOAD_FOLDER
 #--------------------------------------------------------------------------#
 
 """Constants"""
@@ -145,7 +145,7 @@ def allowed_file(filename):
 def save_file(list, sn, fileName):
     if list and allowed_file(list.filename):
       filename = secure_filename(fileName + "." + list.filename.rsplit('.', 1)[1])
-      path = bp.config['UPLOAD_FOLDER'] + sn.replace("/", "") + "/" 
+      path = UPLOAD_FOLDER + sn.replace("/", "") + "/" 
       os.makedirs(path, exist_ok=True)
       list.save(os.path.join(path, filename))
       return path + filename
@@ -400,12 +400,165 @@ def add_device():
       except Exception as e:
         almaza_logger.exception('Failed to add new device.')
       
-    return render_template("add.html",
+    return render_template("addDevice.html",
                           title="Add New Device",
                           equipments=equipments,
                           models=models,
                           locations=locations,
                           manufacturers=manufacturers)
+
+# Delete new device
+@bp.route("/edit-device", methods=['GET', 'POST'])
+@login_required
+def edit_device(): 
+    # Connecting with database
+    mydb, mycursor = mysql_connector()
+    db_tables = retrive_tables(mycursor, "model", "location", "equipment", "manufacturer")
+    
+    models = db_tables['model']
+    locations = db_tables['location']
+    equipments = db_tables['equipment']
+    manufacturers = db_tables['manufacturer']
+    
+    sn_page = request.args.get("sn", "")
+    mycursor.execute("""SELECT 
+      device_sn, 
+      category,
+      equipment_name, 
+      model_name, 
+      manufacturer_name, 
+      device_production_date, 
+      device_supply_date, 
+      location_name, 
+      device_country, 
+      device_contract_type, 
+      contract_start_date, 
+      contract_end_date, 
+      technical_status, 
+      problem, 
+      TRC, 
+      Code,
+      qrCode,
+      createdAt, 
+      updatedAt  
+    FROM device
+    left JOIN equipment
+    ON device.equipment_id = equipment.equipment_id
+    left JOIN model
+    ON device.model_id = model.model_id
+    left JOIN manufacturer
+    ON device.manufacturer_id = manufacturer.manufacturer_id
+    left JOIN location
+    ON device.location_id = location.location_id    
+    WHERE device_sn=%s""",(sn_page,))
+    device = mycursor.fetchone()
+    
+    # When click on edit
+    if request.method == 'POST' :
+      # Get data from inputs
+      sn = request.form['sn']
+      sn = sn.replace(" ","")
+
+      equipment = request.form['equipment']
+      category = request.form['category']
+      model = request.form['model']
+      manufacturer = request.form['manufacturer']
+
+      prod_date = request.form["prod-date"]
+      prod_date = check_date(prod_date, "production")
+      supp_date = request.form["supp-date"]
+      supp_date = check_date(supp_date, "supply")
+      
+      location = request.form['location']
+      country = request.form['country'].lower()
+      
+      contract = request.form['contract-type']
+      maintenance_contract_type = request.form['maintenance-contract-type']
+      if contract == "Contract of Maintenance":
+        contract = contract + " - " + maintenance_contract_type
+
+      contract_start_date = request.form['contract-start-date']
+      contract_start_date = check_date(contract_start_date, "start date of contract")
+      contract_end_date = request.form['contract-end-date']
+      contract_end_date = check_date(contract_end_date, "end date of contract")
+      
+      technical_status = request.form.getlist('technical-status')
+      PF_problem = request.form['PF-problem']
+      NF_problem = request.form['NF-problem']
+      
+      problem = ''
+      if technical_status == "PF":
+        problem = PF_problem
+      elif technical_status == "NF":
+        problem = NF_problem
+
+      trc = request.form.getlist('trc')
+
+      updatedAt = pd.to_datetime("today")
+      updatedAt = f"{updatedAt.year}-{updatedAt.month}-{updatedAt.day}"
+
+      # Validation
+      # S/N
+      mycursor.execute(f"SELECT device_sn FROM device WHERE `device_sn` = '{sn} and `device_sn` != {sn_page} '")
+      print(f"SELECT device_sn FROM device WHERE `device_sn` = '{sn}' and `device_sn` != '{sn_page}'")
+      sn_exist = mycursor.fetchone()
+      if sn_exist:
+        flash("The Serial Number is used before !", "error")
+        return
+
+      # Insertion Process
+      try:
+        # 1) Get id of equipment_name chosen
+        mycursor.execute('SELECT equipment_id FROM equipment where equipment_name = %s', (equipment,))
+        equipment_id = mycursor.fetchone()
+
+        # 2) Get id of model_name chosen
+        mycursor.execute('SELECT model_id FROM model where model_name = %s', (model,))
+        model_id = mycursor.fetchone()
+
+        # 3) Get id of manufacturer_id chosen
+        mycursor.execute('SELECT manufacturer_id FROM manufacturer where manufacturer_name = %s', (manufacturer,))
+        manufacturer_id = mycursor.fetchone()
+
+        # 4) Get id of location_id chosen
+        mycursor.execute('SELECT location_id FROM location where location_name = %s', (location,))
+        location_id = mycursor.fetchone()
+
+        # 6) Edit the device
+        mycursor.execute("""UPDATE `device`
+                            SET
+                            `device_sn` = %s,
+                            `category` = %s,
+                            `equipment_id` = %s,
+                            `model_id` = %s,
+                            `manufacturer_id` = %s,
+                            `device_production_date` = %s,
+                            `device_supply_date` = %s,
+                            `location_id` = %s,
+                            `device_country` = %s,
+                            `device_contract_type` = %s,
+                            `contract_start_date` = %s,
+                            `contract_end_date` = %s,
+                            `technical_status` = %s,
+                            `problem` = %s,
+                            `TRC` = %s,
+                            `updatedAt` = %s
+                            WHERE `device_sn` = %s;""",
+                        (sn, category, equipment_id[0], model_id[0],manufacturer_id[0], prod_date, supp_date, location_id[0], country, contract, contract_start_date,contract_end_date, technical_status[0], problem, trc[0], updatedAt, sn_page))
+
+        mydb.commit() # Process is done
+        flash("Device Edited successfully.","info")
+        almaza_logger.info(f'Succeded to edit the device with sn {sn_page}.')
+      except Exception as e:
+        almaza_logger.exception('Failed to edit the device.')
+      
+    return render_template("editDevice.html",
+                          title="Edit New Device",
+                          equipments=equipments,
+                          models=models,
+                          locations=locations,
+                          manufacturers=manufacturers,
+                          device=device)
 
 # Delete device
 @bp.route("/delete-device")
@@ -418,7 +571,7 @@ def delete_device():
     
     try:
       # Remove device data
-      rmtree(bp.config['UPLOAD_FOLDER'] + sn ,ignore_errors=True)
+      rmtree(UPLOAD_FOLDER + sn ,ignore_errors=True)
 
       # Execute the delete Process
       mycursor.execute(f"""DELETE FROM Device WHERE device_sn='{sn}';""")
@@ -439,8 +592,8 @@ def delete_devices():
       # Connecting with database
       mydb, mycursor = mysql_connector() 
 
-      # Remove device data
-      rmtree(bp.config['UPLOAD_FOLDER'] ,ignore_errors=True)
+      # Remove devices data
+      rmtree(UPLOAD_FOLDER ,ignore_errors=True)
 
       # Execute the delete Process
       mycursor.execute(f"""DELETE FROM Device;""")
@@ -544,7 +697,7 @@ def search():
       technical_status = get_sql_for_search('technical-status','technical_status')
       trc = get_sql_for_search('trc','trc')
       
-      print(f"""SELECT 
+      mycursor.execute(f"""SELECT 
                           device_sn, 
                           equipment_name, 
                           model_name, 
@@ -580,42 +733,6 @@ def search():
                           {technical_status}
                           {trc}
                         LIMIT {curr_page},{per_page}""")
-      mycursor.execute(f"""SELECT 
-                          device_sn, 
-                          equipment_name, 
-                          model_name, 
-                          manufacturer_name, 
-                          device_production_date, 
-                          location_name, 
-                          device_country, 
-                          device_contract_type, 
-                          Code
-                        FROM `device`
-                        LEFT JOIN equipment
-                          ON device.equipment_id = equipment.equipment_id
-                        LEFT JOIN model
-                          ON device.model_id = model.model_id
-                        LEFT JOIN manufacturer
-                          ON device.manufacturer_id = manufacturer.manufacturer_id
-                        LEFT JOIN location
-                          ON device.location_id = location.location_id 
-                        WHERE
-                          (device_sn LIKE '%{search_word}%' OR
-                          equipment_name LIKE '%{search_word}%' OR
-                          model_name LIKE '%{search_word}%' OR
-                          manufacturer_name LIKE '%{search_word}%' OR
-                          location_name LIKE '%{search_word}%' OR
-                          Code LIKE '%{search_word}%') AND
-                          {category}
-                          {equipment}
-                          {model}
-                          {manufacturer}
-                          {location}
-                          {country}
-                          {contract}
-                          {technical_status}
-                          {trc[:-3]}
-                        LIMIT {curr_page},{per_page}""")
       data = mycursor.fetchall()
 
       mycursor.execute(f"""SELECT COUNT(device_sn) FROM `device`
@@ -633,7 +750,7 @@ def search():
                           model_name LIKE '%{search_word}%' OR
                           manufacturer_name LIKE '%{search_word}%' OR
                           location_name LIKE '%{search_word}%' OR
-                          Code LIKE '%{search_word}%') AND
+                          Code LIKE '%{search_word}%')
                           {category}
                           {equipment}
                           {model}
@@ -642,7 +759,7 @@ def search():
                           {country}
                           {contract}
                           {technical_status}
-                          {trc[:-3]}""")
+                          {trc}""")
       num_of_results = mycursor.fetchone()[0]
 
     return render_template("search.html",
