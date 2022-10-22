@@ -8,7 +8,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{title}} | مستشفى الجمعية الشرعية للأطفال</title>
+    <title>{% block title %}{% endblock %} | مستشفى الجمعية الشرعية للأطفال</title>
   <!-- QR Code -->
   <script type="text/javascript" src="{{ url_for('static', filename='js/qrcode.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/html5-qrcode.js') }}"></script>
@@ -77,23 +77,6 @@
               <i class="icon-search"></i>
               <input name="searchValue" type="search" class="form-control" placeholder="Search" title="Search">
             </form>
-          </li>
-          <li class="nav-item dropdown"> 
-            <a title="NotificationIcon" class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="icon-bell"></i>
-              <span class="count"></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                  <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="image" class="img-sm profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow py-2">
-                  <p class="preview-subject ellipsis font-weight-medium text-dark">Travis Jenkins </p>
-                  <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
-                </div>
-              </a>
-            </div>
           </li>
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">

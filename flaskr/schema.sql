@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS `service`;
 CREATE TABLE `admin` (
   `admin_id` int NOT NULL auto_increment,
   `username` varchar(55) DEFAULT NULL,
-  `passwd` varchar(55) DEFAULT NULL,
+  `passwd` text DEFAULT NULL,
   PRIMARY KEY (`admin_id`)
 );
 

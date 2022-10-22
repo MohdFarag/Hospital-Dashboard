@@ -3,18 +3,21 @@ from shutil import rmtree
 from werkzeug.utils import secure_filename
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, json
 )
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.database import mysql_connector, retrive_tables
+from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.exceptions import HTTPException
 
 import pandas as pd
 import math
 
 from flaskr.log import almaza_logger
 from flaskr.config import Config
+
 #--------------------------------------------------------------------------#
 
 bp = Blueprint('dashboard', __name__)
@@ -242,7 +245,6 @@ def dashboard():
     
     
     return render_template("dashboard.html",
-                       title="Dashboard",
                        num_of_devices=len(devices),
                        this_month=this_month,
                        equipments=equipments,
@@ -401,7 +403,6 @@ def add_device():
         almaza_logger.exception('Failed to add new device.')
       
     return render_template("addDevice.html",
-                          title="Add New Device",
                           equipments=equipments,
                           models=models,
                           locations=locations,
@@ -496,11 +497,11 @@ def edit_device():
 
       updatedAt = pd.to_datetime("today")
       updatedAt = f"{updatedAt.year}-{updatedAt.month}-{updatedAt.day}"
-
+      
       # Validation
       # S/N
       mycursor.execute(f"SELECT device_sn FROM device WHERE `device_sn` = '{sn} and `device_sn` != {sn_page} '")
-      print(f"SELECT device_sn FROM device WHERE `device_sn` = '{sn}' and `device_sn` != '{sn_page}'")
+
       sn_exist = mycursor.fetchone()
       if sn_exist:
         flash("The Serial Number is used before !", "error")
@@ -549,11 +550,12 @@ def edit_device():
         mydb.commit() # Process is done
         flash("Device Edited successfully.","info")
         almaza_logger.info(f'Succeded to edit the device with sn {sn_page}.')
+        
+        return redirect(url_for('search'))
       except Exception as e:
         almaza_logger.exception('Failed to edit the device.')
       
     return render_template("editDevice.html",
-                          title="Edit New Device",
                           equipments=equipments,
                           models=models,
                           locations=locations,
@@ -763,7 +765,6 @@ def search():
       num_of_results = mycursor.fetchone()[0]
 
     return render_template("search.html",
-                    title="Devices",
                     num_of_results=num_of_results,
                     devices=data,
                     search_word=search_word,
@@ -849,9 +850,7 @@ def device():
     mycursor.execute(f"SELECT COUNT(service_id) FROM service WHERE device_sn='{sn}'")
     num_of_results = mycursor.fetchone()[0]
 
-    title = device[0]
     return render_template("device.html",
-                            title=title,
                             services=services,
                             device=device,
                             num_of_results=num_of_results,
@@ -895,7 +894,6 @@ def services():
     num_of_results = mycursor.fetchone()[0]
 
     return render_template("services.html",
-                          title="Services",
                           num_of_results=num_of_results,
                           num_of_pages=int(num_of_results/per_page)+1,
                           services=data,
@@ -1019,7 +1017,6 @@ def service_order():
 
     today = pd.to_datetime("today")
     return render_template("serviceOrder.html",
-                            title="Service Order",
                             service=service,
                             today=today)
   
@@ -1062,7 +1059,7 @@ def settings():
           account = mycursor.fetchone()
           if account :
             # Update information
-            mycursor.execute(f"""UPDATE `admin` SET username='{username}', passwd='{password}' WHERE admin_id=0""")
+            mycursor.execute(f"""UPDATE `admin` SET username='{username}', passwd='{generate_password_hash(password)}' WHERE admin_id=0""")
             mydb.commit()            
             flash('Admin information updated successfully, logout to update information.', "logininfo")
             almaza_logger.info('Admin information updated successfully')
@@ -1081,7 +1078,6 @@ def settings():
     manufacturers = db_tables['manufacturer']
 
     return render_template("settings.html", 
-                          title="Settings",
                           equipments=equipments,
                           models=models,
                           locations=locations,
@@ -1089,15 +1085,38 @@ def settings():
   
 #-----------Error Handler-----------#
 
-# Page 404
-@bp.errorhandler(404)
-def page_not_found(e):
-    # note that we set the 404 status explicitly
-    return render_template('404.html'), 404
+# Error Handle exception
+@bp.errorhandler(HTTPException)
+def handle_exception(e):
+    """Return JSON instead of HTML for HTTP errors."""
+    # start with the correct headers and status code from the error
+    response = e.get_response()
+    # replace the body with JSON
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
 
 # Page 500
 @bp.errorhandler(500)
 def internal_server_error(e):
-    # note that we set the 500 status explicitly
-    return render_template('500.html'), 500
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
 
+    # now you're handling non-HTTP exceptions only
+    return render_template("500.html", e=e), 500
+
+# Page 404
+@bp.errorhandler(405)
+@bp.errorhandler(404)
+def page_not_found(e):
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+    # now you're handling non-HTTP exceptions only
+    return render_template("404.html", e=e), 404

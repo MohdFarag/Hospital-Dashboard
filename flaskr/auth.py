@@ -18,29 +18,28 @@ def login():
     if request.method == 'POST':
       username  = request.form['username']
       password  = request.form['password']
-
-      # pw_hash = generate_password_hash(password)
-      
+     
       # Check if account exists using MySQL
-      mycursor.execute(f"SELECT * FROM admin WHERE `username` = '{username}' AND `passwd` = '{password}'")
-
+      mycursor.execute(f"SELECT * FROM admin WHERE `username` = '{username}'")
       # Fetch one record and return result
-      account = mycursor.fetchone()
+      user = mycursor.fetchone()
 
       # If account exists in accounts table in out database
-      if account:
-          # Create session data, we can access this data in other routes
-          session.clear()
-          session['loggedin'] = True
-          session['id'] = account[0]
-          session['username'] = account[1]
-          almaza_logger.info(f'admin:{username} logged in succefully.')
-
-          # Redirect to dashboard page
-          return redirect(url_for('index'))
+      if user:
+        if check_password_hash(user[2], password):
+            # Create session data, we can access this data in other routes
+            session.clear()
+            session['loggedin'] = True
+            session['id'] = user[0]
+            session['username'] = user[1]
+            almaza_logger.info(f'admin:{username} logged in succefully.')
+            # Redirect to dashboard page
+            return redirect(url_for('index'))
+        else:
+            flash("We didn't recognize the password you entered.", "error")
       else:
           # Account doesnt exist or username/password incorrect
-          flash("We didn't recognize the username or password you entered.", "error")
+          flash("We didn't recognize the username you entered.", "error")
 
     return render_template("login.html",
                           title="Login")

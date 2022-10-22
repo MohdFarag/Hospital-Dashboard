@@ -7,14 +7,20 @@ from . import database
 from . import auth
 from . import dashboard
 
-from flaskr.log import almaza_logger
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.exceptions import HTTPException
+
+from flaskr.log import almaza_logger
 
 #--------------------------------------------------------------------------#
+
 """Our app"""
+# __ init __
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+    
     # configuration
     app.config.from_object('flaskr.config.Config')
 
@@ -36,15 +42,11 @@ def create_app(test_config=None):
         pass
 
     almaza_logger.info('Settings are setted successfully.')
-
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
+  
+    # Initialize the Database File
     database.init_app(app)
-    app.register_blueprint(auth.bp)
 
+    app.register_blueprint(auth.bp)
     app.register_blueprint(dashboard.bp)
     app.add_url_rule('/', endpoint='index')
 
